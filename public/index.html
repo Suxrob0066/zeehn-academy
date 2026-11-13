@@ -554,6 +554,45 @@
   .scene-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
   .crs-scene:has(.scene-photo)::before{background:linear-gradient(180deg,rgba(0,70,224,.10) 0%,rgba(0,70,224,.45) 100%);z-index:1}
   .scene-clip{position:absolute;inset:0;overflow:hidden}
+
+  /* ===== Kartochkalar v3: yumaloq burchak, yumshoq soya, nafis hover ===== */
+  :root{--rc:18px;--rs:12px}
+  .crs,.st,.wc,.parents,.cta,form,.map,.crs-feat,.gi,.vbox,.why-img,.ask,.st-cta,.c-item,.p-float,.map-card,.hero-badge,.hm-main,.hm-sub{border-radius:var(--rc)!important}
+  .crs-img,.p-media .p-photo{border-radius:var(--rs)!important}
+  .crs-ic,.st-ic,.wc-ic,.dir-ic,.c-ic,.p-ic,.hb-ic,.crs-tag,.st-num,.badge,.crs-chips span,input,textarea,.pill{border-radius:10px!important}
+  .btn{border-radius:12px}
+  .crs,.st{border-top:0;border:1px solid var(--line);box-shadow:0 1px 2px rgba(2,11,58,.04),0 12px 32px -18px rgba(2,11,58,.22)}
+  .crs:hover,.st:hover{border-color:#C9D7FF;box-shadow:0 2px 4px rgba(2,11,58,.04),0 28px 50px -24px rgba(0,70,224,.38)}
+  .crs-scene{border-radius:var(--rc) var(--rc) 0 0;margin:-27px -27px 30px}
+  .crs-scene .scene-clip,.crs-scene .scene-photo{border-radius:var(--rc) var(--rc) 0 0}
+  .scene-frame{border-radius:10px}
+  .wc{border-left-width:0!important;position:relative;overflow:hidden}
+  .wc{border:1px solid rgba(2,11,58,.05)!important;transition:transform .3s,box-shadow .3s}
+  .wc::after{content:"";position:absolute;left:0;top:22px;bottom:22px;width:4px;border-radius:0 4px 4px 0;background:var(--blue)}
+  .wc-v::after{background:var(--lime)}
+  .wc:hover{transform:translateY(-3px)!important;box-shadow:0 26px 46px -26px rgba(0,70,224,.4)}
+  .why-chip,.lang-btn,.lang-menu,.lang-menu button{border-radius:10px!important}
+  .ask{border-left:0}
+  .parents{border-top:0;border:1px solid var(--line)}
+  .p-float{border-left:0}
+
+  /* Yo'nalishlar lentasi */
+  .dirs-grid{gap:18px}
+  .dir{position:relative;overflow:hidden;border:1px solid rgba(2,11,58,.06);border-top:0;border-radius:var(--rc);padding:22px 22px 22px 20px;gap:16px;background:#fff;box-shadow:0 2px 6px rgba(2,11,58,.05),0 24px 50px -26px rgba(2,11,58,.40);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s}
+  .dir::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--blue),#2D66F0 60%,var(--lime));transform:scaleX(0);transform-origin:left;transition:transform .35s}
+  .dir::after{content:"";position:absolute;right:-40px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(0,70,224,.08),transparent 70%);transition:transform .4s}
+  .dir:hover{transform:translateY(-6px);border-color:#C9D7FF;box-shadow:0 4px 10px rgba(2,11,58,.05),0 34px 60px -28px rgba(0,70,224,.5)}
+  .dir:hover::before{transform:scaleX(1)}
+  .dir:hover::after{transform:scale(1.6)}
+  .dir-ic{width:50px;height:50px;border-radius:14px!important;background:linear-gradient(145deg,#2D66F0,#0046E0);box-shadow:0 10px 20px -10px rgba(0,70,224,.8)}
+  .dir-flag.flag-round{width:50px;height:50px;border:3px solid #fff;box-shadow:0 0 0 1px rgba(2,11,58,.08),0 10px 20px -10px rgba(2,11,58,.55)}
+  .dir-t{flex:1;min-width:0;position:relative;z-index:1}
+  .dir b{font-size:16px;line-height:1.25;color:var(--navy)}
+  .dir small{font-size:13px;margin-top:3px}
+  .dir-go{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--cloud);color:var(--blue);flex-shrink:0;transition:background .25s,color .25s,transform .25s}
+  .dir-go svg{width:16px;height:16px}
+  .dir:hover .dir-go{background:var(--lime);color:var(--navy);transform:rotate(45deg)}
+  @media (max-width:620px){.dir{padding:16px}.dir-go{position:absolute;right:12px;top:12px;width:28px;height:28px}.dir-go svg{width:14px;height:14px}}
 </style>
 </head>
 <body>
@@ -630,10 +669,10 @@
 
 <div class="dirs">
   <div class="wrap dirs-grid">
-    <a class="dir reveal" href="#kurslar"><span class="dir-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span><span><b>Dasturlash &amp; Sun'iy intellekt</b><small>Amaliy loyihalar bilan</small></span></a>
-    <a class="dir reveal" href="#kurslar"><span class="dir-flag flag-round"><svg viewBox="0 0 20 20"><use href="#f-en" width="20" height="20"/></svg></span><span><b>Ingliz tili</b><small>Tilga tayyorlash</small></span></a>
-    <a class="dir reveal" href="#kurslar"><span class="dir-flag flag-round"><svg viewBox="0 0 20 20"><use href="#f-de" width="20" height="20"/></svg></span><span><b>Nemis tili</b><small>Tilga tayyorlash</small></span></a>
-    <a class="dir reveal" href="#kurslar"><span class="dir-flag flag-round"><svg viewBox="0 0 20 20"><use href="#f-ko" width="20" height="20"/></svg></span><span><b>Koreys tili</b><small>Tilga tayyorlash</small></span></a>
+    <a class="dir reveal" href="#kurslar"><span class="dir-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span><span class="dir-t"><b>Dasturlash &amp; Sun'iy intellekt</b><small>Amaliy loyihalar bilan</small></span><span class="dir-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span></a>
+    <a class="dir reveal" href="#kurslar"><span class="dir-flag flag-round"><svg viewBox="0 0 20 20"><use href="#f-en" width="20" height="20"/></svg></span><span class="dir-t"><b>Ingliz tili</b><small>Tilga tayyorlash</small></span><span class="dir-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span></a>
+    <a class="dir reveal" href="#kurslar"><span class="dir-flag flag-round"><svg viewBox="0 0 20 20"><use href="#f-de" width="20" height="20"/></svg></span><span class="dir-t"><b>Nemis tili</b><small>Tilga tayyorlash</small></span><span class="dir-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span></a>
+    <a class="dir reveal" href="#kurslar"><span class="dir-flag flag-round"><svg viewBox="0 0 20 20"><use href="#f-ko" width="20" height="20"/></svg></span><span class="dir-t"><b>Koreys tili</b><small>Tilga tayyorlash</small></span><span class="dir-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span></a>
   </div>
 </div>
 
