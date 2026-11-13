@@ -4,6 +4,8 @@
 // Kerakli sozlamalar (Cloudflare → Settings → Variables and Secrets):
 //   BOT_TOKEN — @BotFather bergan bot tokeni
 //   CHAT_ID   — xabarlar boradigan chat yoki guruh ID raqami
+//   CHAT_ID_2 — (ixtiyoriy) qo'shimcha qabul qiluvchilar. Bir nechta bo'lsa vergul bilan: 111,222
+//   Har bir qabul qiluvchi oldin botga /start bosgan bo'lishi kerak.
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -16,7 +18,12 @@ const esc = (s) =>
 
 async function handleSend(request, env) {
   if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
-  if (!env.BOT_TOKEN || !env.CHAT_ID) return json({ ok: false, error: "config" }, 500);
+  const chatIds = [env.CHAT_ID, env.CHAT_ID_2]
+    .filter(Boolean)
+    .flatMap((v) => String(v).split(","))
+    .map((v) => v.trim())
+    .filter(Boolean);
+  if (!env.BOT_TOKEN || chatIds.length === 0) return json({ ok: false, error: "config" }, 500);
 
   let body;
   try {
@@ -41,13 +48,21 @@ async function handleSend(request, env) {
     `📞 <b>Telefon:</b> ${esc(phone)}\n` +
     (message ? `💬 <b>Xabar:</b> ${esc(message)}` : "💬 Xabar yozilmagan");
 
-  const tg = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: env.CHAT_ID, text, parse_mode: "HTML" }),
-  });
+  // Xabarni barcha qabul qiluvchilarga bir vaqtda yuboramiz
+  const results = await Promise.all(
+    [...new Set(chatIds)].map((chat_id) =>
+      fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id, text, parse_mode: "HTML" }),
+      })
+        .then((r) => r.ok)
+        .catch(() => false)
+    )
+  );
 
-  if (!tg.ok) return json({ ok: false, error: "telegram" }, 502);
+  // Kamida bittasiga yetib borsa — muvaffaqiyatli
+  if (!results.some(Boolean)) return json({ ok: false, error: "telegram" }, 502);
   return json({ ok: true });
 }
 
