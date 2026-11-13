@@ -100,7 +100,9 @@
   .crs-foot small{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px}
   .crs-chips{display:flex;flex-wrap:wrap;gap:8px}
   .crs-chips span{font-size:13px;font-weight:700;color:var(--blue);background:#EAF0FF;border-radius:2px;padding:7px 12px;transition:background .2s,color .2s}
-  .crs:hover .crs-chips span{background:var(--blue);color:#fff}
+  .crs-chips span{cursor:pointer;user-select:none}
+  .crs-chips span:hover{background:#DCE6FF}
+  .crs-chips span.on{background:var(--blue);color:#fff}
   .crs-hello{position:absolute;right:-6px;bottom:58px;font-family:'Poppins','Montserrat',system-ui,sans-serif;font-weight:700;font-size:44px;color:#F0F4FF;pointer-events:none;white-space:nowrap}
   .bi,.ask .bi{display:inline-flex;color:inherit}.bi svg{width:18px;height:18px}
   .badge{align-self:flex-start;background:var(--lime);color:var(--navy);font-size:12px;font-weight:800;padding:6px 12px;border-radius:2px;margin-bottom:18px;text-transform:uppercase;letter-spacing:.05em}
@@ -1010,6 +1012,9 @@
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
     let l='uz';try{l=localStorage.getItem('zeehn-lang')||'uz'}catch(e){}
     applyLang(['uz','ru','en','de'].includes(l)?l:'uz');})();
+  // "Darslarda" yorliqlari: bosilgani ko'k bo'lib qoladi
+  document.querySelectorAll('.crs-chips span').forEach(c=>{c.setAttribute('role','button');c.tabIndex=0;
+    const t=()=>c.classList.toggle('on');c.addEventListener('click',t);c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}})});
   // Forma -> /api/send (Cloudflare Pages Function) -> Telegram bot
   const form=document.getElementById('form'),err=document.getElementById('err'),btn=document.getElementById('sendBtn');
   form.addEventListener('submit',async e=>{
