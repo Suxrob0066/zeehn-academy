@@ -551,6 +551,9 @@
   /* Sahnadagi haqiqiy foto: brend fotostili — ko'k duotone qatlam */
   .scene-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
   .crs-scene:has(.scene-photo)::before{background:linear-gradient(180deg,rgba(0,70,224,.10) 0%,rgba(0,70,224,.45) 100%);z-index:1}
+
+  .uni{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--blue);background:var(--cloud);border-left:3px solid var(--lime);padding:7px 12px 7px 10px;margin:2px 0 12px;border-radius:2px}
+  .uni svg{width:16px;height:16px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -662,19 +665,22 @@
       <article class="crs reveal">
         <div class="crs-scene scene-en"><img class="scene-photo" src="img/uni-en.jpg" alt="" loading="lazy" style="object-position:50% 55%"><span class="scene-frame" aria-hidden="true"></span><span class="flag-round"><svg viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice"><use href="#f-en" width="30" height="20"/></svg></span><span class="crs-tag">Chet tili</span></div>
         <h3>Ingliz tili</h3>
-        <p>Dunyo bo'ylab eshiklarni ochadigan til.</p>
+        <span class="uni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg>Oxford University</span>
+        <p>Chet elda o'qishni orzu qilasizmi? Xorijiy universitetlar va grantlarga yo'lingizni birga quramiz.</p>
         <div class="crs-foot"><small>Darslarda:</small><div class="crs-chips"><span>Gapirish</span><span>Grammatika</span><span>Lug'at</span></div></div>
       </article>
       <article class="crs reveal">
         <div class="crs-scene scene-de"><img class="scene-photo" src="img/uni-de.jpg" alt="" loading="lazy" style="object-position:50% 45%"><span class="scene-frame" aria-hidden="true"></span><span class="flag-round"><svg viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice"><use href="#f-de" width="30" height="20"/></svg></span><span class="crs-tag">Chet tili</span></div>
         <h3>Nemis tili</h3>
-        <p>Germaniyada o'qish va ishlash sari birinchi qadam.</p>
+        <span class="uni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg>Heidelberg University</span>
+        <p>Chet elda o'qishni orzu qilasizmi? Xorijiy universitetlar va grantlarga yo'lingizni birga quramiz.</p>
         <div class="crs-foot"><small>Darslarda:</small><div class="crs-chips"><span>Gapirish</span><span>Grammatika</span><span>Lug'at</span></div></div>
       </article>
       <article class="crs reveal">
         <div class="crs-scene scene-ko"><img class="scene-photo" src="img/uni-ko.jpg" alt="" loading="lazy" style="object-position:50% 50%"><span class="scene-frame" aria-hidden="true"></span><span class="flag-round"><svg viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice"><use href="#f-ko" width="30" height="20"/></svg></span><span class="crs-tag">Chet tili</span></div>
         <h3>Koreys tili</h3>
-        <p>Koreyada ta'lim va yangi imkoniyatlar uchun.</p>
+        <span class="uni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg>Seoul National University</span>
+        <p>Chet elda o'qishni orzu qilasizmi? Xorijiy universitetlar va grantlarga yo'lingizni birga quramiz.</p>
         <div class="crs-foot"><small>Darslarda:</small><div class="crs-chips"><span>Hangul</span><span>Gapirish</span><span>Grammatika</span></div></div>
       </article>
     </div>
