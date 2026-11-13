@@ -506,6 +506,20 @@
     .wc-ic{width:46px;height:46px}
     .wc h3{font-size:17px}
   }
+
+  /* Hero rasm kompozitsiyasi (v2) */
+  .hero-media{width:min(540px,100%);aspect-ratio:auto;justify-self:end;padding:26px 0 70px 26px}
+  .hero-globe{width:115%;left:-5%;top:-18%;opacity:.7}
+  .hm-main{position:relative;margin:0;aspect-ratio:4/3;overflow:hidden;border-radius:2px;box-shadow:0 30px 60px -25px rgba(2,11,58,.6);border:6px solid #fff}
+  .hm-main img,.hm-sub img{width:100%;height:100%;object-fit:cover;display:block}
+  .hm-sub{position:absolute;right:-22px;bottom:0;width:44%;aspect-ratio:4/3;margin:0;overflow:hidden;border:6px solid #fff;border-radius:2px;box-shadow:0 24px 50px -20px rgba(2,11,58,.6)}
+  .hm-sub img{object-position:40% 50%}
+  .hero-media .c-tl{left:6px;top:6px}
+  .hero-media .c-br{right:auto;left:calc(56% - 30px);bottom:36px;border-left:4px solid var(--lime);border-right:0;border-top:0;border-bottom:4px solid var(--lime)}
+  .hero-badge{left:-6px;top:auto;bottom:6px;border-top:0;border-left:4px solid var(--lime)}
+  .hero-media .c-br{display:none}
+  @media (max-width:980px){.hero-media{justify-self:center;padding:20px 0 60px 10px}.hm-sub{right:-6px}}
+  @media (max-width:620px){.hero-media{padding:16px 0 64px 8px}.hero-badge{top:auto;bottom:0;left:0}.hm-sub{width:44%;bottom:40px}}
 </style>
 </head>
 <body>
@@ -572,7 +586,8 @@
     </div>
     <div class="hero-media reveal">
       <svg class="hero-globe" viewBox="0 0 400 400" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="1.2" opacity=".35"><circle cx="200" cy="200" r="190"/><ellipse cx="200" cy="200" rx="190" ry="70"/><ellipse cx="200" cy="200" rx="190" ry="135"/><ellipse cx="200" cy="200" rx="70" ry="190"/><ellipse cx="200" cy="200" rx="135" ry="190"/><path d="M10 200h380M200 10v380"/></g><g fill="none" stroke="#C6FF3D" stroke-width="2"><path d="M60 120 Q200 40 330 150"/><path d="M90 300 Q220 360 350 250"/></g><g fill="#C6FF3D"><circle cx="60" cy="120" r="7"/><circle cx="330" cy="150" r="7"/><circle cx="90" cy="300" r="6"/><circle cx="350" cy="250" r="8"/></g></svg>
-      <div class="shield"><img src="img/dasturlash-xonasi.jpg" alt="Zeehn Academy dasturlash xonasida dars" width="1199" height="896"></div>
+      <figure class="hm-main"><img src="img/dasturlash-xonasi.jpg" alt="Zeehn Academy dasturlash xonasida dars" width="1199" height="896"></figure>
+      <figure class="hm-sub"><img src="img/sinf-ustoz.jpg" alt="Ustoz o'quvchilar bilan dars jarayonida" width="1195" height="896"></figure>
       <span class="corner c-tl" aria-hidden="true"></span><span class="corner c-br" aria-hidden="true"></span>
       <div class="hero-badge"><span class="hb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span><div><small>Yangi yo'nalish</small><b>Dasturlash &amp; Sun'iy intellekt</b></div></div>
     </div>
