@@ -5,6 +5,7 @@
 //   BOT_TOKEN — @BotFather bergan bot tokeni
 //   CHAT_ID   — xabarlar boradigan chat yoki guruh ID raqami
 //   CHAT_ID_2 — (ixtiyoriy) qo'shimcha qabul qiluvchilar. Bir nechta bo'lsa vergul bilan: 111,222
+//   EXTRA_CHAT_IDS — wrangler.jsonc dagi qo'shimcha qabul qiluvchilar (vergul bilan)
 //   Har bir qabul qiluvchi oldin botga /start bosgan bo'lishi kerak.
 
 const json = (data, status = 200) =>
@@ -18,7 +19,7 @@ const esc = (s) =>
 
 async function handleSend(request, env) {
   if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
-  const chatIds = [env.CHAT_ID, env.CHAT_ID_2]
+  const chatIds = [env.CHAT_ID, env.CHAT_ID_2, env.EXTRA_CHAT_IDS]
     .filter(Boolean)
     .flatMap((v) => String(v).split(","))
     .map((v) => v.trim())
