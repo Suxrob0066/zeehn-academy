@@ -194,6 +194,11 @@ tbody tr.click:hover td{background:#F8FAFF}
 .pg-n.on{background:var(--blue);border-color:var(--blue);color:#fff}
 .pg-dots{color:var(--muted);padding:0 2px}
 @media (max-width:860px){.pg-nav{margin-left:0;width:100%;justify-content:center}}
+.pwbox{position:relative;width:100%}
+.pwbox .inp{width:100%;padding-right:48px}
+.pwbox .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--gray)}
+.pwbox .eye:hover{color:var(--blue);background:var(--cloud)}
+.pwbox .eye svg{width:20px;height:20px}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -411,6 +416,22 @@ const I = {
   phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
   user_plus: '<circle cx="9" cy="8" r="4"/><path d="M2 21c.7-4 3.6-6.5 7-6.5 1.6 0 3 .5 4.2 1.3"/><path d="M19 14v6M16 17h6"/>',
 };
+const EYE = '<svg class="i" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg class="i" viewBox="0 0 24 24"><path d="M10.6 5.6A9.6 9.6 0 0 1 12 5.5C18 5.5 21.5 12 21.5 12a17 17 0 0 1-2.9 3.7M6.4 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.3-1.1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg>';
+// Parol maydonlariga "ko'z" tugmasi
+function eyeify(root) {
+  $$('input[type=password]', root).forEach((inp) => {
+    if (inp.parentElement.classList.contains("pwbox")) return;
+    const w = document.createElement("div");
+    w.className = "pwbox";
+    inp.parentNode.insertBefore(w, inp);
+    w.appendChild(inp);
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "eye"; b.title = "Parolni ko'rsatish"; b.setAttribute("aria-label", "Parolni ko'rsatish"); b.innerHTML = EYE;
+    b.onclick = () => { const show = inp.type === "password"; inp.type = show ? "text" : "password"; b.innerHTML = show ? EYE_OFF : EYE; b.title = show ? "Parolni yashirish" : "Parolni ko'rsatish"; b.setAttribute("aria-label", b.title); inp.focus(); };
+    w.appendChild(b);
+  });
+}
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24">${I[n] || ""}</svg>`;
 
 // ===== API =====
@@ -538,9 +559,10 @@ function renderLogin() {
       </form>
     </div>
   </div>`;
+  eyeify($("#lf"));
   $("#lf").onsubmit = async (e) => {
     e.preventDefault();
-    const b = $("button", e.target);
+    const b = $("button.btn", e.target);
     await submitBtn(b, async () => {
       try {
         const d = await api("login", { method: "POST", body: formData(e.target) });
@@ -1242,10 +1264,11 @@ async function pSettings() {
         <p class="muted" style="font-size:12.5px;line-height:1.6">Parol almashtirilganda boshqa qurilmalardagi kirishlar avtomatik yopiladi.</p>
       </div>
     </div>`;
+  eyeify($("#pwf"));
   $("#pwf").onsubmit = (e) => {
     e.preventDefault();
     const b = formData(e.target);
-    submitBtn($("button", e.target), async () => {
+    submitBtn($("button.btn", e.target), async () => {
       if (b.new !== b.new2) return toast("Yangi parollar bir xil emas", 1);
       try { await api("me/password", { method: "POST", body: b }); toast("Parol almashtirildi"); e.target.reset(); } catch (er) { toast(er.message, 1); }
     });
