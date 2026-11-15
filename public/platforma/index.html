@@ -1039,13 +1039,14 @@ function groupForm(g) {
       <div class="f full"><label>Ustoz</label><select class="sel" name="teacher_id"><option value="">— Biriktirilmagan —</option>${ts.filter((t) => t.active || t.id == g.teacher_id).map((t) => `<option value="${t.id}" ${t.id == g.teacher_id ? "selected" : ""}>${esc(t.name)}${t.subject ? " · " + esc(t.subject) : ""}</option>`).join("")}</select></div>
       <div class="f full"><label>Dars kunlari</label><div class="daypick">${KUNLAR.map((k, i) => `<button type="button" data-d="${i + 1}" class="${sel.includes(String(i + 1)) ? "on" : ""}">${k}</button>`).join("")}</div>
         <div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn sm ghost" data-preset="1,3,5">Du-Ch-Ju</button><button type="button" class="btn sm ghost" data-preset="2,4,6">Se-Pa-Sh</button><button type="button" class="btn sm ghost" data-preset="1,2,3,4,5">Har kuni</button></div></div>
-      <div class="f"><label>Dars vaqti</label><input class="inp" name="time" value="${esc(g.time)}" placeholder="14:00–15:30"></div>
+      <div class="f"><label>Dars vaqti</label><input class="inp" name="time" id="gtime" value="${esc(g.time)}" placeholder="14:00–16:00"><span class="hint">Boshlanish vaqtini yozsangiz, 2 soatlik dars avtomatik to'ldiriladi</span></div>
       <div class="f"><label>Xona</label><input class="inp" name="room" value="${esc(g.room)}" placeholder="Masalan: 2-xona"></div>
       <div class="f"><label>Boshlangan sana</label><input class="inp" type="date" name="start_date" value="${esc(g.start_date)}"></div>
       <div class="f"><label>Holati</label><select class="sel" name="active"><option value="1">Faol</option><option value="0" ${g.active ? "" : "selected"}>Nofaol</option></select></div>
     </form>`,
     foot: `${g.id ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Saqlash</button>`,
   });
+  m.$("#gtime").onblur = (e) => { const v = e.target.value.trim().replace(".", ":"); const mm = v.match(/^(\d{1,2}):?(\d{2})?$/); if (mm) { const st = +mm[1] * 60 + +(mm[2] || 0); e.target.value = `${hm(st)}–${hm(st + 120)}`; } };
   const setDays = (arr) => $$("[data-d]", m.el).forEach((b) => b.classList.toggle("on", arr.includes(b.dataset.d)));
   $$("[data-d]", m.el).forEach((b) => (b.onclick = () => b.classList.toggle("on")));
   $$("[data-preset]", m.el).forEach((b) => (b.onclick = () => setDays(b.dataset.preset.split(","))));
