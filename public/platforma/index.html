@@ -139,6 +139,8 @@ tbody tr.click:hover td{background:#F8FAFF}
 .ccard .nums span{font-size:12px;color:var(--muted)}
 .ccard .foot{display:flex;gap:8px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
 .ccard.off{opacity:.6}
+.ccard .foot{flex-wrap:wrap}
+.ccard .foot .btn{flex:1 1 auto;padding:0 10px}
 .days{display:flex;gap:4px;flex-wrap:wrap}
 .days span{font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--cloud);color:var(--muted)}
 .days span.on{background:var(--blue);color:#fff}
@@ -199,6 +201,29 @@ tbody tr.click:hover td{background:#F8FAFF}
 .pwbox .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--gray)}
 .pwbox .eye:hover{color:var(--blue);background:var(--cloud)}
 .pwbox .eye svg{width:20px;height:20px}
+.ava.ph{padding:0;overflow:hidden;background:var(--cloud)}
+.ava.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.me-link{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border-radius:12px;padding:6px;margin:-6px}
+.me-link:hover{background:var(--cloud)}
+.me-link .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prof-card{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.prof-cover{height:120px;background:radial-gradient(120% 140% at 0% 0%,#5B92FF,#1E5BF0 50%,#0046E0);position:relative;overflow:hidden}
+.prof-cover img{position:absolute;right:-30px;top:-40px;width:220px;opacity:.14}
+.prof-main{display:flex;align-items:flex-end;gap:20px;padding:0 24px;margin-top:-56px;flex-wrap:wrap}
+.prof-ava{position:relative}
+.prof-cam{position:absolute;right:2px;bottom:6px;width:36px;height:36px;border-radius:50%;background:var(--volt);color:var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;border:3px solid #fff}
+.prof-cam svg{width:17px;height:17px}
+.prof-id{padding:66px 0 6px;flex:1;min-width:220px}
+.prof-id h2{font-size:24px;font-weight:700}
+.prof-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.prof-acts label.btn{cursor:pointer}
+.prof-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:20px 24px 24px}
+.prof-stats div{background:var(--cloud);border-radius:12px;padding:12px 14px}
+.prof-stats span{display:block;font-size:12px;color:var(--muted)}
+.prof-stats b{font-weight:600}
+a.list-item{color:inherit}a.list-item:hover .t{color:var(--blue)}
+.prof-out{display:none}
+@media (max-width:860px){.prof-id{padding-top:4px}.prof-main{flex-direction:column;align-items:center;text-align:center}.prof-acts{justify-content:center}.prof-stats{grid-template-columns:1fr 1fr}.role-teacher .prof-out{display:block}}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -414,6 +439,7 @@ const I = {
   refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
   chevL: '<path d="m15 18-6-6 6-6"/>', chevR: '<path d="m9 18 6-6-6-6"/>',
   phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/>',
   user_plus: '<circle cx="9" cy="8" r="4"/><path d="M2 21c.7-4 3.6-6.5 7-6.5 1.6 0 3 .5 4.2 1.3"/><path d="M19 14v6M16 17h6"/>',
 };
 const EYE = '<svg class="i" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -432,6 +458,9 @@ function eyeify(root) {
     w.appendChild(b);
   });
 }
+const avaHtml = (name, photo, size = 38, extra = "") => photo
+  ? `<div class="ava ph" style="width:${size}px;height:${size}px;${extra}"><img src="${esc(photo)}" alt=""></div>`
+  : `<div class="ava" style="width:${size}px;height:${size}px;font-size:${Math.round(size / 2.9)}px;${extra}">${esc(initials(name))}</div>`;
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24">${I[n] || ""}</svg>`;
 
 // ===== API =====
@@ -584,13 +613,13 @@ const NAV_ADMIN = [
   ["groups", "layers", "Guruhlar"],
   ["teachers", "teacher", "Ustozlar"],
   ["leads", "inbox", "Arizalar"],
-  ["settings", "gear", "Sozlamalar"],
+  ["settings", "gear", "Profil"],
 ];
 const NAV_TEACHER = [
   ["", "home", "Bosh sahifa"],
   ["attendance", "check", "Yo'qlama"],
   ["students", "users", "O'quvchilarim"],
-  ["settings", "gear", "Sozlamalar"],
+  ["settings", "gear", "Profil"],
 ];
 
 function shell() {
@@ -601,7 +630,7 @@ function shell() {
     <aside class="side">
       <a href="#/"><img class="logo" src="/img/logo-h-blue.png" alt="Zeehn"></a>
       <nav class="nav">${nav.map(([h, i, t]) => h === "sep" ? `<div class="sep">${t}</div>` : `<a href="#/${h}" data-r="${h}">${ic(i)}<span>${t}</span>${h === "leads" ? '<b class="cnt hidden" id="leadCnt"></b>' : ""}</a>`).join("")}</nav>
-      <div class="me"><div class="ava">${esc(initials(me.name))}</div><div><div class="nm">${esc(me.name)}</div><div class="rl">${me.role === "admin" ? "Administrator" : "Ustoz"}</div></div><button title="Chiqish" id="logout">${ic("out")}</button></div>
+      <div class="me"><a class="me-link" href="#/settings" title="Profilim"><span id="meAva">${avaHtml(me.name, me.photo)}</span><div style="min-width:0"><div class="nm">${esc(me.name)}</div><div class="rl">${me.role === "admin" ? "Administrator" : "Ustoz"}</div></div></a><button title="Chiqish" id="logout">${ic("out")}</button></div>
     </aside>
     <div class="scrim" id="scrim"></div>
     <main class="main">
@@ -1020,7 +1049,7 @@ async function pTeachers() {
   $("#addT").onclick = () => teacherForm(null);
   $("#page").innerHTML = ts.length ? `<div class="cards">${ts.map((t) => `
     <div class="ccard ${t.active ? "" : "off"}">
-      <div style="display:flex;gap:12px;align-items:center"><div class="ava" style="width:48px;height:48px;font-size:16px;background:var(--blue);color:#fff">${esc(initials(t.name))}</div><div style="flex:1;min-width:0"><h4>${esc(t.name)}</h4><div class="meta">${esc(t.subject || "Fan ko'rsatilmagan")}</div></div>${t.active ? '<span class="badge b-ok">Faol</span>' : '<span class="badge b-gray">Nofaol</span>'}</div>
+      <div style="display:flex;gap:12px;align-items:center">${avaHtml(t.name, t.photo, 48, "background:var(--blue);color:#fff")}<div style="flex:1;min-width:0"><h4>${esc(t.name)}</h4><div class="meta">${esc(t.subject || "Fan ko'rsatilmagan")}</div></div>${t.active ? '<span class="badge b-ok">Faol</span>' : '<span class="badge b-gray">Nofaol</span>'}</div>
       <div class="meta" style="margin-top:14px;display:grid;gap:6px">
         <div>Login: <b style="color:var(--navy);font-family:ui-monospace,monospace">${esc(t.login)}</b></div>
         <div>Telefon: ${phoneLink(t.phone)}</div>
@@ -1245,25 +1274,60 @@ function leadForm() {
 
 // ===== Sozlamalar =====
 async function pSettings() {
-  setHead("Sozlamalar", "");
+  const d = await api("me/profile");
+  const u = d.user;
+  const teacher = u.role === "teacher";
+  setHead("Profil", "");
   $("#page").innerHTML = `
-    <div class="grid g2">
+    <div class="prof-card">
+      <div class="prof-cover"><img src="/icon-512.png" alt=""></div>
+      <div class="prof-main">
+        <div class="prof-ava" id="pAva">${avaHtml(u.name, u.photo, 112, "font-size:38px;border:5px solid #fff;box-shadow:0 12px 30px -14px rgba(0,70,224,.6)")}
+          <label class="prof-cam" title="Rasm yuklash">${ic("camera")}<input type="file" accept="image/*" id="pFile" hidden></label>
+        </div>
+        <div class="prof-id">
+          <h2>${esc(u.name)}</h2>
+          <div class="muted">${teacher ? esc(u.subject || "Ustoz") : "Administrator"} · Zeehn Innovation Academy</div>
+          <div class="prof-acts"><label class="btn sm" for="pFile">${ic("camera")}${u.photo ? "Rasmni almashtirish" : "Rasm yuklash"}</label>${u.photo ? `<button class="btn sm ghost" id="pDel">${ic("trash")}O'chirish</button>` : ""}</div>
+        </div>
+      </div>
+      <div class="prof-stats">
+        <div><span>Telefon</span><b>${u.phone ? phoneLink(u.phone) : "—"}</b></div>
+        <div><span>Login</span><b style="font-family:ui-monospace,monospace">${esc(u.login)}</b></div>
+        ${teacher ? `<div><span>Guruhlar</span><b>${d.groups.length} ta</b></div><div><span>O'quvchilar</span><b>${d.students} ta</b></div><div><span>Yo'qlama qilingan darslar</span><b>${d.lessons} ta</b></div>` : `<div><span>Rol</span><b>Administrator</b></div>`}
+        <div><span>Platformada</span><b>${fmtDate(u.created_at)} dan</b></div>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      ${teacher ? `<div class="card"><h3>${ic("layers")} Guruhlarim <span class="muted" style="font-weight:400;font-size:13px">· ${d.groups.length} ta</span></h3>
+        ${d.groups.length ? d.groups.map((g) => `<a class="list-item" href="#/attendance/${g.id}"><span class="dot" style="background:${esc(g.color)}"></span><div class="grow"><div class="t">${esc(g.name)} <span class="muted" style="font-weight:400">· ${esc(g.course)}</span></div><div class="s">${esc(g.time || "")}${g.room ? " · " + esc(g.room) : ""} · ${g.students} o'quvchi</div><div style="margin-top:6px">${daysHtml(g.days)}</div></div>${ic("chevR")}</a>`).join("") : '<div class="empty" style="padding:20px">Hali guruh biriktirilmagan</div>'}
+        <p class="muted" style="font-size:12.5px;margin-top:12px;line-height:1.6">Ism, telefon yoki guruhlarni o'zgartirish kerak bo'lsa, administratorga murojaat qiling.</p></div>` : ""}
       <div class="card"><h3>${ic("key")} Parolni almashtirish</h3>
         <form class="form" id="pwf" style="grid-template-columns:1fr">
           <div class="f"><label>Hozirgi parol</label><input class="inp" type="password" name="old" autocomplete="current-password"></div>
           <div class="f"><label>Yangi parol</label><input class="inp" type="password" name="new" autocomplete="new-password"><span class="hint">Kamida 6 belgi</span></div>
           <div class="f"><label>Yangi parolni takrorlang</label><input class="inp" type="password" name="new2" autocomplete="new-password"></div>
           <div><button class="btn">Parolni saqlash</button></div>
-        </form></div>
-      <div class="card"><h3>${ic("users")} Hisob</h3>
-        <div class="info-grid" style="grid-template-columns:1fr">
-          <div><span>Ism</span><b>${esc(state.me.name)}</b></div>
-          <div><span>Login</span><b>${esc(state.me.login)}</b></div>
-          <div><span>Rol</span><b>${state.me.role === "admin" ? "Administrator" : "Ustoz"}</b></div>
-        </div>
-        <p class="muted" style="font-size:12.5px;line-height:1.6">Parol almashtirilganda boshqa qurilmalardagi kirishlar avtomatik yopiladi.</p>
+        </form>
+        <p class="muted" style="font-size:12.5px;line-height:1.6;margin-top:12px">Parol almashtirilganda boshqa qurilmalardagi kirishlar avtomatik yopiladi.</p>
       </div>
+      <div class="card prof-out"><h3>${ic("out")} Chiqish</h3><p class="muted" style="font-size:13px;margin-bottom:12px">Platformadan chiqish uchun bosing.</p><button class="btn danger" id="pOut">${ic("out")}Platformadan chiqish</button></div>
     </div>`;
+  const savePhoto = async (photo) => {
+    await api("me/photo", { method: "POST", body: { photo } });
+    state.me.photo = photo;
+    $("#meAva").innerHTML = avaHtml(state.me.name, photo);
+    toast(photo ? "Rasm saqlandi" : "Rasm o'chirildi");
+    pSettings();
+  };
+  $("#pFile").onchange = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) return toast("Faqat rasm fayli tanlang", 1);
+    try { await savePhoto(await squareImage(f, 360)); } catch (er) { toast(er.message || "Rasmni yuklab bo'lmadi", 1); }
+  };
+  if ($("#pDel")) $("#pDel").onclick = async () => { if (await confirmBox("Profil rasmi o'chirilsinmi?")) savePhoto("").catch((er) => toast(er.message, 1)); };
+  $("#pOut").onclick = () => $("#logout").click();
   eyeify($("#pwf"));
   $("#pwf").onsubmit = (e) => {
     e.preventDefault();
@@ -1274,7 +1338,23 @@ async function pSettings() {
     });
   };
 }
-
+// Rasmni kvadrat qilib kichraytirish (markazdan kesish)
+function squareImage(file, size) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = c.height = size;
+      const m = Math.min(img.naturalWidth, img.naturalHeight);
+      c.getContext("2d").drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("Rasmni o'qib bo'lmadi")); };
+    img.src = url;
+  });
+}
 
 // ===== USTOZ: O'quvchilarim (kartochkalar) =====
 async function teacherStudents(gs, f) {

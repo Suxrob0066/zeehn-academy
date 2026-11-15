@@ -126,6 +126,40 @@ async function changeMyPassword(req, env, me) {
   return json({ ok: true });
 }
 
+// ---- Profil ----
+async function photoOf(env, id) {
+  const r = await env.DB.prepare("SELECT photo FROM users WHERE id=?").bind(id).first();
+  return (r && r.photo) || "";
+}
+async function myProfile(env, me) {
+  const db = env.DB;
+  const u = await db.prepare("SELECT id,role,name,login,phone,subject,photo,created_at FROM users WHERE id=?").bind(me.id).first();
+  let groups = [], students = 0, marks = 0;
+  if (me.role === "teacher") {
+    const r = await db
+      .prepare(
+        `SELECT g.id,g.name,g.days,g.time,g.room,c.name course,c.color,
+          (SELECT COUNT(*) FROM students s WHERE s.group_id=g.id AND s.status='active') students
+         FROM groups g JOIN courses c ON c.id=g.course_id WHERE g.teacher_id=? AND g.active=1 ORDER BY g.name`
+      )
+      .bind(me.id)
+      .all();
+    groups = r.results;
+    students = groups.reduce((a, g) => a + g.students, 0);
+    const m = await db.prepare("SELECT COUNT(DISTINCT group_id||'|'||date) n FROM attendance WHERE marked_by=?").bind(me.id).first();
+    marks = m.n;
+  }
+  return json({ ok: true, user: u, groups, students, lessons: marks });
+}
+async function setMyPhoto(req, env, me) {
+  const b = await body(req);
+  const photo = String(b.photo || "");
+  if (photo && !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(photo)) return err("Rasm formati noto'g'ri");
+  if (photo.length > 300000) return err("Rasm juda katta");
+  await env.DB.prepare("UPDATE users SET photo=? WHERE id=?").bind(photo, me.id).run();
+  return json({ ok: true });
+}
+
 // ---- Statistika ----
 async function stats(env) {
   const m = thisMonth();
@@ -410,7 +444,7 @@ async function teachers(req, env, id, url, sub) {
   if (req.method === "GET") {
     const r = await db
       .prepare(
-        `SELECT u.id,u.name,u.phone,u.subject,u.login,u.active,u.created_at,
+        `SELECT u.id,u.name,u.phone,u.subject,u.login,u.active,u.created_at,u.photo,
           (SELECT COUNT(*) FROM groups g WHERE g.teacher_id=u.id AND g.active=1) groups,
           (SELECT COUNT(*) FROM students s JOIN groups g ON g.id=s.group_id WHERE g.teacher_id=u.id AND s.status='active') students,
           (SELECT GROUP_CONCAT(g.name, ', ') FROM groups g WHERE g.teacher_id=u.id AND g.active=1) group_names,
@@ -571,7 +605,9 @@ export async function handlePlatform(req, env, url) {
 
     if (res === "me") {
       if (rawId === "password" && req.method === "POST") return await changeMyPassword(req, env, me);
-      return json({ ok: true, user: { id: me.id, role: me.role, name: me.name, login: me.login }, today: today() });
+      if (rawId === "photo" && req.method === "POST") return await setMyPhoto(req, env, me);
+      if (rawId === "profile") return await myProfile(env, me);
+      return json({ ok: true, user: { id: me.id, role: me.role, name: me.name, login: me.login, photo: await photoOf(env, me.id) }, today: today() });
     }
     if (res === "groups") return await groups(req, env, id, me);
     if (res === "attendance") return await attendance(req, env, me, url);
