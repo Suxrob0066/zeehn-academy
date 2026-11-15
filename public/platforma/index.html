@@ -257,6 +257,78 @@ tbody tr.click:hover td{background:#F8FAFF}
 .lesson .t{font-weight:600}
 .lesson .s{font-size:12.5px;color:var(--muted)}
 
+
+/* ===== Ustoz paneli (ilova uslubi) ===== */
+.grid>*,.att-head>*,.toolbar>*{min-width:0}
+.gchips{max-width:100%}
+.tabbar{display:none}
+.gchips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gchips::-webkit-scrollbar{display:none}
+.gchips button{flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:13.5px;color:var(--navy)}
+.gchips button small{color:var(--muted);font-size:12px}
+.gchips button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.gchips button.on small{color:rgba(255,255,255,.65)}
+.gchips button .dot{width:8px;height:8px}
+.datebox{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px}
+.dlabel{position:relative;display:flex;flex-direction:column;align-items:center;min-width:150px;padding:2px 10px;cursor:pointer;line-height:1.25}
+.dlabel b{font-size:14px}.dlabel span{font-size:12px;color:var(--muted)}
+.dlabel input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.att-prog{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12.5px;color:var(--muted);font-weight:500}
+.att-prog .tr{flex:1;height:8px;background:#fff;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.att-prog .tr i{display:block;height:100%;width:0;background:var(--ok);border-radius:99px;transition:width .25s}
+.seg button svg.i{width:16px;height:16px;stroke-width:2.2}
+.att-row{transition:background .15s}
+.role-teacher .att-row.marked{background:#FBFCFF}
+.t-hero{position:relative;overflow:hidden;background:radial-gradient(120% 120% at 0% 0%,#1E5BF0,#0046E0 55%,#0036B8);color:#fff;border-radius:20px;padding:22px;margin-bottom:16px}
+.t-hero .bgz{position:absolute;right:-40px;bottom:-50px;width:210px;opacity:.12}
+.t-hero .lbl{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600}
+.t-hero .lbl svg{width:15px;height:15px}
+.t-hero .hn{font-size:24px;font-weight:700;margin-top:12px;position:relative}
+.t-hero .hs{opacity:.85;margin-top:4px;font-size:13.5px;position:relative}
+.t-hero .btn{margin-top:16px;position:relative;height:48px;padding:0 22px}
+.t-hero.done{background:radial-gradient(120% 120% at 0% 0%,#1DB75A,#14A44D 60%,#0E8A3F)}
+.t-hero.rest{background:radial-gradient(120% 120% at 0% 0%,#26305E,#020B3A)}
+.ts-group{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.ts-gh{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line);background:#F8FAFF;font-size:13.5px;flex-wrap:wrap}
+.ts-gh .cnt{margin-left:auto;background:var(--cloud);color:var(--blue);font-weight:700;font-size:12px;border-radius:99px;padding:2px 10px}
+.ts-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ts-row:last-child{border-bottom:0}
+.ts-row .grow{flex:1;min-width:0}.ts-row .nm{font-weight:600}.ts-row .sm{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.call{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:58px;height:48px;border-radius:12px;background:var(--cloud);color:var(--blue);flex:none}
+.call svg{width:18px;height:18px}.call small{font-size:10px;font-weight:600}
+.call.p{background:var(--okbg);color:var(--ok)}
+.call:hover{filter:brightness(.96)}
+@media (max-width:860px){
+  .role-teacher .burger{display:none}
+  .role-teacher .top{padding-top:calc(16px + env(safe-area-inset-top))}
+  .role-teacher .page{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+  .role-teacher .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;color:var(--gray);font-size:11px;font-weight:600}
+  .tabbar a svg{width:23px;height:23px}
+  .tabbar a.on{color:var(--blue)}
+  .tabbar a.on svg{background:#E6EEFF;border-radius:10px;padding:3px;width:44px;height:30px}
+  .role-teacher .savebar{position:fixed;left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:45;margin:0}
+  .role-teacher .att-head{flex-direction:column;align-items:stretch}
+  .role-teacher .att-head .tabs{align-self:flex-start}
+  .role-teacher .att-row{padding:14px}
+  .role-teacher .att-row .n{display:none}
+  .role-teacher .seg{display:grid;grid-template-columns:repeat(4,1fr)}
+  .role-teacher .seg button{height:50px;flex-direction:column;gap:2px;font-size:11.5px;padding:0}
+  .role-teacher .seg button svg.i{width:18px;height:18px}
+  .role-teacher .stats{grid-template-columns:repeat(3,1fr);gap:10px}
+  .role-teacher .stat{padding:12px;gap:8px}
+  .role-teacher .stat .ic{width:36px;height:36px}
+  .role-teacher .stat .v{font-size:20px}
+  .role-teacher .toolbar .datebox{flex:1 1 100%}
+  .lesson .grow{flex:1 1 calc(100% - 90px)}
+  .lesson .badge{margin-left:78px}
+  .lesson .btn{margin-left:auto}
+  .role-teacher .dlabel{flex:1}
+  .week{grid-auto-flow:column;grid-template-columns:none!important;grid-auto-columns:46%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .week .wd{scroll-snap-align:start}
+  .lesson{flex-wrap:wrap}
+  .t-hero .btn{width:100%}
+}
 @media (max-width:1100px){.g2{grid-template-columns:1fr}}
 @media (max-width:860px){
   .login{grid-template-columns:1fr}.login-art{display:none}.login-logo-m{display:block}
@@ -302,6 +374,12 @@ const addMonth = (m, k) => { let [y, mm] = m.split("-").map(Number); mm += k; wh
 const dowOf = (d) => ((new Date(d + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;
 const phoneLink = (p) => p ? `<a href="tel:${esc(p.replace(/[^\d+]/g, ""))}" onclick="event.stopPropagation()">${esc(p)}</a>` : '<span class="muted">—</span>';
 const COLORS = ["#0046E0", "#14A44D", "#E0323C", "#D98A00", "#7B3FE4", "#0FA3B1", "#E83E8C", "#020B3A"];
+const ATT_IC = {
+  keldi: '<svg class="i" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  kechikdi: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  kelmadi: '<svg class="i" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
+  sababli: '<svg class="i" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M10 12h5M10 16h5"/></svg>',
+};
 const ATT = { keldi: ["Keldi", "K"], kechikdi: ["Kechikdi", "Ke"], kelmadi: ["Kelmadi", "Y"], sababli: ["Sababli", "S"] };
 
 const I = {
@@ -495,7 +573,7 @@ function shell() {
   const me = state.me;
   const nav = me.role === "admin" ? NAV_ADMIN : NAV_TEACHER;
   $("#root").innerHTML = `
-  <div class="app" id="app">
+  <div class="app role-${me.role}" id="app">
     <aside class="side">
       <a href="#/"><img class="logo" src="/img/logo-h-blue.png" alt="Zeehn"></a>
       <nav class="nav">${nav.map(([h, i, t]) => h === "sep" ? `<div class="sep">${t}</div>` : `<a href="#/${h}" data-r="${h}">${ic(i)}<span>${t}</span>${h === "leads" ? '<b class="cnt hidden" id="leadCnt"></b>' : ""}</a>`).join("")}</nav>
@@ -506,6 +584,7 @@ function shell() {
       <div class="top"><button class="burger" id="burger">${ic("menu")}</button><div><h1 id="ptitle"></h1><div class="sub" id="psub"></div></div><div class="acts" id="pacts"></div></div>
       <div class="page" id="page"></div>
     </main>
+    ${me.role === "teacher" ? `<nav class="tabbar">${[["", "home", "Bosh sahifa"], ["attendance", "check", "Yo'qlama"], ["students", "users", "O'quvchilar"], ["settings", "gear", "Profil"]].map(([h, i, t]) => `<a href="#/${h}" data-r="${h}">${ic(i)}<span>${t}</span></a>`).join("")}</nav>` : ""}
   </div>`;
   $("#burger").onclick = () => $("#app").classList.add("open");
   $("#scrim").onclick = () => $("#app").classList.remove("open");
@@ -522,7 +601,7 @@ const loading = () => ($("#page").innerHTML = '<div class="loading"><div class="
 async function route() {
   if (!state.me) return;
   const [r, ...rest] = location.hash.replace(/^#\/?/, "").split("/");
-  $$(".nav a").forEach((a) => a.classList.toggle("on", a.dataset.r === (r || "")));
+  $$(".nav a, .tabbar a").forEach((a) => a.classList.toggle("on", a.dataset.r === (r || "")));
   $("#app").classList.remove("open");
   $$(".modal-bg").forEach((m) => m.remove());
   loading();
@@ -619,6 +698,7 @@ async function pStudents(rest) {
       <select class="sel" id="fp"><option value="">To'lov: hammasi</option><option value="paid" ${f.pay === "paid" ? "selected" : ""}>To'laganlar</option><option value="unpaid" ${f.pay === "unpaid" ? "selected" : ""}>To'lamaganlar</option></select>` : ""}
     </div>
     <div id="stList"><div class="loading"><div class="spin"></div></div></div>`;
+  if (!admin) return teacherStudents(gs, f);
   const reload = async () => {
     const p = new URLSearchParams();
     if (f.q) p.set("q", f.q);
@@ -1007,11 +1087,14 @@ async function pAttendance(rest) {
   const g = gs.find((x) => x.id === st.group);
   $("#page").innerHTML = `
     <div class="att-head">
-      <select class="sel" id="ag" style="min-width:240px">${gs.map((x) => `<option value="${x.id}" ${x.id === st.group ? "selected" : ""}>${esc(x.name)} · ${esc(x.course)}${x.time ? " · " + esc(x.time) : ""}</option>`).join("")}</select>
+      ${admin ? `<select class="sel" id="ag" style="min-width:240px">${gs.map((x) => `<option value="${x.id}" ${x.id === st.group ? "selected" : ""}>${esc(x.name)} · ${esc(x.course)}${x.time ? " · " + esc(x.time) : ""}</option>`).join("")}</select>`
+        : `<div class="gchips">${gs.map((x) => `<button data-g="${x.id}" class="${x.id === st.group ? "on" : ""}"><span class="dot" style="background:${esc(x.color)}"></span><b>${esc(x.name)}</b><small>${esc(x.time || "")}</small></button>`).join("")}</div>`}
       <div class="tabs" style="margin:0"><button data-v="day" class="${st.view === "day" ? "on" : ""}">${admin ? "Kunlik davomat" : "Kunlik yo'qlama"}</button><button data-v="month" class="${st.view === "month" ? "on" : ""}">Oylik jadval</button></div>
     </div>
     <div id="attBody"></div>`;
-  $("#ag").onchange = (e) => { st.group = +e.target.value; history.replaceState(null, "", "#/attendance/" + st.group); pAttendance([st.group]); };
+  const pickG = (id) => { st.group = id; history.replaceState(null, "", "#/attendance/" + st.group); pAttendance([st.group]); };
+  if ($("#ag")) $("#ag").onchange = (e) => pickG(+e.target.value);
+  $$(".gchips [data-g]").forEach((b) => (b.onclick = () => pickG(+b.dataset.g)));
   $$(".att-head .tabs button").forEach((b) => (b.onclick = () => { st.view = b.dataset.v; pAttendance([st.group]); }));
   $("#psub").textContent = [g.course, g.teacher ? "Ustoz: " + g.teacher : "", String(g.days || "").split(",").filter(Boolean).map((x) => KUNLAR[x - 1]).join(", "), g.time].filter(Boolean).join(" · ");
   if (st.view === "month") return attMonth(g, st);
@@ -1024,20 +1107,21 @@ async function pAttendance(rest) {
   const isLessonDay = String(g.days).split(",").includes(String(dowOf(st.date)));
   body.innerHTML = `
     <div class="toolbar">
-      <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px">
+      <div class="datebox">
         <button class="icon-btn" style="border:0" id="dPrev">${ic("chevL")}</button>
-        <input type="date" class="inp" id="ad" value="${st.date}" ${admin ? "" : `max="${today}"`} style="border:0;height:34px;padding:0 6px">
+        <label class="dlabel"><b>${st.date === today ? "Bugun" : KUNLAR_TOLIQ[dowOf(st.date) - 1]}</b><span>${fmtDate(st.date)}</span><input type="date" id="ad" value="${st.date}" ${admin ? "" : `max="${today}"`}></label>
         <button class="icon-btn" style="border:0" id="dNext" ${!admin && st.date >= today ? "disabled" : ""}>${ic("chevR")}</button>
       </div>
-      <span class="muted">${KUNLAR_TOLIQ[dowOf(st.date) - 1]}${isLessonDay ? "" : " · bu kunda dars jadvalda yo'q"}</span>
+      ${isLessonDay ? "" : '<span class="muted" style="font-size:12.5px">Bu kunda dars jadvalda yo\'q</span>'}
       ${wasMarked ? '<span class="badge b-ok">Yo\'qlama qilingan</span>' : '<span class="badge b-warn">Hali yo\'qlama qilinmagan</span>'}
       ${admin ? '<span class="muted" style="margin-left:auto;font-size:12.5px">Yo\'qlamani faqat ustoz qiladi</span>' : `<button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>`}
     </div>
+    ${d.items.length && !admin ? `<div class="att-prog"><div class="tr"><i id="attBar"></i></div><span id="attCnt"></span></div>` : ""}
     ${d.items.length ? `<div class="att-list">${d.items.map((s, i) => `
       <div class="att-row" data-s="${s.id}">
         <div class="n">${i + 1}</div><div class="ava" style="width:36px;height:36px;font-size:12px">${esc(initials(s.name))}</div>
         <div class="grow"><div class="nm">${esc(s.name)}</div><div class="ph">${s.parent_phone ? "Ota-ona: " + phoneLink(s.parent_phone) : s.phone ? phoneLink(s.phone) : ""}</div></div>
-        ${admin ? (marks[s.id] ? `<span class="badge ${{ keldi: "b-ok", kechikdi: "b-warn", kelmadi: "b-bad", sababli: "b-gray" }[marks[s.id]]}">${ATT[marks[s.id]][0]}</span>` : '<span class="badge b-gray">Belgilanmagan</span>') : `<div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${t}</button>`).join("")}</div>`}
+        ${admin ? (marks[s.id] ? `<span class="badge ${{ keldi: "b-ok", kechikdi: "b-warn", kelmadi: "b-bad", sababli: "b-gray" }[marks[s.id]]}">${ATT[marks[s.id]][0]}</span>` : '<span class="badge b-gray">Belgilanmagan</span>') : `<div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${ATT_IC[k]}<span>${t}</span></button>`).join("")}</div>`}
       </div>`).join("")}</div>
       ${admin ? `<div class="card" style="margin-top:14px;padding:14px 18px" id="attSum"></div>` : `<div class="savebar"><div class="grow" id="attSum"></div><button class="btn volt" id="attSave">${ic("check")}Saqlash</button></div>`}`
       : `<div class="card empty">${ic("users")}<div>Bu guruhda faol o'quvchi yo'q</div></div>`}`;
@@ -1046,6 +1130,9 @@ async function pAttendance(rest) {
     const c = (k) => v.filter((x) => x === k).length;
     const left = v.filter((x) => !x).length;
     const el = $("#attSum");
+    const done = v.length - left;
+    if ($("#attBar")) { $("#attBar").style.width = (v.length ? (done / v.length) * 100 : 0) + "%"; $("#attCnt").textContent = `${done} / ${v.length} belgilandi`; }
+    $$(".att-row").forEach((r) => r.classList.toggle("marked", !!marks[+r.dataset.s]));
     if (el) el.innerHTML = `<b>${c("keldi") + c("kechikdi")}</b> keldi · <b>${c("kelmadi")}</b> kelmadi${c("sababli") ? ` · <b>${c("sababli")}</b> sababli` : ""}${left ? ` · <span style="color:${admin ? "var(--warn)" : "var(--volt)"}">${left} ta belgilanmagan</span>` : ""}`;
   };
   sum();
@@ -1163,6 +1250,34 @@ async function pSettings() {
   };
 }
 
+
+// ===== USTOZ: O'quvchilarim (kartochkalar) =====
+async function teacherStudents(gs, f) {
+  setHead("O'quvchilarim", "");
+  const d = await api("students?status=active");
+  const draw = () => {
+    const q = f.q.trim().toLowerCase();
+    const items = d.items.filter((s) => (!f.group || s.group_id == f.group) && (!q || s.name.toLowerCase().includes(q) || String(s.phone).includes(q) || String(s.parent_phone).includes(q)));
+    $("#psub").textContent = `${items.length} ta o'quvchi`;
+    const groupsShown = gs.filter((g) => items.some((s) => s.group_id === g.id));
+    $("#tsList").innerHTML = items.length ? groupsShown.map((g) => `
+      <div class="ts-group"><div class="ts-gh"><span class="dot" style="background:${esc(g.color)}"></span><b>${esc(g.name)}</b><span class="muted">· ${esc(g.course)} · ${esc(g.time || "")}</span><span class="cnt">${items.filter((s) => s.group_id === g.id).length}</span></div>
+      ${items.filter((s) => s.group_id === g.id).map((s) => `
+        <div class="ts-row"><div class="ava">${esc(initials(s.name))}</div>
+          <div class="grow"><div class="nm">${esc(s.name)}</div><div class="sm">${s.parent_name ? "Ota-ona: " + esc(s.parent_name) : esc(s.phone || "")}</div></div>
+          ${s.phone ? `<a class="call" href="tel:${esc(s.phone.replace(/[^\d+]/g, ""))}" title="O'quvchiga qo'ng'iroq">${ic("phone")}<small>O'quvchi</small></a>` : ""}
+          ${s.parent_phone ? `<a class="call p" href="tel:${esc(s.parent_phone.replace(/[^\d+]/g, ""))}" title="Ota-onaga qo'ng'iroq">${ic("phone")}<small>Ota-ona</small></a>` : ""}
+        </div>`).join("")}</div>`).join("") : `<div class="card empty">${ic("users")}<div>O'quvchi topilmadi</div></div>`;
+  };
+  $("#page").innerHTML = `
+    <div class="toolbar"><div class="search">${ic("search")}<input class="inp" id="fq" placeholder="Ism yoki telefon bo'yicha qidirish" value="${esc(f.q)}"></div></div>
+    <div class="gchips" style="margin-bottom:14px"><button data-g="" class="${!f.group ? "on" : ""}"><b>Hammasi</b></button>${gs.map((g) => `<button data-g="${g.id}" class="${f.group == g.id ? "on" : ""}"><span class="dot" style="background:${esc(g.color)}"></span><b>${esc(g.name)}</b></button>`).join("")}</div>
+    <div id="tsList"></div>`;
+  $("#fq").oninput = (e) => { f.q = e.target.value; draw(); };
+  $$(".gchips [data-g]").forEach((b) => (b.onclick = () => { f.group = b.dataset.g; $$(".gchips [data-g]").forEach((x) => x.classList.toggle("on", x === b)); draw(); }));
+  draw();
+}
+
 // ===== USTOZ: Bosh sahifa =====
 async function pTeacherHome() {
   const gs = (await groupsList()).filter((g) => g.active);
@@ -1173,7 +1288,16 @@ async function pTeacherHome() {
   const h = +new Date().getHours();
   setHead(`${h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech"}, ${state.me.name.split(" ")[0]}!`, `${KUNLAR_TOLIQ[dow - 1]}, ${fmtDate(today)}`);
   const marks = await Promise.all(todays.map((g) => api(`attendance?group=${g.id}&date=${today}`).then((d) => d.items.some((s) => s.status)).catch(() => false)));
-  $("#page").innerHTML = `
+  const nowHM = new Date().toTimeString().slice(0, 5);
+  const endOf = (g) => (String(g.time || "").split(/[–-]/)[1] || "23:59").trim();
+  let ni = todays.findIndex((g, i) => !marks[i] && endOf(g) >= nowHM);
+  if (ni < 0) ni = todays.findIndex((g, i) => !marks[i]);
+  let nextDay = null;
+  if (!todays.length) for (let k = 1; k <= 7 && !nextDay; k++) { const dd = ((dow - 1 + k) % 7) + 1; const ls = gs.filter((g) => String(g.days).split(",").includes(String(dd))).sort((a, b) => String(a.time).localeCompare(String(b.time))); if (ls.length) nextDay = [dd, ls[0]]; }
+  const hero = ni >= 0 ? (() => { const g = todays[ni]; return `<div class="t-hero"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} Yo'qlama kutilmoqda</div><div class="hn">${esc(g.name)}</div><div class="hs">${esc(g.course)} · ${esc(g.time || "")}${g.room ? " · " + esc(g.room) : ""} · ${g.students} o'quvchi</div><a class="btn volt" href="#/attendance/${g.id}">${ic("check")}Yo'qlama qilish</a></div>`; })()
+    : todays.length ? `<div class="t-hero done"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("check")} Ajoyib!</div><div class="hn">Bugungi barcha yo'qlamalar qilingan</div><div class="hs">${todays.length} ta dars · rahmat 🙌</div></div>`
+    : `<div class="t-hero rest"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} Bugun dars yo'q</div><div class="hn">${nextDay ? "Keyingi dars: " + KUNLAR_TOLIQ[nextDay[0] - 1] : "Dam olish kuni"}</div><div class="hs">${nextDay ? esc(nextDay[1].name) + " · " + esc(nextDay[1].time || "") : ""}</div></div>`;
+  $("#page").innerHTML = hero + `
     <div class="stats">
       <div class="stat hero"><div class="ic">${ic("layers")}</div><div><div class="v">${gs.length}</div><div class="l">Guruhlarim</div></div></div>
       <div class="stat"><div class="ic b">${ic("users")}</div><div><div class="v">${totalSt}</div><div class="l">O'quvchilarim</div></div></div>
