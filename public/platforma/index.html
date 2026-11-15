@@ -534,7 +534,7 @@ async function pDash() {
             <span class="dot" style="background:${esc(g.color)}"></span>
             <div class="grow"><div class="t">${esc(g.name)} <span class="muted" style="font-weight:400">· ${esc(g.course)}</span></div><div class="s">${esc(g.time || "Vaqt ko'rsatilmagan")}${g.room ? " · " + esc(g.room) : ""} · ${esc(g.teacher || "Ustoz biriktirilmagan")}</div></div>
             ${g.marked ? `<span class="badge b-ok">${g.present}/${g.students} keldi</span>` : `<span class="badge b-warn">Yo'qlama qilinmagan</span>`}
-            <a class="btn sm ghost" href="#/attendance/${g.id}">Yo'qlama</a>
+            <a class="btn sm ghost" href="#/attendance/${g.id}">Ko'rish</a>
           </div>`).join("") : `<div class="empty" style="padding:24px">Bugun dars jadvalida guruh yo'q</div>`}
       </div>
     </div>
@@ -816,7 +816,7 @@ async function pGroups() {
       <div style="margin-top:12px">${daysHtml(g.days)}</div>
       <div class="meta" style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap"><span>${ic("clock", "").replace('class="i ', 'style="width:15px;height:15px;vertical-align:-3px" class="i ')} ${esc(g.time || "—")}</span>${g.room ? `<span>📍 ${esc(g.room)}</span>` : ""}</div>
       <div class="nums"><div><b>${g.students}</b><span>o'quvchi</span></div><div><b style="font-size:14px;line-height:2">${esc(g.teacher || "—")}</b><span>ustoz</span></div></div>
-      <div class="foot"><a class="btn sm" href="#/attendance/${g.id}">${ic("check")}Yo'qlama</a><a class="btn sm ghost" href="#/students" onclick="state.cache.stFilter={q:'',course:'',group:'${g.id}',status:'active',pay:''}">O'quvchilar</a><button class="icon-btn" data-e="${g.id}" title="Tahrirlash" style="margin-left:auto">${ic("edit")}</button></div>
+      <div class="foot"><a class="btn sm" href="#/attendance/${g.id}">${ic("check")}Davomat</a><a class="btn sm ghost" href="#/students" onclick="state.cache.stFilter={q:'',course:'',group:'${g.id}',status:'active',pay:''}">O'quvchilar</a><button class="icon-btn" data-e="${g.id}" title="Tahrirlash" style="margin-left:auto">${ic("edit")}</button></div>
     </div>`).join("")}</div>` : `<div class="card empty">${ic("layers")}<div>Hali guruh yo'q. Guruh — bu kurs, ustoz va dars vaqtining birikmasi.</div><button class="btn" style="margin-top:14px" onclick="document.getElementById('addG').click()">${ic("plus")}Guruh qo'shish</button></div>`;
   $$("[data-e]").forEach((b) => (b.onclick = () => groupForm(gs.find((g) => g.id == b.dataset.e))));
 }
@@ -953,7 +953,7 @@ async function pAttendance(rest) {
   $("#page").innerHTML = `
     <div class="att-head">
       <select class="sel" id="ag" style="min-width:240px">${gs.map((x) => `<option value="${x.id}" ${x.id === st.group ? "selected" : ""}>${esc(x.name)} · ${esc(x.course)}${x.time ? " · " + esc(x.time) : ""}</option>`).join("")}</select>
-      <div class="tabs" style="margin:0"><button data-v="day" class="${st.view === "day" ? "on" : ""}">Kunlik yo'qlama</button><button data-v="month" class="${st.view === "month" ? "on" : ""}">Oylik jadval</button></div>
+      <div class="tabs" style="margin:0"><button data-v="day" class="${st.view === "day" ? "on" : ""}">${admin ? "Kunlik davomat" : "Kunlik yo'qlama"}</button><button data-v="month" class="${st.view === "month" ? "on" : ""}">Oylik jadval</button></div>
     </div>
     <div id="attBody"></div>`;
   $("#ag").onchange = (e) => { st.group = +e.target.value; history.replaceState(null, "", "#/attendance/" + st.group); pAttendance([st.group]); };
@@ -976,22 +976,22 @@ async function pAttendance(rest) {
       </div>
       <span class="muted">${KUNLAR_TOLIQ[dowOf(st.date) - 1]}${isLessonDay ? "" : " · bu kunda dars jadvalda yo'q"}</span>
       ${wasMarked ? '<span class="badge b-ok">Yo\'qlama qilingan</span>' : '<span class="badge b-warn">Hali yo\'qlama qilinmagan</span>'}
-      <button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>
+      ${admin ? '<span class="muted" style="margin-left:auto;font-size:12.5px">Yo\'qlamani faqat ustoz qiladi</span>' : `<button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>`}
     </div>
     ${d.items.length ? `<div class="att-list">${d.items.map((s, i) => `
       <div class="att-row" data-s="${s.id}">
         <div class="n">${i + 1}</div><div class="ava" style="width:36px;height:36px;font-size:12px">${esc(initials(s.name))}</div>
         <div class="grow"><div class="nm">${esc(s.name)}</div><div class="ph">${s.parent_phone ? "Ota-ona: " + phoneLink(s.parent_phone) : s.phone ? phoneLink(s.phone) : ""}</div></div>
-        <div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${t}</button>`).join("")}</div>
+        ${admin ? (marks[s.id] ? `<span class="badge ${{ keldi: "b-ok", kechikdi: "b-warn", kelmadi: "b-bad", sababli: "b-gray" }[marks[s.id]]}">${ATT[marks[s.id]][0]}</span>` : '<span class="badge b-gray">Belgilanmagan</span>') : `<div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${t}</button>`).join("")}</div>`}
       </div>`).join("")}</div>
-      <div class="savebar"><div class="grow" id="attSum"></div><button class="btn volt" id="attSave">${ic("check")}Saqlash</button></div>`
+      ${admin ? `<div class="card" style="margin-top:14px;padding:14px 18px" id="attSum"></div>` : `<div class="savebar"><div class="grow" id="attSum"></div><button class="btn volt" id="attSave">${ic("check")}Saqlash</button></div>`}`
       : `<div class="card empty">${ic("users")}<div>Bu guruhda faol o'quvchi yo'q</div></div>`}`;
   const sum = () => {
     const v = Object.values(marks);
     const c = (k) => v.filter((x) => x === k).length;
     const left = v.filter((x) => !x).length;
     const el = $("#attSum");
-    if (el) el.innerHTML = `<b>${c("keldi") + c("kechikdi")}</b> keldi · <b>${c("kelmadi")}</b> kelmadi${c("sababli") ? ` · <b>${c("sababli")}</b> sababli` : ""}${left ? ` · <span style="color:var(--volt)">${left} ta belgilanmagan</span>` : ""}`;
+    if (el) el.innerHTML = `<b>${c("keldi") + c("kechikdi")}</b> keldi · <b>${c("kelmadi")}</b> kelmadi${c("sababli") ? ` · <b>${c("sababli")}</b> sababli` : ""}${left ? ` · <span style="color:${admin ? "var(--warn)" : "var(--volt)"}">${left} ta belgilanmagan</span>` : ""}`;
   };
   sum();
   $$(".att-row").forEach((r) => $$("[data-st]", r).forEach((b) => (b.onclick = () => {

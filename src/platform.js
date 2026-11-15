@@ -487,6 +487,7 @@ async function attendance(req, env, me, url) {
       .all();
     return json({ ok: true, date, items: r.results });
   }
+  if (me.role !== "teacher") return err("Yo'qlamani faqat ustoz qiladi", 403);
   const b = await body(req);
   const gid = I(b.group_id);
   const date = S(b.date, 10);
