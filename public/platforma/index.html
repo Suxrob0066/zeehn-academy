@@ -24,7 +24,7 @@ svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 /* Login */
 .login{min-height:100vh;display:grid;grid-template-columns:1.05fr 1fr}
 .login-art{background:radial-gradient(120% 80% at 20% 20%,#1E5BF0,#0046E0 50%,#0036B8);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.login-art .bgz{position:absolute;right:80px;bottom:90px;width:230px;opacity:.14}
+.login-art .bgz{position:absolute;right:-120px;bottom:-140px;width:560px;opacity:.08}
 .login-art h1{font-size:44px;line-height:1.15;font-weight:700;max-width:520px}
 .login-art h1 b{color:var(--volt);font-weight:700}
 .login-art p{opacity:.85;margin-top:16px;max-width:440px;line-height:1.7}
@@ -34,12 +34,12 @@ svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .login-card{width:100%;max-width:380px}
 .login-card h2{font-size:26px;font-weight:700}
 .login-card .sub{color:var(--muted);margin:6px 0 28px}
-.login-logo-m{display:none;height:38px;margin-bottom:28px}
+.login-logo-m{display:none!important;margin-bottom:28px}
 
 /* Layout */
 .app{display:flex;min-height:100%}
 .side{width:248px;background:#fff;border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:40}
-.side .logo{height:34px;margin:4px 10px 26px}
+.side .logo{display:block;margin:4px 10px 26px}
 .nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:#4A5373;font-weight:500;margin-bottom:3px;position:relative}
 .nav a:hover{background:var(--cloud);color:var(--navy)}
 .nav a.on{background:var(--blue);color:#fff;box-shadow:0 10px 24px -12px rgba(0,70,224,.8)}
@@ -208,7 +208,7 @@ tbody tr.click:hover td{background:#F8FAFF}
 .me-link .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prof-card{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden}
 .prof-cover{height:120px;background:radial-gradient(120% 140% at 0% 0%,#5B92FF,#1E5BF0 50%,#0046E0);position:relative;overflow:hidden}
-.prof-cover img{position:absolute;right:40px;top:14px;height:92px;opacity:.22}
+.prof-cover img{position:absolute;right:-30px;top:-40px;width:220px;opacity:.14}
 .prof-main{display:flex;align-items:flex-end;gap:20px;padding:0 24px;margin-top:-56px;flex-wrap:wrap}
 .prof-ava{position:relative}
 .prof-cam{position:absolute;right:2px;bottom:6px;width:36px;height:36px;border-radius:50%;background:var(--volt);color:var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;border:3px solid #fff}
@@ -230,11 +230,12 @@ a.list-item{color:inherit}a.list-item:hover .t{color:var(--blue)}
 .lockbar.open{border-left-color:var(--ok);background:var(--okbg)}
 .lockbar.open svg{color:var(--ok)}
 .btn.ghost-w{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
-/* Aylanuvchi Z logo */
-.bgz{animation:zspin 9s linear infinite;transform-origin:50% 50%;pointer-events:none;will-change:transform}
-@keyframes zspin{from{transform:perspective(900px) rotateY(0deg)}to{transform:perspective(900px) rotateY(360deg)}}
-@media (prefers-reduced-motion:reduce){.bgz{animation:none}}
-@media (max-width:860px){.t-hero .bgz{right:16px;top:22px;margin-top:0;height:72px;opacity:.2}}
+/* Logo: Z belgisi aylanadi */
+.brand{display:inline-flex;align-items:center;gap:calc(var(--h) * .43);height:var(--h)}
+.brand img{height:100%;display:block}
+.brand .bmark{animation:zspin 6s linear infinite;transform-origin:50% 50%;will-change:transform}
+@keyframes zspin{from{transform:perspective(600px) rotateY(0deg)}to{transform:perspective(600px) rotateY(360deg)}}
+@media (prefers-reduced-motion:reduce){.brand .bmark{animation:none}}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -323,7 +324,7 @@ a.list-item{color:inherit}a.list-item:hover .t{color:var(--blue)}
 .att-row{transition:background .15s}
 .role-teacher .att-row.marked{background:#FBFCFF}
 .t-hero{position:relative;overflow:hidden;background:radial-gradient(120% 120% at 0% 0%,#1E5BF0,#0046E0 55%,#0036B8);color:#fff;border-radius:20px;padding:22px;margin-bottom:16px}
-.t-hero .bgz{position:absolute;right:48px;top:50%;margin-top:-52px;height:104px;opacity:.22}
+.t-hero .bgz{position:absolute;right:-40px;bottom:-50px;width:210px;opacity:.12}
 .t-hero .lbl{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600}
 .t-hero .lbl svg{width:15px;height:15px}
 .t-hero .hn{font-size:24px;font-weight:700;margin-top:12px;position:relative}
@@ -374,7 +375,7 @@ a.list-item{color:inherit}a.list-item:hover .t{color:var(--blue)}
 }
 @media (max-width:1100px){.g2{grid-template-columns:1fr}}
 @media (max-width:860px){
-  .login{grid-template-columns:1fr}.login-art{display:none}.login-logo-m{display:block}
+  .login{grid-template-columns:1fr}.login-art{display:none}.login-logo-m{display:inline-flex!important}
   .side{transform:translateX(-100%);transition:.25s;box-shadow:20px 0 60px -20px rgba(2,11,58,.4)}
   .app.open .side{transform:none}
   .app.open .scrim{display:block;position:fixed;inset:0;background:rgba(2,11,58,.35);z-index:30}
@@ -590,8 +591,8 @@ function renderLogin() {
   $("#root").innerHTML = `
   <div class="login">
     <div class="login-art">
-      <img src="/img/logo-h-white.png" alt="Zeehn" style="height:42px;align-self:flex-start">
-      <img class="bgz" src="/img/zeehn-mark-white.png" alt="">
+      <span class="brand " style="--h:42px;align-self:flex-start"><img class="bmark" src="/img/logo-mark-white.png" alt=""><img class="bword" src="/img/logo-word-white.png" alt="Zeehn Innovation Academy"></span>
+      <img class="bgz" src="/icon-512.png" alt="">
       <div>
         <h1>O'quv markazini <b>bir joydan</b> boshqaring</h1>
         <p>O'quvchilar, guruhlar, to'lovlar va davomat — barchasi Zeehn platformasida.</p>
@@ -601,7 +602,7 @@ function renderLogin() {
     </div>
     <div class="login-box">
       <form class="login-card" id="lf">
-        <img class="login-logo-m" src="/img/logo-h-blue.png" alt="Zeehn">
+        <span class="brand login-logo-m" style="--h:38px;"><img class="bmark" src="/img/logo-mark-blue.png" alt=""><img class="bword" src="/img/logo-word-blue.png" alt="Zeehn Innovation Academy"></span>
         <h2>Xush kelibsiz 👋</h2>
         <div class="sub">Platformaga kirish uchun login va parolingizni kiriting</div>
         <div id="lerr"></div>
@@ -652,7 +653,7 @@ function shell() {
   $("#root").innerHTML = `
   <div class="app role-${me.role}" id="app">
     <aside class="side">
-      <a href="#/"><img class="logo" src="/img/logo-h-blue.png" alt="Zeehn"></a>
+      <a href="#/" class="logo"><span class="brand " style="--h:34px;"><img class="bmark" src="/img/logo-mark-blue.png" alt=""><img class="bword" src="/img/logo-word-blue.png" alt="Zeehn Innovation Academy"></span></a>
       <nav class="nav">${nav.map(([h, i, t]) => h === "sep" ? `<div class="sep">${t}</div>` : `<a href="#/${h}" data-r="${h}">${ic(i)}<span>${t}</span>${h === "leads" ? '<b class="cnt hidden" id="leadCnt"></b>' : ""}</a>`).join("")}</nav>
       <div class="me"><a class="me-link" href="#/settings" title="Profilim"><span id="meAva">${avaHtml(me.name, me.photo)}</span><div style="min-width:0"><div class="nm">${esc(me.name)}</div><div class="rl">${me.role === "admin" ? "Administrator" : "Ustoz"}</div></div></a><button title="Chiqish" id="logout">${ic("out")}</button></div>
     </aside>
@@ -1313,7 +1314,7 @@ async function pSettings() {
   setHead("Profil", "");
   $("#page").innerHTML = `
     <div class="prof-card">
-      <div class="prof-cover"><img class="bgz" src="/img/zeehn-mark-white.png" alt=""></div>
+      <div class="prof-cover"><img src="/icon-512.png" alt=""></div>
       <div class="prof-main">
         <div class="prof-ava" id="pAva">${avaHtml(u.name, u.photo, 112, "font-size:38px;border:5px solid #fff;box-shadow:0 12px 30px -14px rgba(0,70,224,.6)")}
           <label class="prof-cam" title="Rasm yuklash">${ic("camera")}<input type="file" accept="image/*" id="pFile" hidden></label>
@@ -1430,9 +1431,9 @@ async function pTeacherHome() {
   if (ni < 0) ni = todays.findIndex((g, i) => !marks[i] && lessonState(g, today).st === "before");
   let nextDay = null;
   if (!todays.length) for (let k = 1; k <= 7 && !nextDay; k++) { const dd = ((dow - 1 + k) % 7) + 1; const ls = gs.filter((g) => String(g.days).split(",").includes(String(dd))).sort((a, b) => String(a.time).localeCompare(String(b.time))); if (ls.length) nextDay = [dd, ls[0]]; }
-  const hero = ni >= 0 ? (() => { const g = todays[ni]; return `<div class="t-hero"><img class="bgz" src="/img/zeehn-mark-white.png" alt=""><div class="lbl">${ic("clock")} ${lessonState(g, today).st === "open" ? "Dars hozir davom etmoqda" : "Navbatdagi dars"}</div><div class="hn">${esc(g.name)}</div><div class="hs">${esc(g.course)} · ${esc(g.time || "")}${g.room ? " · " + esc(g.room) : ""} · ${g.students} o'quvchi</div>${(() => { const ls = lessonState(g, today); return ls.st === "open" ? `<a class="btn volt" href="#/attendance/${g.id}">${ic("check")}Yo'qlama qilish</a>` : `<a class="btn ghost-w" href="#/attendance/${g.id}">${ic("clock")}Yo'qlama ${ls.start} da ochiladi</a>`; })()}</div>`; })()
-    : todays.length ? `<div class="t-hero done"><img class="bgz" src="/img/zeehn-mark-white.png" alt=""><div class="lbl">${ic("check")} Ajoyib!</div><div class="hn">Bugungi barcha yo'qlamalar qilingan</div><div class="hs">${todays.length} ta dars · rahmat 🙌</div></div>`
-    : `<div class="t-hero rest"><img class="bgz" src="/img/zeehn-mark-white.png" alt=""><div class="lbl">${ic("clock")} Bugun dars yo'q</div><div class="hn">${nextDay ? "Keyingi dars: " + KUNLAR_TOLIQ[nextDay[0] - 1] : "Dam olish kuni"}</div><div class="hs">${nextDay ? esc(nextDay[1].name) + " · " + esc(nextDay[1].time || "") : ""}</div></div>`;
+  const hero = ni >= 0 ? (() => { const g = todays[ni]; return `<div class="t-hero"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} ${lessonState(g, today).st === "open" ? "Dars hozir davom etmoqda" : "Navbatdagi dars"}</div><div class="hn">${esc(g.name)}</div><div class="hs">${esc(g.course)} · ${esc(g.time || "")}${g.room ? " · " + esc(g.room) : ""} · ${g.students} o'quvchi</div>${(() => { const ls = lessonState(g, today); return ls.st === "open" ? `<a class="btn volt" href="#/attendance/${g.id}">${ic("check")}Yo'qlama qilish</a>` : `<a class="btn ghost-w" href="#/attendance/${g.id}">${ic("clock")}Yo'qlama ${ls.start} da ochiladi</a>`; })()}</div>`; })()
+    : todays.length ? `<div class="t-hero done"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("check")} Ajoyib!</div><div class="hn">Bugungi barcha yo'qlamalar qilingan</div><div class="hs">${todays.length} ta dars · rahmat 🙌</div></div>`
+    : `<div class="t-hero rest"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} Bugun dars yo'q</div><div class="hn">${nextDay ? "Keyingi dars: " + KUNLAR_TOLIQ[nextDay[0] - 1] : "Dam olish kuni"}</div><div class="hs">${nextDay ? esc(nextDay[1].name) + " · " + esc(nextDay[1].time || "") : ""}</div></div>`;
   $("#page").innerHTML = hero + `
     <div class="stats">
       <a class="stat hero" href="#/settings"><div class="ic">${ic("layers")}</div><div><div class="v">${gs.length}</div><div class="l">Guruhlarim</div></div></a>
