@@ -165,7 +165,7 @@ async function stats(env) {
     `SELECT COALESCE(SUM(c.price),0) n FROM students s JOIN groups g ON g.id=s.group_id JOIN courses c ON c.id=g.course_id WHERE s.status='active'`
   ).first();
   const recent = await q(
-    `SELECT s.id,s.name,s.joined_at,g.name grp,c.name course FROM students s LEFT JOIN groups g ON g.id=s.group_id LEFT JOIN courses c ON c.id=g.course_id ORDER BY s.id DESC LIMIT 6`
+    `SELECT s.id,s.name,s.joined_at,g.name grp,c.name course FROM students s LEFT JOIN groups g ON g.id=s.group_id LEFT JOIN courses c ON c.id=g.course_id ORDER BY s.joined_at DESC, s.id DESC LIMIT 6`
   ).all();
   return json({
     ok: true,
