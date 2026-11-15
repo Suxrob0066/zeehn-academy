@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zeehn Platforma</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0046E0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0046E0;--blue2:#1E5BF0;--volt:#C6FF3D;--navy:#020B3A;--cloud:#EEF3FF;--line:#E2E8F5;--muted:#6B7594;--ok:#14A44D;--okbg:#E5F7EC;--warn:#D98A00;--warnbg:#FFF4DC;--bad:#E0323C;--badbg:#FDE8EA;--gray:#8A93AD;--graybg:#EEF0F5;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--cloud);color:var(--navy);font-size:14px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit;text-decoration:none}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hidden{display:none!important}
+
+/* Login */
+.login{min-height:100vh;display:grid;grid-template-columns:1.05fr 1fr}
+.login-art{background:radial-gradient(120% 80% at 20% 20%,#1E5BF0,#0046E0 50%,#0036B8);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login-art .bgz{position:absolute;right:-120px;bottom:-140px;width:560px;opacity:.08}
+.login-art h1{font-size:44px;line-height:1.15;font-weight:700;max-width:520px}
+.login-art h1 b{color:var(--volt);font-weight:700}
+.login-art p{opacity:.85;margin-top:16px;max-width:440px;line-height:1.7}
+.login-art .pts{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.login-art .pts span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:8px 14px;border-radius:999px;font-size:13px}
+.login-box{display:flex;align-items:center;justify-content:center;padding:32px;background:#fff}
+.login-card{width:100%;max-width:380px}
+.login-card h2{font-size:26px;font-weight:700}
+.login-card .sub{color:var(--muted);margin:6px 0 28px}
+.login-logo-m{display:none;height:38px;margin-bottom:28px}
+
+/* Layout */
+.app{display:flex;min-height:100%}
+.side{width:248px;background:#fff;border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:40}
+.side .logo{height:34px;margin:4px 10px 26px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:#4A5373;font-weight:500;margin-bottom:3px;position:relative}
+.nav a:hover{background:var(--cloud);color:var(--navy)}
+.nav a.on{background:var(--blue);color:#fff;box-shadow:0 10px 24px -12px rgba(0,70,224,.8)}
+.nav a .cnt{margin-left:auto;background:var(--volt);color:var(--navy);font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px}
+.nav .sep{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin:18px 14px 8px}
+.side .me{margin-top:auto;border-top:1px solid var(--line);padding:16px 10px 0;display:flex;align-items:center;gap:10px}
+.ava{width:38px;height:38px;border-radius:50%;background:var(--cloud);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.me .nm{font-weight:600;font-size:13px;line-height:1.2}
+.me .rl{font-size:12px;color:var(--muted)}
+.me button{margin-left:auto;color:var(--muted);padding:6px;border-radius:8px}
+.me button:hover{background:var(--badbg);color:var(--bad)}
+.main{flex:1;margin-left:248px;min-width:0}
+.top{display:flex;align-items:center;gap:14px;padding:22px 32px 6px}
+.top h1{font-size:24px;font-weight:700}
+.top .sub{color:var(--muted);font-size:13px}
+.top .acts{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+.burger{display:none;width:42px;height:42px;border-radius:12px;background:#fff;border:1px solid var(--line);align-items:center;justify-content:center}
+.page{padding:18px 32px 60px}
+.scrim{display:none}
+
+/* UI */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:12px;font-weight:600;background:var(--blue);color:#fff;white-space:nowrap;transition:.15s}
+.btn:hover{background:#003BC0}
+.btn.sm{height:34px;padding:0 12px;font-size:13px;border-radius:10px}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn.volt{background:var(--volt);color:var(--navy)}
+.btn.volt:hover{background:#B5F01F}
+.btn.danger{background:var(--badbg);color:var(--bad)}
+.btn.danger:hover{background:#F9D3D7}
+.btn.ok{background:var(--ok)}
+.btn:disabled{opacity:.55;cursor:default}
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--line);padding:20px}
+.card h3{font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 .more{margin-left:auto;font-size:13px;color:var(--blue);font-weight:500}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1.4fr 1fr}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start;cursor:default}
+a.stat{cursor:pointer}a.stat:hover{border-color:var(--blue)}
+.stat .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.stat .v{font-size:24px;font-weight:700;line-height:1.1}
+.stat .v.money{font-size:18px;padding-top:4px}
+.stat>div:last-child{min-width:0}
+.stat .l{color:var(--muted);font-size:12.5px;margin-top:3px}
+.stat.hero{background:linear-gradient(135deg,#0046E0,#1E5BF0);color:#fff;border:0}
+.stat.hero .l{color:rgba(255,255,255,.8)}
+.stat.hero .ic{background:rgba(255,255,255,.15)!important;color:#fff!important}
+.ic.b{background:#E6EEFF;color:var(--blue)}.ic.g{background:var(--okbg);color:var(--ok)}.ic.r{background:var(--badbg);color:var(--bad)}.ic.y{background:var(--warnbg);color:var(--warn)}.ic.v{background:#F3FFD6;color:#5C8A00}
+.bar{height:8px;background:var(--cloud);border-radius:99px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--volt);border-radius:99px}
+.stat:not(.hero) .bar i{background:var(--blue)}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.inp,.sel{height:42px;border:1px solid var(--line);border-radius:12px;padding:0 14px;background:#fff;outline:none;min-width:0}
+.inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,70,224,.1)}
+.search{position:relative;flex:1;min-width:200px;max-width:340px}
+.search .inp{width:100%;padding-left:40px}
+.search svg{position:absolute;left:13px;top:11px;color:var(--gray)}
+textarea.inp{height:auto;padding:12px 14px;resize:vertical;min-height:80px}
+
+.tbl-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:12px 16px;background:#F8FAFF;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+td.wrap{white-space:normal}
+tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:#F8FAFF}
+.who{display:flex;align-items:center;gap:10px}
+.who .nm{font-weight:600}
+.who .sm{font-size:12px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.nodot::before{display:none}
+.b-ok{background:var(--okbg);color:var(--ok)}.b-bad{background:var(--badbg);color:var(--bad)}.b-warn{background:var(--warnbg);color:var(--warn)}.b-gray{background:var(--graybg);color:var(--gray)}.b-blue{background:#E6EEFF;color:var(--blue)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:8px;background:var(--cloud);font-size:12px;font-weight:500;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:40px 20px}
+.empty svg{width:42px;height:42px;color:#B8C3E0;margin-bottom:8px}
+.muted{color:var(--muted)}
+.money{font-variant-numeric:tabular-nums;white-space:nowrap}
+.row-acts{display:flex;gap:6px;justify-content:flex-end}
+.icon-btn{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line);background:#fff}
+.icon-btn:hover{color:var(--blue);border-color:var(--blue)}
+.icon-btn.del:hover{color:var(--bad);border-color:var(--bad)}
+.icon-btn svg{width:17px;height:17px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.ccard{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.ccard .stripe{position:absolute;left:0;top:0;bottom:0;width:5px}
+.ccard h4{font-size:16px;font-weight:600}
+.ccard .meta{color:var(--muted);font-size:13px;margin-top:4px}
+.ccard .nums{display:flex;gap:18px;margin:16px 0}
+.ccard .nums b{display:block;font-size:20px}
+.ccard .nums span{font-size:12px;color:var(--muted)}
+.ccard .foot{display:flex;gap:8px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.ccard.off{opacity:.6}
+.days{display:flex;gap:4px;flex-wrap:wrap}
+.days span{font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--cloud);color:var(--muted)}
+.days span.on{background:var(--blue);color:#fff}
+
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.list-item:last-child{border-bottom:0}
+.list-item .grow{flex:1;min-width:0}
+.list-item .t{font-weight:600}
+.list-item .s{font-size:12.5px;color:var(--muted)}
+.cbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cbar .nm{width:140px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbar .tr{flex:1;height:10px;background:var(--cloud);border-radius:99px;overflow:hidden}
+.cbar .tr i{display:block;height:100%;border-radius:99px}
+.cbar .n{width:36px;text-align:right;font-weight:600}
+
+/* Davomat */
+.att-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.att-sum{display:flex;gap:8px;flex-wrap:wrap}
+.att-list{background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.att-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.att-row:last-child{border-bottom:0}
+.att-row .n{width:26px;color:var(--gray);font-size:12px;text-align:right}
+.att-row .grow{flex:1;min-width:0}
+.att-row .nm{font-weight:600}
+.att-row .ph{font-size:12px;color:var(--muted)}
+.seg{display:flex;background:var(--cloud);border-radius:12px;padding:4px;gap:4px}
+.seg button{height:36px;padding:0 12px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
+.seg button:hover{background:#fff}
+.seg button.on.keldi{background:var(--ok);color:#fff}
+.seg button.on.kechikdi{background:var(--warn);color:#fff}
+.seg button.on.kelmadi{background:var(--bad);color:#fff}
+.seg button.on.sababli{background:var(--gray);color:#fff}
+.savebar{position:sticky;bottom:16px;margin-top:16px;background:var(--navy);color:#fff;border-radius:16px;padding:12px 12px 12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 20px 40px -20px rgba(2,11,58,.7)}
+.savebar .grow{flex:1}
+.mx{border-collapse:separate;border-spacing:0;min-width:0}
+.mx th,.mx td{padding:6px;text-align:center;font-size:12px;border-bottom:1px solid var(--line)}
+.mx th:first-child,.mx td:first-child{text-align:left;position:sticky;left:0;background:#fff;min-width:170px;padding-left:16px;z-index:1}
+.mx th:first-child{background:#F8FAFF}
+.mx .c{width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
+.c.keldi{background:var(--okbg);color:var(--ok)}.c.kelmadi{background:var(--badbg);color:var(--bad)}.c.kechikdi{background:var(--warnbg);color:var(--warn)}.c.sababli{background:var(--graybg);color:var(--gray)}
+.mx .pct{font-weight:700}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
+.legend span{display:flex;align-items:center;gap:6px}
+
+/* Tabs */
+.tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
+.tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
+.tabs button.on{background:var(--cloud);color:var(--blue)}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(2,11,58,.45);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;overflow:auto;animation:fade .15s}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:560px;box-shadow:0 40px 80px -30px rgba(2,11,58,.6);animation:pop .18s}
+.modal.wide{max-width:760px}
+.modal-h{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.modal-h h3{font-size:18px;font-weight:700}
+.modal-h .x{margin-left:auto;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.modal-h .x:hover{background:var(--cloud)}
+.modal-b{padding:22px 24px}
+.modal-f{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--line);flex-wrap:wrap}
+.modal-f .left{margin-right:auto}
+@keyframes fade{from{opacity:0}}@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f.full{grid-column:1/-1}
+.f label{font-size:12.5px;font-weight:600;color:#4A5373}
+.f .inp,.f .sel{width:100%}
+.f .hint{font-size:12px;color:var(--muted)}
+.pw{display:flex;gap:8px}.pw .inp{flex:1}
+.daypick{display:flex;gap:6px;flex-wrap:wrap}
+.daypick button{width:44px;height:38px;border-radius:10px;border:1px solid var(--line);font-weight:600;font-size:13px;color:var(--muted)}
+.daypick button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.swatches button.on{box-shadow:0 0 0 2px var(--navy)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.info-grid div{background:var(--cloud);border-radius:12px;padding:12px 14px}
+.info-grid span{display:block;font-size:12px;color:var(--muted)}
+.info-grid b{font-weight:600}
+.cred{background:var(--navy);color:#fff;border-radius:14px;padding:18px;margin-top:6px}
+.cred div{display:flex;justify-content:space-between;padding:6px 0;font-family:ui-monospace,monospace;font-size:15px}
+.cred span{color:rgba(255,255,255,.6);font-family:'Poppins';font-size:13px}
+.err{background:var(--badbg);color:var(--bad);padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:14px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;z-index:200;font-weight:500;box-shadow:0 20px 40px -20px rgba(2,11,58,.8);display:flex;gap:10px;align-items:center;animation:pop .2s}
+.toast.bad{background:var(--bad)}
+.loading{display:flex;justify-content:center;padding:60px}
+.spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.today-card{background:linear-gradient(135deg,#0046E0,#1E5BF0);color:#fff;border-radius:18px;padding:22px;position:relative;overflow:hidden}
+.today-card .bgz{position:absolute;right:-40px;top:-30px;width:200px;opacity:.1}
+.lesson{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.lesson .tm{width:64px;text-align:center;font-weight:700;font-size:16px;color:var(--blue)}
+.lesson .tm small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.lesson .grow{flex:1;min-width:0}
+.lesson .t{font-weight:600}
+.lesson .s{font-size:12.5px;color:var(--muted)}
+
+@media (max-width:1100px){.g2{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .login{grid-template-columns:1fr}.login-art{display:none}.login-logo-m{display:block}
+  .side{transform:translateX(-100%);transition:.25s;box-shadow:20px 0 60px -20px rgba(2,11,58,.4)}
+  .app.open .side{transform:none}
+  .app.open .scrim{display:block;position:fixed;inset:0;background:rgba(2,11,58,.35);z-index:30}
+  .main{margin-left:0}
+  .burger{display:flex}
+  .top{padding:16px 16px 4px;flex-wrap:wrap}
+  .top h1{font-size:20px}
+  .top .acts{width:100%;margin-left:0}
+  .page{padding:12px 16px 90px}
+  .form,.info-grid{grid-template-columns:1fr}
+  .att-row{flex-wrap:wrap}
+  .att-row .seg{width:100%}
+  .att-row .seg button{flex:1;justify-content:center;padding:0 4px}
+  .search{max-width:none}
+  .modal-bg{padding:0;align-items:flex-end}
+  .modal{border-radius:20px 20px 0 0;max-height:92vh;overflow:auto}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat{padding:14px;flex-direction:column;gap:10px}
+  .stat .v{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div id="root"><div class="loading"><div class="spin"></div></div></div>
+
+<script>
+// ===== Yordamchi funksiyalar =====
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = (n) => (Number(n) || 0).toLocaleString("ru-RU").replace(/,/g, " ") + " so'm";
+const num = (n) => (Number(n) || 0).toLocaleString("ru-RU");
+const OYLAR = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+const KUNLAR = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"];
+const KUNLAR_TOLIQ = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
+const fmtDate = (d) => { if (!d) return "—"; const [y, m, dd] = d.slice(0, 10).split("-"); return `${+dd} ${OYLAR[+m - 1].toLowerCase()} ${y}`; };
+const fmtMonth = (m) => { const [y, mm] = m.split("-"); return `${OYLAR[+mm - 1]} ${y}`; };
+const initials = (n) => String(n || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+const addMonth = (m, k) => { let [y, mm] = m.split("-").map(Number); mm += k; while (mm > 12) { mm -= 12; y++; } while (mm < 1) { mm += 12; y--; } return `${y}-${String(mm).padStart(2, "0")}`; };
+const dowOf = (d) => ((new Date(d + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;
+const phoneLink = (p) => p ? `<a href="tel:${esc(p.replace(/[^\d+]/g, ""))}" onclick="event.stopPropagation()">${esc(p)}</a>` : '<span class="muted">—</span>';
+const COLORS = ["#0046E0", "#14A44D", "#E0323C", "#D98A00", "#7B3FE4", "#0FA3B1", "#E83E8C", "#020B3A"];
+const ATT = { keldi: ["Keldi", "K"], kechikdi: ["Kechikdi", "Ke"], kelmadi: ["Kelmadi", "Y"], sababli: ["Sababli", "S"] };
+
+const I = {
+  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M17.5 14.5c2.3.3 3.8 2 4 4.5"/>',
+  book: '<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20"/><path d="M8 7h8"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+  wallet: '<rect x="3" y="6" width="18" height="14" rx="2.5"/><path d="M3 10h18"/><path d="M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h9"/>',
+  teacher: '<circle cx="12" cy="7" r="4"/><path d="M4 21c.8-4 4-6.5 8-6.5s7.2 2.5 8 6.5"/><path d="m9.5 14.5 2.5 3 2.5-3"/>',
+  check: '<rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M8 2.5v3M16 2.5v3M3 9h18"/><path d="m8.5 14.5 2.3 2.3 4.7-4.6"/>',
+  inbox: '<path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  out: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  edit: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/>',
+  money: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
+  copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+  refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
+  chevL: '<path d="m15 18-6-6 6-6"/>', chevR: '<path d="m9 18 6-6-6-6"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  user_plus: '<circle cx="9" cy="8" r="4"/><path d="M2 21c.7-4 3.6-6.5 7-6.5 1.6 0 3 .5 4.2 1.3"/><path d="M19 14v6M16 17h6"/>',
+};
+const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24">${I[n] || ""}</svg>`;
+
+// ===== API =====
+async function api(path, opts = {}) {
+  const o = { method: opts.method || "GET", headers: {}, credentials: "same-origin" };
+  if (opts.body !== undefined) { o.headers["Content-Type"] = "application/json"; o.body = JSON.stringify(opts.body); }
+  let r;
+  try { r = await fetch("/api/p/" + path, o); } catch { throw new Error("Internet aloqasini tekshiring"); }
+  let d = {};
+  try { d = await r.json(); } catch {}
+  if (r.status === 401 && path !== "login") { state.me = null; renderLogin(); throw new Error("Qaytadan kiring"); }
+  if (!r.ok || d.ok === false) throw new Error(d.error || "Xatolik yuz berdi");
+  return d;
+}
+
+function toast(msg, bad) {
+  $$(".toast").forEach((t) => t.remove());
+  const t = document.createElement("div");
+  t.className = "toast" + (bad ? " bad" : "");
+  t.innerHTML = (bad ? ic("alert") : ic("check")) + esc(msg);
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ===== Modal =====
+function modal({ title, body, foot = "", wide = false, onMount }) {
+  const bg = document.createElement("div");
+  bg.className = "modal-bg";
+  bg.innerHTML = `<div class="modal ${wide ? "wide" : ""}"><div class="modal-h"><h3>${title}</h3><button class="x" data-close>${ic("x")}</button></div><div class="modal-b">${body}</div>${foot ? `<div class="modal-f">${foot}</div>` : ""}</div>`;
+  const close = () => { bg.remove(); document.removeEventListener("keydown", onKey); };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onKey);
+  bg.addEventListener("mousedown", (e) => { if (e.target === bg) close(); });
+  $$("[data-close]", bg).forEach((b) => (b.onclick = close));
+  document.body.appendChild(bg);
+  const m = { el: bg, close, $: (s) => $(s, bg), err(msg) { let e = $(".err", bg); if (!e) { e = document.createElement("div"); e.className = "err"; $(".modal-b", bg).prepend(e); } e.textContent = msg; } };
+  onMount && onMount(m);
+  const first = $("input:not([type=hidden]),select,textarea", bg);
+  if (first && window.innerWidth > 860) first.focus();
+  return m;
+}
+function confirmBox(text, okText = "O'chirish") {
+  return new Promise((res) => {
+    const m = modal({ title: "Tasdiqlang", body: `<p style="line-height:1.6">${text}</p>`, foot: `<button class="btn ghost" data-close>Bekor qilish</button><button class="btn danger" id="cOk">${okText}</button>` });
+    m.$("#cOk").onclick = () => { m.close(); res(true); };
+    m.el.addEventListener("remove", () => res(false));
+  });
+}
+function formData(root) {
+  const o = {};
+  $$("[name]", root).forEach((el) => { o[el.name] = el.type === "checkbox" ? el.checked : el.value; });
+  return o;
+}
+async function submitBtn(btn, fn) {
+  const t = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<div class="spin" style="width:18px;height:18px;border-width:2px;border-top-color:#fff"></div>';
+  try { await fn(); } finally { btn.disabled = false; btn.innerHTML = t; }
+}
+const genPass = () => { const a = "abcdefghjkmnpqrstuvwxyz23456789"; let s = ""; const r = crypto.getRandomValues(new Uint8Array(8)); r.forEach((x) => (s += a[x % a.length])); return s; };
+const translit = (s) => { const m = { "o'": "o", "g'": "g", "sh": "sh", "ch": "ch" }; return String(s).toLowerCase().replace(/[ʻʼ'`’]/g, "").replace(/[^a-z0-9\s]/g, "").trim().split(/\s+/).slice(0, 2).join("."); };
+
+// ===== Holat =====
+const state = { me: null, today: null, cache: {} };
+async function load(key, path) { const d = await api(path); state.cache[key] = d.items; return d.items; }
+const courses = () => load("courses", "courses");
+const groupsList = () => load("groups", "groups");
+const teachersList = () => load("teachers", "teachers");
+
+// ===== Login =====
+function renderLogin() {
+  document.title = "Kirish — Zeehn Platforma";
+  $("#root").innerHTML = `
+  <div class="login">
+    <div class="login-art">
+      <img src="/img/logo-h-white.png" alt="Zeehn" style="height:42px;align-self:flex-start">
+      <img class="bgz" src="/icon-512.png" alt="">
+      <div>
+        <h1>O'quv markazini <b>bir joydan</b> boshqaring</h1>
+        <p>O'quvchilar, guruhlar, to'lovlar va davomat — barchasi Zeehn platformasida.</p>
+        <div class="pts"><span>O'quvchilar ro'yxati</span><span>To'lov nazorati</span><span>Yo'qlama</span><span>Ustozlar</span></div>
+      </div>
+      <div style="opacity:.6;font-size:13px">© Zeehn Innovation Academy</div>
+    </div>
+    <div class="login-box">
+      <form class="login-card" id="lf">
+        <img class="login-logo-m" src="/img/logo-h-blue.png" alt="Zeehn">
+        <h2>Xush kelibsiz 👋</h2>
+        <div class="sub">Platformaga kirish uchun login va parolingizni kiriting</div>
+        <div id="lerr"></div>
+        <div class="f" style="margin-bottom:14px"><label>Login</label><input class="inp" name="login" autocomplete="username" autocapitalize="off" required></div>
+        <div class="f" style="margin-bottom:22px"><label>Parol</label><input class="inp" type="password" name="password" autocomplete="current-password" required></div>
+        <button class="btn" style="width:100%;height:48px">Kirish</button>
+        <p class="muted" style="font-size:12.5px;margin-top:18px;line-height:1.6">Login yoki parolni unutgan bo'lsangiz, administratorga murojaat qiling.</p>
+      </form>
+    </div>
+  </div>`;
+  $("#lf").onsubmit = async (e) => {
+    e.preventDefault();
+    const b = $("button", e.target);
+    await submitBtn(b, async () => {
+      try {
+        const d = await api("login", { method: "POST", body: formData(e.target) });
+        state.me = d.user;
+        await boot();
+      } catch (er) { $("#lerr").innerHTML = `<div class="err">${esc(er.message)}</div>`; }
+    });
+  };
+}
+
+// ===== Asosiy karkas =====
+const NAV_ADMIN = [
+  ["", "home", "Bosh sahifa"],
+  ["students", "users", "O'quvchilar"],
+  ["payments", "wallet", "To'lovlar"],
+  ["attendance", "check", "Davomat"],
+  ["sep", "", "Boshqaruv"],
+  ["courses", "book", "Kurslar"],
+  ["groups", "layers", "Guruhlar"],
+  ["teachers", "teacher", "Ustozlar"],
+  ["leads", "inbox", "Arizalar"],
+  ["settings", "gear", "Sozlamalar"],
+];
+const NAV_TEACHER = [
+  ["", "home", "Bosh sahifa"],
+  ["attendance", "check", "Yo'qlama"],
+  ["students", "users", "O'quvchilarim"],
+  ["settings", "gear", "Sozlamalar"],
+];
+
+function shell() {
+  const me = state.me;
+  const nav = me.role === "admin" ? NAV_ADMIN : NAV_TEACHER;
+  $("#root").innerHTML = `
+  <div class="app" id="app">
+    <aside class="side">
+      <a href="#/"><img class="logo" src="/img/logo-h-blue.png" alt="Zeehn"></a>
+      <nav class="nav">${nav.map(([h, i, t]) => h === "sep" ? `<div class="sep">${t}</div>` : `<a href="#/${h}" data-r="${h}">${ic(i)}<span>${t}</span>${h === "leads" ? '<b class="cnt hidden" id="leadCnt"></b>' : ""}</a>`).join("")}</nav>
+      <div class="me"><div class="ava">${esc(initials(me.name))}</div><div><div class="nm">${esc(me.name)}</div><div class="rl">${me.role === "admin" ? "Administrator" : "Ustoz"}</div></div><button title="Chiqish" id="logout">${ic("out")}</button></div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+    <main class="main">
+      <div class="top"><button class="burger" id="burger">${ic("menu")}</button><div><h1 id="ptitle"></h1><div class="sub" id="psub"></div></div><div class="acts" id="pacts"></div></div>
+      <div class="page" id="page"></div>
+    </main>
+  </div>`;
+  $("#burger").onclick = () => $("#app").classList.add("open");
+  $("#scrim").onclick = () => $("#app").classList.remove("open");
+  $("#logout").onclick = async () => { try { await api("logout", { method: "POST" }); } catch {} state.me = null; renderLogin(); };
+}
+function setHead(title, sub = "", acts = "") {
+  $("#ptitle").textContent = title;
+  $("#psub").innerHTML = sub;
+  $("#pacts").innerHTML = acts;
+  document.title = title + " — Zeehn Platforma";
+}
+const loading = () => ($("#page").innerHTML = '<div class="loading"><div class="spin"></div></div>');
+
+async function route() {
+  if (!state.me) return;
+  const [r, ...rest] = location.hash.replace(/^#\/?/, "").split("/");
+  $$(".nav a").forEach((a) => a.classList.toggle("on", a.dataset.r === (r || "")));
+  $("#app").classList.remove("open");
+  $$(".modal-bg").forEach((m) => m.remove());
+  loading();
+  const admin = state.me.role === "admin";
+  const pages = admin
+    ? { "": pDash, students: pStudents, payments: pPayments, attendance: pAttendance, courses: pCourses, groups: pGroups, teachers: pTeachers, leads: pLeads, settings: pSettings }
+    : { "": pTeacherHome, attendance: pAttendance, students: pStudents, settings: pSettings };
+  const fn = pages[r] || pages[""];
+  try { await fn(rest); } catch (e) { $("#page").innerHTML = `<div class="card empty">${ic("alert")}<div>${esc(e.message)}</div></div>`; }
+  window.scrollTo(0, 0);
+}
+async function refreshLeadCount() {
+  if (state.me?.role !== "admin") return;
+  try {
+    const d = await api("leads");
+    const n = d.items.filter((x) => x.status === "yangi").length;
+    const el = $("#leadCnt");
+    if (el) { el.textContent = n; el.classList.toggle("hidden", !n); }
+  } catch {}
+}
+
+// ===== ADMIN: Bosh sahifa =====
+async function pDash() {
+  const d = await api("stats");
+  state.today = d.today;
+  const h = +new Date().getHours();
+  const hi = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
+  const dt = new Date(d.today + "T00:00:00Z");
+  setHead(`${hi}, ${state.me.name.split(" ")[0]}!`, `${KUNLAR_TOLIQ[dowOf(d.today) - 1]}, ${fmtDate(d.today)}`, `<a class="btn" href="#/students/new">${ic("user_plus")}O'quvchi qo'shish</a>`);
+  const pct = d.expected ? Math.min(100, Math.round((d.income / d.expected) * 100)) : 0;
+  const maxC = Math.max(1, ...d.byCourse.map((c) => c.students));
+  $("#page").innerHTML = `
+  <div class="stats">
+    <a class="stat hero" href="#/students"><div class="ic">${ic("users")}</div><div><div class="v">${num(d.students)}</div><div class="l">Faol o'quvchilar</div></div></a>
+    <a class="stat" href="#/courses"><div class="ic b">${ic("book")}</div><div><div class="v">${d.courses}</div><div class="l">Kurslar</div></div></a>
+    <a class="stat" href="#/groups"><div class="ic v">${ic("layers")}</div><div><div class="v">${d.groups}</div><div class="l">Guruhlar</div></div></a>
+    <a class="stat" href="#/teachers"><div class="ic b">${ic("teacher")}</div><div><div class="v">${d.teachers}</div><div class="l">Ishlayotgan ustozlar</div></div></a>
+    <a class="stat" href="#/payments"><div class="ic r">${ic("alert")}</div><div><div class="v">${d.unpaid}</div><div class="l">${OYLAR[+d.month.slice(5) - 1]} oyi uchun to'lamaganlar</div></div></a>
+    <a class="stat" href="#/leads"><div class="ic y">${ic("inbox")}</div><div><div class="v">${d.newLeads}</div><div class="l">Yangi arizalar</div></div></a>
+  </div>
+  <div class="grid g2">
+    <div class="grid" style="align-content:start">
+      <div class="card">
+        <h3>${ic("money")} ${OYLAR[+d.month.slice(5) - 1]} oyi tushumi <a class="more" href="#/payments">Batafsil →</a></h3>
+        <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap"><div style="font-size:28px;font-weight:700" class="money">${money(d.income)}</div><div class="muted" style="padding-bottom:5px">/ ${money(d.expected)} kutilmoqda</div></div>
+        <div class="bar" style="height:10px"><i style="width:${pct}%;background:var(--blue)"></i></div>
+        <div class="muted" style="font-size:12.5px;margin-top:8px">${pct}% yig'ildi</div>
+      </div>
+      <div class="card">
+        <h3>${ic("clock")} Bugungi darslar <a class="more" href="#/groups">Barcha guruhlar →</a></h3>
+        ${d.todayGroups.length ? d.todayGroups.map((g) => `
+          <div class="list-item">
+            <span class="dot" style="background:${esc(g.color)}"></span>
+            <div class="grow"><div class="t">${esc(g.name)} <span class="muted" style="font-weight:400">· ${esc(g.course)}</span></div><div class="s">${esc(g.time || "Vaqt ko'rsatilmagan")}${g.room ? " · " + esc(g.room) : ""} · ${esc(g.teacher || "Ustoz biriktirilmagan")}</div></div>
+            ${g.marked ? `<span class="badge b-ok">${g.present}/${g.students} keldi</span>` : `<span class="badge b-warn">Yo'qlama qilinmagan</span>`}
+            <a class="btn sm ghost" href="#/attendance/${g.id}">Yo'qlama</a>
+          </div>`).join("") : `<div class="empty" style="padding:24px">Bugun dars jadvalida guruh yo'q</div>`}
+      </div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card">
+        <h3>${ic("book")} Kurslar bo'yicha o'quvchilar</h3>
+        ${d.byCourse.length ? d.byCourse.map((c) => `<div class="cbar"><div class="nm">${esc(c.name)}</div><div class="tr"><i style="width:${(c.students / maxC) * 100}%;background:${esc(c.color)}"></i></div><div class="n">${c.students}</div></div>`).join("") : `<div class="empty" style="padding:20px">Hali kurs qo'shilmagan.<br><a class="btn sm" style="margin-top:12px" href="#/courses">Kurs qo'shish</a></div>`}
+      </div>
+      <div class="card">
+        <h3>${ic("user_plus")} Oxirgi qo'shilganlar <a class="more" href="#/students">Hammasi →</a></h3>
+        ${d.recent.length ? d.recent.map((s) => `<div class="list-item"><div class="ava">${esc(initials(s.name))}</div><div class="grow"><div class="t">${esc(s.name)}</div><div class="s">${esc(s.course || "Kurs yo'q")}${s.grp ? " · " + esc(s.grp) : ""}</div></div><div class="s muted">${fmtDate(s.joined_at)}</div></div>`).join("") : `<div class="empty" style="padding:20px">Hali o'quvchi yo'q</div>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ===== O'quvchilar =====
+function payBadge(s) {
+  if (s.status !== "active") return '<span class="muted">—</span>';
+  if (!s.price) return s.paid ? `<span class="badge b-ok">${money(s.paid)}</span>` : '<span class="muted">—</span>';
+  if (!s.paid) return '<span class="badge b-bad">To\'lamagan</span>';
+  if (s.paid < s.price) return `<span class="badge b-warn">Qisman · ${money(s.paid)}</span>`;
+  return '<span class="badge b-ok">To\'lagan</span>';
+}
+const ST = { active: ["Faol", "b-blue"], frozen: ["Muzlatilgan", "b-gray"], left: ["Ketgan", "b-gray"] };
+
+async function pStudents(rest) {
+  const admin = state.me.role === "admin";
+  const [cs, gs] = await Promise.all([admin ? courses() : Promise.resolve([]), groupsList()]);
+  const f = state.cache.stFilter || (state.cache.stFilter = { q: "", course: "", group: "", status: "active", pay: "" });
+  setHead(admin ? "O'quvchilar" : "O'quvchilarim", "", admin ? `<button class="btn" id="addSt">${ic("plus")}O'quvchi qo'shish</button>` : "");
+  $("#page").innerHTML = `
+    <div class="toolbar">
+      <div class="search">${ic("search")}<input class="inp" id="fq" placeholder="Ism yoki telefon bo'yicha qidirish" value="${esc(f.q)}"></div>
+      ${admin ? `<select class="sel" id="fc"><option value="">Barcha kurslar</option>${cs.map((c) => `<option value="${c.id}" ${f.course == c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>` : ""}
+      <select class="sel" id="fg"><option value="">Barcha guruhlar</option>${gs.map((g) => `<option value="${g.id}" ${f.group == g.id ? "selected" : ""}>${esc(g.name)} · ${esc(g.course)}</option>`).join("")}</select>
+      ${admin ? `<select class="sel" id="fs"><option value="active" ${f.status === "active" ? "selected" : ""}>Faol</option><option value="frozen" ${f.status === "frozen" ? "selected" : ""}>Muzlatilgan</option><option value="left" ${f.status === "left" ? "selected" : ""}>Ketgan</option><option value="" ${!f.status ? "selected" : ""}>Hammasi</option></select>
+      <select class="sel" id="fp"><option value="">To'lov: hammasi</option><option value="paid" ${f.pay === "paid" ? "selected" : ""}>To'laganlar</option><option value="unpaid" ${f.pay === "unpaid" ? "selected" : ""}>To'lamaganlar</option></select>` : ""}
+    </div>
+    <div id="stList"><div class="loading"><div class="spin"></div></div></div>`;
+  const reload = async () => {
+    const p = new URLSearchParams();
+    if (f.q) p.set("q", f.q);
+    if (f.course) p.set("course", f.course);
+    if (f.group) p.set("group", f.group);
+    if (admin && f.status) p.set("status", f.status);
+    if (!admin) p.set("status", "active");
+    if (f.pay) p.set("pay", f.pay);
+    const d = await api("students?" + p);
+    $("#psub").textContent = `${d.items.length} ta o'quvchi${admin ? ` · to'lov holati: ${fmtMonth(d.month)}` : ""}`;
+    $("#stList").innerHTML = d.items.length ? `
+      <div class="tbl-wrap"><table><thead><tr><th>#</th><th>O'quvchi</th><th>Telefon</th><th>Kurs / guruh</th><th>Qo'shilgan sana</th>${admin ? "<th>Bu oy to'lov</th><th>Holat</th><th></th>" : "<th>Ota-ona telefoni</th>"}</tr></thead><tbody>
+      ${d.items.map((s, i) => `<tr class="${admin ? "click" : ""}" data-id="${s.id}">
+        <td class="muted">${i + 1}</td>
+        <td><div class="who"><div class="ava" style="width:34px;height:34px;font-size:12px">${esc(initials(s.name))}</div><div><div class="nm">${esc(s.name)}</div>${s.parent_name ? `<div class="sm">Ota-ona: ${esc(s.parent_name)}</div>` : ""}</div></div></td>
+        <td>${phoneLink(s.phone)}</td>
+        <td>${s.course ? `<span class="chip"><span class="dot" style="width:8px;height:8px;background:${esc(s.color)}"></span>${esc(s.course)}</span> <span class="muted" style="font-size:12.5px">${esc(s.grp || "")}</span>` : '<span class="muted">Guruhsiz</span>'}</td>
+        <td>${fmtDate(s.joined_at)}</td>
+        ${admin ? `<td>${payBadge(s)}</td><td><span class="badge ${ST[s.status][1]}">${ST[s.status][0]}</span></td>
+        <td><div class="row-acts">${s.status === "active" ? `<button class="btn sm volt" data-pay="${s.id}">To'lov</button>` : ""}<button class="icon-btn" data-edit="${s.id}" title="Tahrirlash">${ic("edit")}</button></div></td>` : `<td>${phoneLink(s.parent_phone)}</td>`}
+      </tr>`).join("")}
+      </tbody></table></div>` : `<div class="card empty">${ic("users")}<div>O'quvchi topilmadi</div>${admin ? `<button class="btn" style="margin-top:14px" onclick="document.getElementById('addSt').click()">${ic("plus")}O'quvchi qo'shish</button>` : ""}</div>`;
+    if (admin) {
+      $$("#stList tr[data-id]").forEach((tr) => (tr.onclick = () => studentCard(+tr.dataset.id, reload)));
+      $$("[data-edit]").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); studentForm(d.items.find((x) => x.id == b.dataset.edit), reload); }));
+      $$("[data-pay]").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); payForm(d.items.find((x) => x.id == b.dataset.pay), d.month, reload); }));
+    }
+  };
+  let t;
+  $("#fq").oninput = (e) => { f.q = e.target.value; clearTimeout(t); t = setTimeout(reload, 300); };
+  $("#fg").onchange = (e) => { f.group = e.target.value; reload(); };
+  if (admin) {
+    $("#fc").onchange = (e) => { f.course = e.target.value; reload(); };
+    $("#fs").onchange = (e) => { f.status = e.target.value; reload(); };
+    $("#fp").onchange = (e) => { f.pay = e.target.value; reload(); };
+    $("#addSt").onclick = () => studentForm(null, reload);
+    if (rest[0] === "new") { history.replaceState(null, "", "#/students"); studentForm(null, reload); }
+  }
+  await reload();
+}
+
+async function studentForm(s, done, preset = {}) {
+  const gs = state.cache.groups || (await groupsList());
+  s = s || { status: "active", joined_at: state.today || new Date().toISOString().slice(0, 10), ...preset };
+  const m = modal({
+    title: s.id ? "O'quvchini tahrirlash" : "Yangi o'quvchi",
+    body: `<form class="form" id="sf">
+      <div class="f full"><label>Ism familiya *</label><input class="inp" name="name" value="${esc(s.name)}" required></div>
+      <div class="f"><label>Telefon</label><input class="inp" name="phone" value="${esc(s.phone || "+998 ")}" inputmode="tel"></div>
+      <div class="f"><label>Tug'ilgan sana</label><input class="inp" type="date" name="birth_date" value="${esc(s.birth_date)}"></div>
+      <div class="f"><label>Ota-onasi ismi</label><input class="inp" name="parent_name" value="${esc(s.parent_name)}"></div>
+      <div class="f"><label>Ota-onasi telefoni</label><input class="inp" name="parent_phone" value="${esc(s.parent_phone || "+998 ")}" inputmode="tel"></div>
+      <div class="f full"><label>Kurs va guruh</label><select class="sel" name="group_id"><option value="">— Guruh tanlanmagan —</option>${gs.filter((g) => g.active || g.id == s.group_id).map((g) => `<option value="${g.id}" ${g.id == s.group_id ? "selected" : ""}>${esc(g.course)} — ${esc(g.name)}${g.time ? " (" + esc(g.time) + ")" : ""}</option>`).join("")}</select>${gs.length ? "" : '<span class="hint">Avval "Guruhlar" bo\'limida guruh yarating</span>'}</div>
+      <div class="f"><label>Kursga qo'shilgan sana *</label><input class="inp" type="date" name="joined_at" value="${esc(s.joined_at)}" required></div>
+      <div class="f"><label>Holati</label><select class="sel" name="status"><option value="active" ${s.status === "active" ? "selected" : ""}>Faol</option><option value="frozen" ${s.status === "frozen" ? "selected" : ""}>Muzlatilgan</option><option value="left" ${s.status === "left" ? "selected" : ""}>Ketgan</option></select></div>
+      <div class="f full"><label>Izoh</label><textarea class="inp" name="note" rows="2">${esc(s.note)}</textarea></div>
+    </form>`,
+    foot: `${s.id ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Saqlash</button>`,
+  });
+  const clean = (v) => (v.replace(/\D/g, "").length <= 3 ? "" : v.trim());
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const b = formData(m.$("#sf"));
+    b.phone = clean(b.phone); b.parent_phone = clean(b.parent_phone);
+    if (preset.lead_id) b.lead_id = preset.lead_id;
+    try {
+      await api("students" + (s.id ? "/" + s.id : ""), { method: s.id ? "PUT" : "POST", body: b });
+      m.close(); toast(s.id ? "Saqlandi" : "O'quvchi qo'shildi"); done && done();
+    } catch (e) { m.err(e.message); }
+  });
+  if (s.id) m.$("#del").onclick = async () => {
+    if (!(await confirmBox(`<b>${esc(s.name)}</b> va uning barcha to'lov hamda davomat ma'lumotlari o'chiriladi. O'quvchi ketgan bo'lsa, o'chirish o'rniga holatini "Ketgan" qilib qo'yish tavsiya etiladi.`))) return;
+    try { await api("students/" + s.id, { method: "DELETE" }); m.close(); toast("O'chirildi"); done && done(); } catch (e) { toast(e.message, 1); }
+  };
+}
+
+async function studentCard(id, done) {
+  const d = await api("students/" + id);
+  const s = d.student;
+  const att = Object.fromEntries(d.attendance.map((x) => [x.status, x.n]));
+  const total = d.attendance.reduce((a, x) => a + x.n, 0);
+  const present = (att.keldi || 0) + (att.kechikdi || 0);
+  const m = modal({
+    wide: true,
+    title: esc(s.name),
+    body: `
+      <div class="info-grid">
+        <div><span>Kurs</span><b>${esc(s.course || "—")}</b></div>
+        <div><span>Guruh / ustoz</span><b>${esc(s.grp || "—")}${s.teacher ? " · " + esc(s.teacher) : ""}</b></div>
+        <div><span>Telefon</span><b>${phoneLink(s.phone)}</b></div>
+        <div><span>Ota-onasi</span><b>${esc(s.parent_name || "—")} ${s.parent_phone ? "· " + phoneLink(s.parent_phone) : ""}</b></div>
+        <div><span>Kursga qo'shilgan</span><b>${fmtDate(s.joined_at)}</b></div>
+        <div><span>Oylik to'lov</span><b class="money">${s.price ? money(s.price) : "—"}</b></div>
+        <div><span>Davomat</span><b>${total ? Math.round((present / total) * 100) + "% (" + present + "/" + total + " dars)" : "Hali yo'qlama yo'q"}</b></div>
+        <div><span>Holati</span><b>${ST[s.status][0]}</b></div>
+      </div>
+      ${s.note ? `<div class="card" style="margin-bottom:16px;padding:14px"><span class="muted" style="font-size:12px">Izoh</span><div>${esc(s.note)}</div></div>` : ""}
+      ${d.lastAttendance.length ? `<h4 style="margin-bottom:10px">Oxirgi darslar</h4><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px">${d.lastAttendance.map((a) => `<span class="chip c ${a.status}" title="${ATT[a.status][0]}">${a.date.slice(8)}.${a.date.slice(5, 7)} · ${ATT[a.status][0]}</span>`).join("")}</div>` : ""}
+      <h4 style="margin-bottom:10px;display:flex;align-items:center">To'lovlar tarixi <button class="btn sm volt" style="margin-left:auto" id="addPay">${ic("plus")}To'lov qabul qilish</button></h4>
+      ${d.payments.length ? `<div class="tbl-wrap"><table style="min-width:520px"><thead><tr><th>Oy</th><th>Summa</th><th>Usul</th><th>Sana</th><th></th></tr></thead><tbody>${d.payments.map((p) => `<tr><td><b>${fmtMonth(p.month)}</b>${p.note ? `<div class="muted" style="font-size:12px">${esc(p.note)}</div>` : ""}</td><td class="money">${money(p.amount)}</td><td>${esc(p.method)}</td><td>${fmtDate(p.paid_at)}</td><td><div class="row-acts"><button class="icon-btn del" data-dp="${p.id}" title="O'chirish">${ic("trash")}</button></div></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty" style="padding:20px;background:var(--cloud);border-radius:12px">Hali to'lov qilinmagan</div>`}
+    `,
+    foot: `<button class="btn ghost" id="edit">${ic("edit")}Tahrirlash</button><button class="btn" data-close>Yopish</button>`,
+  });
+  const re = () => { m.close(); studentCard(id, done); done && done(); };
+  m.$("#edit").onclick = () => { m.close(); studentForm(s, done); };
+  m.$("#addPay").onclick = () => { m.close(); payForm(s, null, () => { studentCard(id, done); done && done(); }); };
+  $$("[data-dp]", m.el).forEach((b) => (b.onclick = async () => {
+    if (!(await confirmBox("Bu to'lov yozuvi o'chirilsinmi?"))) return;
+    try { await api("payments/" + b.dataset.dp, { method: "DELETE" }); toast("To'lov o'chirildi"); re(); } catch (e) { toast(e.message, 1); }
+  }));
+}
+
+async function payForm(s, month, done) {
+  const today = state.today || new Date().toISOString().slice(0, 10);
+  month = month || today.slice(0, 7);
+  let stOpts = "";
+  if (!s) {
+    const d = await api("students?status=active");
+    stOpts = d.items.map((x) => `<option value="${x.id}" data-price="${x.price || 0}">${esc(x.name)} — ${esc(x.course || "kurssiz")}</option>`).join("");
+  }
+  const m = modal({
+    title: "To'lov qabul qilish",
+    body: `<form class="form" id="pf">
+      ${s ? `<div class="f full"><label>O'quvchi</label><div class="inp" style="display:flex;align-items:center;background:var(--cloud)"><b>${esc(s.name)}</b>&nbsp;<span class="muted">· ${esc(s.course || "")}</span></div><input type="hidden" name="student_id" value="${s.id}"></div>`
+        : `<div class="f full"><label>O'quvchi *</label><select class="sel" name="student_id" id="pst"><option value="">— Tanlang —</option>${stOpts}</select></div>`}
+      <div class="f"><label>Qaysi oy uchun *</label><input class="inp" type="month" name="month" value="${month}"></div>
+      <div class="f"><label>Summa (so'm) *</label><input class="inp" name="amount" id="pam" inputmode="numeric" value="${s && s.price ? num(s.price) : ""}"></div>
+      <div class="f"><label>To'lov usuli</label><select class="sel" name="method"><option value="naqd">Naqd</option><option value="karta">Karta</option><option value="click">Click</option><option value="payme">Payme</option><option value="boshqa">Boshqa</option></select></div>
+      <div class="f"><label>To'langan sana</label><input class="inp" type="date" name="paid_at" value="${today}"></div>
+      <div class="f full"><label>Izoh</label><input class="inp" name="note" placeholder="Masalan: chegirma bilan"></div>
+    </form>`,
+    foot: `<button class="btn ghost" data-close>Bekor qilish</button><button class="btn ok" id="save">${ic("check")}To'lovni saqlash</button>`,
+  });
+  const am = m.$("#pam");
+  am.oninput = () => { const v = am.value.replace(/\D/g, ""); am.value = v ? num(v) : ""; };
+  if (!s) m.$("#pst").onchange = (e) => { const p = +e.target.selectedOptions[0]?.dataset.price; if (p) am.value = num(p); };
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    try { await api("payments", { method: "POST", body: formData(m.$("#pf")) }); m.close(); toast("To'lov saqlandi"); done && done(); } catch (e) { m.err(e.message); }
+  });
+}
+
+// ===== To'lovlar =====
+async function pPayments() {
+  const st = state.cache.payState || (state.cache.payState = { month: (state.today || new Date().toISOString()).slice(0, 7), tab: "debt" });
+  setHead("To'lovlar", "", `<button class="btn" id="newPay">${ic("plus")}To'lov qabul qilish</button>`);
+  $("#newPay").onclick = () => payForm(null, st.month, draw);
+  async function draw() {
+    const [all, pays] = await Promise.all([api(`students?status=active&month=${st.month}`), api(`payments?month=${st.month}`)]);
+    const items = all.items;
+    const expected = items.reduce((a, s) => a + (s.price || 0), 0);
+    const income = pays.items.reduce((a, p) => a + p.amount, 0);
+    const debt = items.filter((s) => s.price && (s.paid || 0) < s.price);
+    const debtSum = debt.reduce((a, s) => a + (s.price - (s.paid || 0)), 0);
+    const paidN = items.filter((s) => s.paid && (!s.price || s.paid >= s.price)).length;
+    $("#psub").textContent = fmtMonth(st.month);
+    $("#page").innerHTML = `
+      <div class="toolbar">
+        <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px">
+          <button class="icon-btn" style="border:0" id="mPrev">${ic("chevL")}</button><b style="min-width:130px;text-align:center">${fmtMonth(st.month)}</b><button class="icon-btn" style="border:0" id="mNext">${ic("chevR")}</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat hero"><div class="ic">${ic("money")}</div><div><div class="v money">${money(income)}</div><div class="l">Tushgan to'lovlar</div></div></div>
+        <div class="stat"><div class="ic b">${ic("wallet")}</div><div><div class="v money">${money(expected)}</div><div class="l">Kutilayotgan summa</div></div></div>
+        <div class="stat"><div class="ic r">${ic("alert")}</div><div><div class="v money">${money(debtSum)}</div><div class="l">Qarzdorlik · ${debt.length} o'quvchi</div></div></div>
+        <div class="stat"><div class="ic g">${ic("check")}</div><div><div class="v">${paidN} / ${items.length}</div><div class="l">To'liq to'laganlar</div></div></div>
+      </div>
+      <div class="tabs"><button data-t="debt" class="${st.tab === "debt" ? "on" : ""}">To'lamaganlar (${debt.length})</button><button data-t="hist" class="${st.tab === "hist" ? "on" : ""}">To'lovlar tarixi (${pays.items.length})</button></div>
+      <div id="payBody"></div>`;
+    $("#mPrev").onclick = () => { st.month = addMonth(st.month, -1); draw(); };
+    $("#mNext").onclick = () => { st.month = addMonth(st.month, 1); draw(); };
+    $$(".tabs button").forEach((b) => (b.onclick = () => { st.tab = b.dataset.t; draw(); }));
+    if (st.tab === "debt") {
+      $("#payBody").innerHTML = debt.length ? `<div class="tbl-wrap"><table><thead><tr><th>O'quvchi</th><th>Telefon</th><th>Kurs / guruh</th><th>Oylik</th><th>To'langan</th><th>Qarz</th><th></th></tr></thead><tbody>
+        ${debt.map((s) => `<tr><td><div class="who"><div class="ava" style="width:34px;height:34px;font-size:12px">${esc(initials(s.name))}</div><div class="nm">${esc(s.name)}</div></div></td><td>${phoneLink(s.parent_phone || s.phone)}</td><td>${esc(s.course || "")} <span class="muted">${esc(s.grp || "")}</span></td><td class="money">${money(s.price)}</td><td class="money">${s.paid ? money(s.paid) : "—"}</td><td class="money" style="color:var(--bad);font-weight:600">${money(s.price - (s.paid || 0))}</td><td><div class="row-acts"><button class="btn sm volt" data-pay="${s.id}">To'lov qabul qilish</button></div></td></tr>`).join("")}
+        </tbody></table></div>` : `<div class="card empty">${ic("check")}<div>Bu oy uchun barcha o'quvchilar to'lagan 🎉</div></div>`;
+      $$("[data-pay]").forEach((b) => (b.onclick = () => { const s = debt.find((x) => x.id == b.dataset.pay); payForm({ ...s, price: s.price - (s.paid || 0) }, st.month, draw); }));
+    } else {
+      $("#payBody").innerHTML = pays.items.length ? `<div class="tbl-wrap"><table><thead><tr><th>Sana</th><th>O'quvchi</th><th>Kurs</th><th>Summa</th><th>Usul</th><th>Izoh</th><th></th></tr></thead><tbody>
+        ${pays.items.map((p) => `<tr><td>${fmtDate(p.paid_at)}</td><td><b>${esc(p.student)}</b></td><td>${esc(p.course || "")} <span class="muted">${esc(p.grp || "")}</span></td><td class="money"><b>${money(p.amount)}</b></td><td><span class="chip">${esc(p.method)}</span></td><td class="muted">${esc(p.note || "")}</td><td><div class="row-acts"><button class="icon-btn del" data-dp="${p.id}">${ic("trash")}</button></div></td></tr>`).join("")}
+        </tbody></table></div>` : `<div class="card empty">${ic("wallet")}<div>Bu oyda hali to'lov yo'q</div></div>`;
+      $$("[data-dp]").forEach((b) => (b.onclick = async () => {
+        if (!(await confirmBox("Bu to'lov yozuvi o'chirilsinmi?"))) return;
+        try { await api("payments/" + b.dataset.dp, { method: "DELETE" }); toast("O'chirildi"); draw(); } catch (e) { toast(e.message, 1); }
+      }));
+    }
+  }
+  await draw();
+}
+
+// ===== Kurslar =====
+async function pCourses() {
+  const cs = await courses();
+  setHead("Kurslar", `${cs.filter((c) => c.active).length} ta faol kurs`, `<button class="btn" id="addC">${ic("plus")}Kurs qo'shish</button>`);
+  $("#addC").onclick = () => courseForm(null);
+  $("#page").innerHTML = cs.length ? `<div class="cards">${cs.map((c) => `
+    <div class="ccard ${c.active ? "" : "off"}"><span class="stripe" style="background:${esc(c.color)}"></span>
+      <div style="display:flex;align-items:flex-start;gap:8px"><div style="flex:1"><h4>${esc(c.name)}</h4><div class="meta">${c.price ? money(c.price) + " / oy" : "Narx belgilanmagan"}</div></div>${c.active ? "" : '<span class="badge b-gray">Nofaol</span>'}</div>
+      ${c.description ? `<div class="meta" style="margin-top:8px">${esc(c.description)}</div>` : ""}
+      <div class="nums"><div><b>${c.students}</b><span>o'quvchi</span></div><div><b>${c.groups}</b><span>guruh</span></div></div>
+      <div class="foot"><a class="btn sm ghost" href="#/students" onclick="state.cache.stFilter={q:'',course:'${c.id}',group:'',status:'active',pay:''}">O'quvchilar</a><button class="btn sm ghost" data-e="${c.id}">${ic("edit")}Tahrirlash</button></div>
+    </div>`).join("")}</div>` : `<div class="card empty">${ic("book")}<div>Hali kurs qo'shilmagan</div><button class="btn" style="margin-top:14px" onclick="document.getElementById('addC').click()">${ic("plus")}Birinchi kursni qo'shish</button></div>`;
+  $$("[data-e]").forEach((b) => (b.onclick = () => courseForm(cs.find((c) => c.id == b.dataset.e))));
+}
+function courseForm(c) {
+  c = c || { color: COLORS[(state.cache.courses || []).length % COLORS.length], active: 1 };
+  const m = modal({
+    title: c.id ? "Kursni tahrirlash" : "Yangi kurs",
+    body: `<form class="form" id="cf">
+      <div class="f full"><label>Kurs nomi *</label><input class="inp" name="name" value="${esc(c.name)}" placeholder="Masalan: Ingliz tili"></div>
+      <div class="f"><label>Oylik to'lov (so'm)</label><input class="inp" name="price" id="cpr" inputmode="numeric" value="${c.price ? num(c.price) : ""}" placeholder="0"></div>
+      <div class="f"><label>Holati</label><select class="sel" name="active"><option value="1">Faol</option><option value="0" ${c.active ? "" : "selected"}>Nofaol</option></select></div>
+      <div class="f full"><label>Rangi</label><div class="swatches">${COLORS.map((x) => `<button type="button" data-c="${x}" class="${x === c.color ? "on" : ""}" style="background:${x}"></button>`).join("")}</div><input type="hidden" name="color" value="${esc(c.color)}"></div>
+      <div class="f full"><label>Qisqa tavsif</label><textarea class="inp" name="description" rows="2">${esc(c.description)}</textarea></div>
+    </form>`,
+    foot: `${c.id ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Saqlash</button>`,
+  });
+  const pr = m.$("#cpr");
+  pr.oninput = () => { const v = pr.value.replace(/\D/g, ""); pr.value = v ? num(v) : ""; };
+  $$("[data-c]", m.el).forEach((b) => (b.onclick = () => { $$("[data-c]", m.el).forEach((x) => x.classList.remove("on")); b.classList.add("on"); m.$("[name=color]").value = b.dataset.c; }));
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const b = formData(m.$("#cf")); b.price = b.price.replace(/\D/g, ""); b.active = b.active === "1";
+    try { await api("courses" + (c.id ? "/" + c.id : ""), { method: c.id ? "PUT" : "POST", body: b }); m.close(); toast("Saqlandi"); route(); } catch (e) { m.err(e.message); }
+  });
+  if (c.id) m.$("#del").onclick = async () => {
+    if (!(await confirmBox(`<b>${esc(c.name)}</b> kursi o'chirilsinmi?`))) return;
+    try { await api("courses/" + c.id, { method: "DELETE" }); m.close(); toast("O'chirildi"); route(); } catch (e) { toast(e.message, 1); }
+  };
+}
+
+// ===== Guruhlar =====
+const daysHtml = (days) => { const s = String(days || "").split(","); return `<div class="days">${KUNLAR.map((k, i) => `<span class="${s.includes(String(i + 1)) ? "on" : ""}">${k}</span>`).join("")}</div>`; };
+async function pGroups() {
+  const [gs] = await Promise.all([groupsList(), courses(), teachersList()]);
+  setHead("Guruhlar", `${gs.filter((g) => g.active).length} ta faol guruh`, `<button class="btn" id="addG">${ic("plus")}Guruh qo'shish</button>`);
+  $("#addG").onclick = () => groupForm(null);
+  $("#page").innerHTML = gs.length ? `<div class="cards">${gs.map((g) => `
+    <div class="ccard ${g.active ? "" : "off"}"><span class="stripe" style="background:${esc(g.color)}"></span>
+      <div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><h4>${esc(g.name)}</h4><div class="meta">${esc(g.course)}</div></div>${g.active ? "" : '<span class="badge b-gray">Nofaol</span>'}</div>
+      <div style="margin-top:12px">${daysHtml(g.days)}</div>
+      <div class="meta" style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap"><span>${ic("clock", "").replace('class="i ', 'style="width:15px;height:15px;vertical-align:-3px" class="i ')} ${esc(g.time || "—")}</span>${g.room ? `<span>📍 ${esc(g.room)}</span>` : ""}</div>
+      <div class="nums"><div><b>${g.students}</b><span>o'quvchi</span></div><div><b style="font-size:14px;line-height:2">${esc(g.teacher || "—")}</b><span>ustoz</span></div></div>
+      <div class="foot"><a class="btn sm" href="#/attendance/${g.id}">${ic("check")}Yo'qlama</a><a class="btn sm ghost" href="#/students" onclick="state.cache.stFilter={q:'',course:'',group:'${g.id}',status:'active',pay:''}">O'quvchilar</a><button class="icon-btn" data-e="${g.id}" title="Tahrirlash" style="margin-left:auto">${ic("edit")}</button></div>
+    </div>`).join("")}</div>` : `<div class="card empty">${ic("layers")}<div>Hali guruh yo'q. Guruh — bu kurs, ustoz va dars vaqtining birikmasi.</div><button class="btn" style="margin-top:14px" onclick="document.getElementById('addG').click()">${ic("plus")}Guruh qo'shish</button></div>`;
+  $$("[data-e]").forEach((b) => (b.onclick = () => groupForm(gs.find((g) => g.id == b.dataset.e))));
+}
+function groupForm(g) {
+  const cs = state.cache.courses || [], ts = state.cache.teachers || [];
+  g = g || { active: 1, days: "1,3,5" };
+  const sel = String(g.days || "").split(",");
+  const m = modal({
+    title: g.id ? "Guruhni tahrirlash" : "Yangi guruh",
+    body: `<form class="form" id="gf">
+      <div class="f"><label>Guruh nomi *</label><input class="inp" name="name" value="${esc(g.name)}" placeholder="Masalan: IELTS-1"></div>
+      <div class="f"><label>Kurs *</label><select class="sel" name="course_id"><option value="">— Tanlang —</option>${cs.filter((c) => c.active || c.id == g.course_id).map((c) => `<option value="${c.id}" ${c.id == g.course_id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>${cs.length ? "" : '<span class="hint">Avval kurs qo\'shing</span>'}</div>
+      <div class="f full"><label>Ustoz</label><select class="sel" name="teacher_id"><option value="">— Biriktirilmagan —</option>${ts.filter((t) => t.active || t.id == g.teacher_id).map((t) => `<option value="${t.id}" ${t.id == g.teacher_id ? "selected" : ""}>${esc(t.name)}${t.subject ? " · " + esc(t.subject) : ""}</option>`).join("")}</select></div>
+      <div class="f full"><label>Dars kunlari</label><div class="daypick">${KUNLAR.map((k, i) => `<button type="button" data-d="${i + 1}" class="${sel.includes(String(i + 1)) ? "on" : ""}">${k}</button>`).join("")}</div>
+        <div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn sm ghost" data-preset="1,3,5">Du-Ch-Ju</button><button type="button" class="btn sm ghost" data-preset="2,4,6">Se-Pa-Sh</button><button type="button" class="btn sm ghost" data-preset="1,2,3,4,5">Har kuni</button></div></div>
+      <div class="f"><label>Dars vaqti</label><input class="inp" name="time" value="${esc(g.time)}" placeholder="14:00–15:30"></div>
+      <div class="f"><label>Xona</label><input class="inp" name="room" value="${esc(g.room)}" placeholder="Masalan: 2-xona"></div>
+      <div class="f"><label>Boshlangan sana</label><input class="inp" type="date" name="start_date" value="${esc(g.start_date)}"></div>
+      <div class="f"><label>Holati</label><select class="sel" name="active"><option value="1">Faol</option><option value="0" ${g.active ? "" : "selected"}>Nofaol</option></select></div>
+    </form>`,
+    foot: `${g.id ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Saqlash</button>`,
+  });
+  const setDays = (arr) => $$("[data-d]", m.el).forEach((b) => b.classList.toggle("on", arr.includes(b.dataset.d)));
+  $$("[data-d]", m.el).forEach((b) => (b.onclick = () => b.classList.toggle("on")));
+  $$("[data-preset]", m.el).forEach((b) => (b.onclick = () => setDays(b.dataset.preset.split(","))));
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const b = formData(m.$("#gf")); b.active = b.active === "1";
+    b.days = $$("[data-d].on", m.el).map((x) => x.dataset.d).join(",");
+    try { await api("groups" + (g.id ? "/" + g.id : ""), { method: g.id ? "PUT" : "POST", body: b }); m.close(); toast("Saqlandi"); route(); } catch (e) { m.err(e.message); }
+  });
+  if (g.id) m.$("#del").onclick = async () => {
+    if (!(await confirmBox(`<b>${esc(g.name)}</b> guruhi va uning davomat tarixi o'chirilsinmi?`))) return;
+    try { await api("groups/" + g.id, { method: "DELETE" }); m.close(); toast("O'chirildi"); route(); } catch (e) { toast(e.message, 1); }
+  };
+}
+
+// ===== Ustozlar =====
+async function pTeachers() {
+  const ts = await teachersList();
+  const act = ts.filter((t) => t.active).length;
+  setHead("Ustozlar", `${act} ta ustoz ishlamoqda${ts.length > act ? ` · ${ts.length - act} ta nofaol` : ""}`, `<button class="btn" id="addT">${ic("plus")}Ustoz qo'shish</button>`);
+  $("#addT").onclick = () => teacherForm(null);
+  $("#page").innerHTML = ts.length ? `<div class="cards">${ts.map((t) => `
+    <div class="ccard ${t.active ? "" : "off"}">
+      <div style="display:flex;gap:12px;align-items:center"><div class="ava" style="width:48px;height:48px;font-size:16px;background:var(--blue);color:#fff">${esc(initials(t.name))}</div><div style="flex:1;min-width:0"><h4>${esc(t.name)}</h4><div class="meta">${esc(t.subject || "Fan ko'rsatilmagan")}</div></div>${t.active ? '<span class="badge b-ok">Faol</span>' : '<span class="badge b-gray">Nofaol</span>'}</div>
+      <div class="meta" style="margin-top:14px;display:grid;gap:6px">
+        <div>Login: <b style="color:var(--navy);font-family:ui-monospace,monospace">${esc(t.login)}</b></div>
+        <div>Telefon: ${phoneLink(t.phone)}</div>
+        <div>Guruhlari: ${esc(t.group_names || "—")}</div>
+        <div>Oxirgi yo'qlama: ${t.last_mark ? fmtDate(t.last_mark) : "—"}</div>
+      </div>
+      <div class="nums"><div><b>${t.groups}</b><span>guruh</span></div><div><b>${t.students}</b><span>o'quvchi</span></div></div>
+      <div class="foot"><button class="btn sm ghost" data-e="${t.id}">${ic("edit")}Tahrirlash</button><button class="btn sm ghost" data-p="${t.id}">${ic("key")}Yangi parol</button></div>
+    </div>`).join("")}</div>` : `<div class="card empty">${ic("teacher")}<div>Hali ustoz qo'shilmagan</div><button class="btn" style="margin-top:14px" onclick="document.getElementById('addT').click()">${ic("plus")}Ustoz qo'shish</button></div>`;
+  $$("[data-e]").forEach((b) => (b.onclick = () => teacherForm(ts.find((t) => t.id == b.dataset.e))));
+  $$("[data-p]").forEach((b) => (b.onclick = () => resetPass(ts.find((t) => t.id == b.dataset.p))));
+}
+function showCred(t, login, pw) {
+  const text = `Zeehn platformasi\nSayt: ${location.origin}/platforma\nLogin: ${login}\nParol: ${pw}`;
+  const m = modal({
+    title: "Kirish ma'lumotlari tayyor",
+    body: `<p style="margin-bottom:12px"><b>${esc(t)}</b> uchun login va parol. Ularni ustozga yuboring — parol boshqa ko'rsatilmaydi.</p>
+      <div class="cred"><div><span>Sayt</span>${esc(location.host)}/platforma</div><div><span>Login</span>${esc(login)}</div><div><span>Parol</span>${esc(pw)}</div></div>`,
+    foot: `<button class="btn ghost" id="cp">${ic("copy")}Nusxa olish</button><a class="btn ghost" target="_blank" href="https://t.me/share/url?url=${encodeURIComponent(location.origin + "/platforma")}&text=${encodeURIComponent(text)}">Telegramda yuborish</a><button class="btn" data-close>Tayyor</button>`,
+  });
+  m.$("#cp").onclick = async () => { try { await navigator.clipboard.writeText(text); toast("Nusxa olindi"); } catch { toast("Nusxa olib bo'lmadi", 1); } };
+}
+function teacherForm(t) {
+  const isNew = !t;
+  t = t || { active: 1 };
+  const m = modal({
+    title: isNew ? "Yangi ustoz" : "Ustozni tahrirlash",
+    body: `<form class="form" id="tf">
+      <div class="f full"><label>Ism familiya *</label><input class="inp" name="name" id="tn" value="${esc(t.name)}"></div>
+      <div class="f"><label>Telefon</label><input class="inp" name="phone" value="${esc(t.phone || "+998 ")}" inputmode="tel"></div>
+      <div class="f"><label>Fani / yo'nalishi</label><input class="inp" name="subject" value="${esc(t.subject)}" placeholder="Masalan: Ingliz tili"></div>
+      <div class="f"><label>Login *</label><input class="inp" name="login" id="tl" value="${esc(t.login)}" autocapitalize="off" placeholder="masalan: aziz.karimov"><span class="hint">Lotin harflari, raqam, nuqta</span></div>
+      ${isNew ? `<div class="f"><label>Parol *</label><div class="pw"><input class="inp" name="password" id="tp" value="${genPass()}"><button type="button" class="icon-btn" id="gp" title="Yangi parol">${ic("refresh")}</button></div><span class="hint">Kamida 6 belgi</span></div>`
+        : `<div class="f"><label>Holati</label><select class="sel" name="active"><option value="1">Faol — ishlamoqda</option><option value="0" ${t.active ? "" : "selected"}>Nofaol — kira olmaydi</option></select></div>`}
+    </form>`,
+    foot: `${!isNew ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">${isNew ? "Ustoz yaratish" : "Saqlash"}</button>`,
+  });
+  if (isNew) {
+    let touched = false;
+    m.$("#tl").oninput = () => (touched = true);
+    m.$("#tn").oninput = (e) => { if (!touched) m.$("#tl").value = translit(e.target.value); };
+    m.$("#gp").onclick = () => (m.$("#tp").value = genPass());
+  }
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const b = formData(m.$("#tf"));
+    if (b.phone.replace(/\D/g, "").length <= 3) b.phone = "";
+    if (!isNew) b.active = b.active === "1";
+    try {
+      await api("teachers" + (isNew ? "" : "/" + t.id), { method: isNew ? "POST" : "PUT", body: b });
+      m.close(); route();
+      if (isNew) showCred(b.name, b.login.toLowerCase(), b.password); else toast("Saqlandi");
+    } catch (e) { m.err(e.message); }
+  });
+  if (!isNew) m.$("#del").onclick = async () => {
+    if (!(await confirmBox(`<b>${esc(t.name)}</b> butunlay o'chirilsinmi? Ishdan ketgan bo'lsa, "Nofaol" qilib qo'yish ham mumkin.`))) return;
+    try { await api("teachers/" + t.id, { method: "DELETE" }); m.close(); toast("O'chirildi"); route(); } catch (e) { toast(e.message, 1); }
+  };
+}
+function resetPass(t) {
+  const m = modal({
+    title: "Yangi parol berish",
+    body: `<p style="margin-bottom:14px"><b>${esc(t.name)}</b> uchun yangi parol. Eski parol ishlamay qoladi.</p><div class="f"><label>Yangi parol</label><div class="pw"><input class="inp" id="np" value="${genPass()}"><button type="button" class="icon-btn" id="gp">${ic("refresh")}</button></div></div>`,
+    foot: `<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Parolni saqlash</button>`,
+  });
+  m.$("#gp").onclick = () => (m.$("#np").value = genPass());
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const pw = m.$("#np").value;
+    try { await api(`teachers/${t.id}/password`, { method: "POST", body: { password: pw } }); m.close(); showCred(t.name, t.login, pw); } catch (e) { m.err(e.message); }
+  });
+}
+
+// ===== Davomat / Yo'qlama =====
+async function pAttendance(rest) {
+  const gs = (await groupsList()).filter((g) => g.active);
+  const admin = state.me.role === "admin";
+  const today = state.today || new Date().toISOString().slice(0, 10);
+  const st = state.cache.attState || (state.cache.attState = { group: null, date: today, view: "day", month: today.slice(0, 7) });
+  if (rest[0]) st.group = +rest[0];
+  if (!gs.find((g) => g.id === st.group)) {
+    const dow = dowOf(today);
+    st.group = (gs.find((g) => String(g.days).split(",").includes(String(dow))) || gs[0])?.id || null;
+  }
+  setHead(admin ? "Davomat" : "Yo'qlama", "");
+  if (!gs.length) {
+    $("#page").innerHTML = `<div class="card empty">${ic("layers")}<div>${admin ? "Avval guruh yarating" : "Sizga hali guruh biriktirilmagan. Administratorga murojaat qiling."}</div></div>`;
+    return;
+  }
+  const g = gs.find((x) => x.id === st.group);
+  $("#page").innerHTML = `
+    <div class="att-head">
+      <select class="sel" id="ag" style="min-width:240px">${gs.map((x) => `<option value="${x.id}" ${x.id === st.group ? "selected" : ""}>${esc(x.name)} · ${esc(x.course)}${x.time ? " · " + esc(x.time) : ""}</option>`).join("")}</select>
+      <div class="tabs" style="margin:0"><button data-v="day" class="${st.view === "day" ? "on" : ""}">Kunlik yo'qlama</button><button data-v="month" class="${st.view === "month" ? "on" : ""}">Oylik jadval</button></div>
+    </div>
+    <div id="attBody"></div>`;
+  $("#ag").onchange = (e) => { st.group = +e.target.value; history.replaceState(null, "", "#/attendance/" + st.group); pAttendance([st.group]); };
+  $$(".att-head .tabs button").forEach((b) => (b.onclick = () => { st.view = b.dataset.v; pAttendance([st.group]); }));
+  $("#psub").textContent = [g.course, g.teacher ? "Ustoz: " + g.teacher : "", String(g.days || "").split(",").filter(Boolean).map((x) => KUNLAR[x - 1]).join(", "), g.time].filter(Boolean).join(" · ");
+  if (st.view === "month") return attMonth(g, st);
+
+  const body = $("#attBody");
+  body.innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  const d = await api(`attendance?group=${g.id}&date=${st.date}`);
+  const marks = Object.fromEntries(d.items.map((s) => [s.id, s.status || ""]));
+  const wasMarked = d.items.some((s) => s.status);
+  const isLessonDay = String(g.days).split(",").includes(String(dowOf(st.date)));
+  body.innerHTML = `
+    <div class="toolbar">
+      <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px">
+        <button class="icon-btn" style="border:0" id="dPrev">${ic("chevL")}</button>
+        <input type="date" class="inp" id="ad" value="${st.date}" ${admin ? "" : `max="${today}"`} style="border:0;height:34px;padding:0 6px">
+        <button class="icon-btn" style="border:0" id="dNext" ${!admin && st.date >= today ? "disabled" : ""}>${ic("chevR")}</button>
+      </div>
+      <span class="muted">${KUNLAR_TOLIQ[dowOf(st.date) - 1]}${isLessonDay ? "" : " · bu kunda dars jadvalda yo'q"}</span>
+      ${wasMarked ? '<span class="badge b-ok">Yo\'qlama qilingan</span>' : '<span class="badge b-warn">Hali yo\'qlama qilinmagan</span>'}
+      <button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>
+    </div>
+    ${d.items.length ? `<div class="att-list">${d.items.map((s, i) => `
+      <div class="att-row" data-s="${s.id}">
+        <div class="n">${i + 1}</div><div class="ava" style="width:36px;height:36px;font-size:12px">${esc(initials(s.name))}</div>
+        <div class="grow"><div class="nm">${esc(s.name)}</div><div class="ph">${s.parent_phone ? "Ota-ona: " + phoneLink(s.parent_phone) : s.phone ? phoneLink(s.phone) : ""}</div></div>
+        <div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${t}</button>`).join("")}</div>
+      </div>`).join("")}</div>
+      <div class="savebar"><div class="grow" id="attSum"></div><button class="btn volt" id="attSave">${ic("check")}Saqlash</button></div>`
+      : `<div class="card empty">${ic("users")}<div>Bu guruhda faol o'quvchi yo'q</div></div>`}`;
+  const sum = () => {
+    const v = Object.values(marks);
+    const c = (k) => v.filter((x) => x === k).length;
+    const left = v.filter((x) => !x).length;
+    const el = $("#attSum");
+    if (el) el.innerHTML = `<b>${c("keldi") + c("kechikdi")}</b> keldi · <b>${c("kelmadi")}</b> kelmadi${c("sababli") ? ` · <b>${c("sababli")}</b> sababli` : ""}${left ? ` · <span style="color:var(--volt)">${left} ta belgilanmagan</span>` : ""}`;
+  };
+  sum();
+  $$(".att-row").forEach((r) => $$("[data-st]", r).forEach((b) => (b.onclick = () => {
+    const id = +r.dataset.s;
+    marks[id] = marks[id] === b.dataset.st ? "" : b.dataset.st;
+    $$("[data-st]", r).forEach((x) => x.classList.toggle("on", x.dataset.st === marks[id]));
+    sum();
+  })));
+  const go = (k) => { const dt = new Date(st.date + "T00:00:00Z"); dt.setUTCDate(dt.getUTCDate() + k); st.date = dt.toISOString().slice(0, 10); if (!admin && st.date > today) st.date = today; pAttendance([g.id]); };
+  $("#dPrev").onclick = () => go(-1);
+  $("#dNext").onclick = () => go(1);
+  $("#ad").onchange = (e) => { if (e.target.value) { st.date = e.target.value; pAttendance([g.id]); } };
+  const all = $("#allIn");
+  if (all) all.onclick = () => { $$(".att-row").forEach((r) => { const id = +r.dataset.s; if (!marks[id]) { marks[id] = "keldi"; $$("[data-st]", r).forEach((x) => x.classList.toggle("on", x.dataset.st === "keldi")); } }); sum(); };
+  const sv = $("#attSave");
+  if (sv) sv.onclick = () => submitBtn(sv, async () => {
+    try {
+      await api("attendance", { method: "POST", body: { group_id: g.id, date: st.date, items: Object.entries(marks).map(([student_id, status]) => ({ student_id: +student_id, status })) } });
+      toast("Yo'qlama saqlandi");
+      const b = $(".toolbar .badge"); if (b) { b.className = "badge b-ok"; b.textContent = "Yo'qlama qilingan"; }
+    } catch (e) { toast(e.message, 1); }
+  });
+}
+async function attMonth(g, st) {
+  const body = $("#attBody");
+  body.innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  const d = await api(`attendance?group=${g.id}&month=${st.month}`);
+  const [y, m] = st.month.split("-").map(Number);
+  const nDays = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const gd = String(g.days).split(",");
+  const recDates = new Set(d.records.map((r) => r.date));
+  const dates = [];
+  for (let i = 1; i <= nDays; i++) {
+    const ds = `${st.month}-${String(i).padStart(2, "0")}`;
+    if (gd.includes(String(dowOf(ds))) || recDates.has(ds)) dates.push(ds);
+  }
+  const map = {};
+  d.records.forEach((r) => (map[r.student_id + "|" + r.date] = r.status));
+  body.innerHTML = `
+    <div class="toolbar"><div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px"><button class="icon-btn" style="border:0" id="mPrev">${ic("chevL")}</button><b style="min-width:130px;text-align:center">${fmtMonth(st.month)}</b><button class="icon-btn" style="border:0" id="mNext">${ic("chevR")}</button></div></div>
+    ${d.students.length ? `<div class="tbl-wrap"><table class="mx"><thead><tr><th>O'quvchi</th>${dates.map((ds) => `<th title="${fmtDate(ds)}">${+ds.slice(8)}<div style="font-weight:400;font-size:10px">${KUNLAR[dowOf(ds) - 1]}</div></th>`).join("")}<th>Davomat</th></tr></thead><tbody>
+      ${d.students.map((s) => {
+        let p = 0, t = 0;
+        const cells = dates.map((ds) => { const v = map[s.id + "|" + ds]; if (v) { t++; if (v === "keldi" || v === "kechikdi") p++; } return `<td>${v ? `<span class="c ${v}" title="${ATT[v][0]}">${ATT[v][1]}</span>` : '<span class="muted">·</span>'}</td>`; }).join("");
+        const pc = t ? Math.round((p / t) * 100) : null;
+        return `<tr><td><b>${esc(s.name)}</b></td>${cells}<td class="pct" style="color:${pc == null ? "var(--gray)" : pc >= 80 ? "var(--ok)" : pc >= 60 ? "var(--warn)" : "var(--bad)"}">${pc == null ? "—" : pc + "%"}</td></tr>`;
+      }).join("")}
+    </tbody></table></div>
+    <div class="legend">${Object.entries(ATT).map(([k, [t, s]]) => `<span><span class="c ${k}" style="width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">${s}</span>${t}</span>`).join("")}</div>`
+    : `<div class="card empty">Bu guruhda o'quvchi yo'q</div>`}`;
+  $("#mPrev").onclick = () => { st.month = addMonth(st.month, -1); attMonth(g, st); };
+  $("#mNext").onclick = () => { st.month = addMonth(st.month, 1); attMonth(g, st); };
+}
+
+// ===== Arizalar =====
+const LS = { yangi: ["Yangi", "b-warn"], boglanildi: ["Bog'lanildi", "b-blue"], yozildi: ["Kursga yozildi", "b-ok"], rad: ["Rad etdi", "b-gray"] };
+async function pLeads() {
+  const d = await api("leads");
+  const f = state.cache.leadF || (state.cache.leadF = "");
+  const items = f ? d.items.filter((x) => x.status === f) : d.items;
+  setHead("Arizalar", "Saytdagi formadan kelgan murojaatlar shu yerga avtomatik tushadi", `<button class="btn ghost" id="addL">${ic("plus")}Qo'lda qo'shish</button>`);
+  $("#addL").onclick = () => leadForm();
+  $("#page").innerHTML = `
+    <div class="tabs">${[["", "Hammasi", d.items.length], ...Object.entries(LS).map(([k, [t]]) => [k, t, d.items.filter((x) => x.status === k).length])].map(([k, t, n]) => `<button data-f="${k}" class="${f === k ? "on" : ""}">${t} (${n})</button>`).join("")}</div>
+    ${items.length ? `<div class="tbl-wrap"><table><thead><tr><th>Sana</th><th>Ism</th><th>Telefon</th><th>Xabar</th><th>Holat</th><th></th></tr></thead><tbody>
+      ${items.map((l) => `<tr><td class="muted" style="white-space:nowrap">${fmtDate(l.created_at)}<div style="font-size:12px">${esc(l.created_at.slice(11, 16))}</div></td><td><b>${esc(l.name)}</b></td><td>${phoneLink(l.phone)}</td><td class="wrap" style="min-width:220px;max-width:340px">${esc(l.message || "—")}</td>
+        <td><select class="sel" data-s="${l.id}" style="height:34px">${Object.entries(LS).map(([k, [t]]) => `<option value="${k}" ${l.status === k ? "selected" : ""}>${t}</option>`).join("")}</select></td>
+        <td><div class="row-acts">${l.status !== "yozildi" ? `<button class="btn sm volt" data-st="${l.id}">${ic("user_plus")}O'quvchi qilish</button>` : ""}<button class="icon-btn del" data-d="${l.id}">${ic("trash")}</button></div></td></tr>`).join("")}
+    </tbody></table></div>` : `<div class="card empty">${ic("inbox")}<div>Ariza yo'q</div></div>`}`;
+  $$(".tabs [data-f]").forEach((b) => (b.onclick = () => { state.cache.leadF = b.dataset.f; pLeads(); }));
+  $$("[data-s]").forEach((s) => (s.onchange = async () => { try { await api("leads/" + s.dataset.s, { method: "PUT", body: { status: s.value } }); toast("Holat yangilandi"); refreshLeadCount(); } catch (e) { toast(e.message, 1); } }));
+  $$("[data-d]").forEach((b) => (b.onclick = async () => { if (!(await confirmBox("Ariza o'chirilsinmi?"))) return; await api("leads/" + b.dataset.d, { method: "DELETE" }); toast("O'chirildi"); pLeads(); refreshLeadCount(); }));
+  $$("[data-st]").forEach((b) => (b.onclick = async () => { const l = d.items.find((x) => x.id == b.dataset.st); await groupsList(); studentForm(null, () => { pLeads(); refreshLeadCount(); }, { name: l.name, phone: l.phone, note: l.message, lead_id: l.id }); }));
+  refreshLeadCount();
+}
+function leadForm() {
+  const m = modal({
+    title: "Yangi ariza",
+    body: `<form class="form" id="lf2"><div class="f"><label>Ism *</label><input class="inp" name="name"></div><div class="f"><label>Telefon</label><input class="inp" name="phone" value="+998 "></div><div class="f full"><label>Izoh</label><textarea class="inp" name="message" rows="3" placeholder="Qaysi kursga qiziqyapti, qachon qo'ng'iroq qilish kerak..."></textarea></div></form>`,
+    foot: `<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Saqlash</button>`,
+  });
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => { try { await api("leads", { method: "POST", body: formData(m.$("#lf2")) }); m.close(); toast("Ariza qo'shildi"); pLeads(); } catch (e) { m.err(e.message); } });
+}
+
+// ===== Sozlamalar =====
+async function pSettings() {
+  setHead("Sozlamalar", "");
+  $("#page").innerHTML = `
+    <div class="grid g2">
+      <div class="card"><h3>${ic("key")} Parolni almashtirish</h3>
+        <form class="form" id="pwf" style="grid-template-columns:1fr">
+          <div class="f"><label>Hozirgi parol</label><input class="inp" type="password" name="old" autocomplete="current-password"></div>
+          <div class="f"><label>Yangi parol</label><input class="inp" type="password" name="new" autocomplete="new-password"><span class="hint">Kamida 6 belgi</span></div>
+          <div class="f"><label>Yangi parolni takrorlang</label><input class="inp" type="password" name="new2" autocomplete="new-password"></div>
+          <div><button class="btn">Parolni saqlash</button></div>
+        </form></div>
+      <div class="card"><h3>${ic("users")} Hisob</h3>
+        <div class="info-grid" style="grid-template-columns:1fr">
+          <div><span>Ism</span><b>${esc(state.me.name)}</b></div>
+          <div><span>Login</span><b>${esc(state.me.login)}</b></div>
+          <div><span>Rol</span><b>${state.me.role === "admin" ? "Administrator" : "Ustoz"}</b></div>
+        </div>
+        <p class="muted" style="font-size:12.5px;line-height:1.6">Parol almashtirilganda boshqa qurilmalardagi kirishlar avtomatik yopiladi.</p>
+      </div>
+    </div>`;
+  $("#pwf").onsubmit = (e) => {
+    e.preventDefault();
+    const b = formData(e.target);
+    submitBtn($("button", e.target), async () => {
+      if (b.new !== b.new2) return toast("Yangi parollar bir xil emas", 1);
+      try { await api("me/password", { method: "POST", body: b }); toast("Parol almashtirildi"); e.target.reset(); } catch (er) { toast(er.message, 1); }
+    });
+  };
+}
+
+// ===== USTOZ: Bosh sahifa =====
+async function pTeacherHome() {
+  const gs = (await groupsList()).filter((g) => g.active);
+  const today = state.today;
+  const dow = dowOf(today);
+  const todays = gs.filter((g) => String(g.days).split(",").includes(String(dow))).sort((a, b) => String(a.time).localeCompare(String(b.time)));
+  const totalSt = gs.reduce((a, g) => a + g.students, 0);
+  const h = +new Date().getHours();
+  setHead(`${h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech"}, ${state.me.name.split(" ")[0]}!`, `${KUNLAR_TOLIQ[dow - 1]}, ${fmtDate(today)}`);
+  const marks = await Promise.all(todays.map((g) => api(`attendance?group=${g.id}&date=${today}`).then((d) => d.items.some((s) => s.status)).catch(() => false)));
+  $("#page").innerHTML = `
+    <div class="stats">
+      <div class="stat hero"><div class="ic">${ic("layers")}</div><div><div class="v">${gs.length}</div><div class="l">Guruhlarim</div></div></div>
+      <div class="stat"><div class="ic b">${ic("users")}</div><div><div class="v">${totalSt}</div><div class="l">O'quvchilarim</div></div></div>
+      <div class="stat"><div class="ic v">${ic("clock")}</div><div><div class="v">${todays.length}</div><div class="l">Bugungi darslar</div></div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><h3>${ic("clock")} Bugungi darslar</h3>
+        ${todays.length ? todays.map((g, i) => `<div class="lesson"><div class="tm">${esc((g.time || "").split(/[–-]/)[0] || "—")}<small>${esc(g.room || "")}</small></div><div class="grow"><div class="t">${esc(g.name)}</div><div class="s">${esc(g.course)} · ${g.students} o'quvchi</div></div>${marks[i] ? '<span class="badge b-ok">Qilingan</span>' : ""}<a class="btn sm ${marks[i] ? "ghost" : ""}" href="#/attendance/${g.id}">${marks[i] ? "Ko'rish" : "Yo'qlama qilish"}</a></div>`).join("")
+          : `<div class="empty" style="padding:24px">Bugun darsingiz yo'q 🙂</div>`}
+      </div>
+      <div class="card"><h3>${ic("layers")} Barcha guruhlarim</h3>
+        ${gs.length ? gs.map((g) => `<div class="list-item"><span class="dot" style="background:${esc(g.color)}"></span><div class="grow"><div class="t">${esc(g.name)} <span class="muted" style="font-weight:400">· ${esc(g.course)}</span></div><div class="s">${esc(g.time || "")} · ${g.students} o'quvchi</div><div style="margin-top:6px">${daysHtml(g.days)}</div></div><a class="icon-btn" href="#/attendance/${g.id}" title="Yo'qlama">${ic("check")}</a></div>`).join("")
+          : `<div class="empty" style="padding:24px">Sizga hali guruh biriktirilmagan</div>`}
+      </div>
+    </div>`;
+}
+
+// ===== Ishga tushirish =====
+async function boot() {
+  try {
+    const d = await api("me");
+    state.me = d.user;
+    state.today = d.today;
+  } catch { if (!state.me) return renderLogin(); }
+  state.cache = {};
+  shell();
+  if (state.me.role === "admin") refreshLeadCount();
+  await route();
+}
+window.addEventListener("hashchange", route);
+boot();
+</script>
+</body>
+</html>

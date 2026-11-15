@@ -22,3 +22,10 @@ GitHub'ga har safar o'zgarish yuklanganda sayt o'zi yangilanadi.
 ## Telefon raqam
 
 +998 99 299 55 88 · Telegram: @ZeehnAcademy · Instagram: @zeehn.academy
+
+## Platforma (admin va ustozlar)
+
+- Manzil: `/platforma` — administrator va ustozlar login/parol bilan kiradi.
+- Kod: `public/platforma/index.html` (interfeys), `src/platform.js` (API: `/api/p/*`).
+- Ma'lumotlar: Cloudflare D1 bazasi `zeehn-platforma` (binding `DB`), sxema `migrations/` papkasida.
+- Saytdagi formadan kelgan arizalar ham bazaga yoziladi va "Arizalar" bo'limida ko'rinadi.

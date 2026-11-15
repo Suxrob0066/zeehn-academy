@@ -8,6 +8,8 @@
 //   EXTRA_CHAT_IDS — wrangler.jsonc dagi qo'shimcha qabul qiluvchilar (vergul bilan)
 //   Har bir qabul qiluvchi oldin botga /start bosgan bo'lishi kerak.
 
+import { handlePlatform, saveLead } from "./platform.js";
+
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
     status,
@@ -43,6 +45,9 @@ async function handleSend(request, env) {
   if (name.length < 2) return json({ ok: false, error: "name" }, 400);
   if (phone.replace(/\D/g, "").length < 12) return json({ ok: false, error: "phone" }, 400);
 
+  // Arizani platformadagi "Arizalar" bo'limiga ham saqlaymiz
+  await saveLead(env, name, phone, message);
+
   const text =
     "📩 <b>Saytdan yangi ariza</b>\n\n" +
     `👤 <b>Ism:</b> ${esc(name)}\n` +
@@ -71,6 +76,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/send") return handleSend(request, env);
+    if (url.pathname.startsWith("/api/p/")) return handlePlatform(request, env, url);
+    if (url.pathname === "/platforma") return Response.redirect(url.origin + "/platforma/", 301);
     return env.ASSETS.fetch(request);
   },
 };

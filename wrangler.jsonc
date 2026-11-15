@@ -10,5 +10,8 @@
   },
   "observability": { "enabled": true },
   "keep_vars": true,
+  "d1_databases": [
+    { "binding": "DB", "database_name": "zeehn-platforma", "database_id": "0ea5d779-9c18-4c42-9ea3-2c8661ad577d", "migrations_dir": "migrations" }
+  ],
   "vars": { "EXTRA_CHAT_IDS": "5379894446" }
 }
