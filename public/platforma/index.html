@@ -224,6 +224,12 @@ tbody tr.click:hover td{background:#F8FAFF}
 a.list-item{color:inherit}a.list-item:hover .t{color:var(--blue)}
 .prof-out{display:none}
 @media (max-width:860px){.prof-id{padding-top:4px}.prof-main{flex-direction:column;align-items:center;text-align:center}.prof-acts{justify-content:center}.prof-stats{grid-template-columns:1fr 1fr}.role-teacher .prof-out{display:block}}
+.lockbar{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gray);border-radius:12px;padding:12px 16px;margin-bottom:12px}
+.lockbar svg{width:22px;height:22px;color:var(--gray);flex:none}
+.lockbar b{display:block;font-size:14px}.lockbar span{font-size:12.5px;color:var(--muted)}
+.lockbar.open{border-left-color:var(--ok);background:var(--okbg)}
+.lockbar.open svg{color:var(--ok)}
+.btn.ghost-w{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -461,6 +467,19 @@ function eyeify(root) {
 const avaHtml = (name, photo, size = 38, extra = "") => photo
   ? `<div class="ava ph" style="width:${size}px;height:${size}px;${extra}"><img src="${esc(photo)}" alt=""></div>`
   : `<div class="ava" style="width:${size}px;height:${size}px;font-size:${Math.round(size / 2.9)}px;${extra}">${esc(initials(name))}</div>`;
+const GRACE = 15;
+const tzNow = () => { const t = new Date(Date.now() + 5 * 3600 * 1000); return t.getUTCHours() * 60 + t.getUTCMinutes(); };
+const parseLesson = (time) => { const m = String(time || "").match(/(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})/); return m ? [+m[1] * 60 + +m[2], +m[3] * 60 + +m[4]] : null; };
+const hm = (n) => `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+// bugun shu guruh uchun yo'qlama holati: "open" | "before" | "after" | "noday"
+function lessonState(g, todayStr) {
+  if (!String(g.days).split(",").includes(String(dowOf(todayStr)))) return { st: "noday" };
+  const w = parseLesson(g.time), n = tzNow();
+  if (!w) return { st: "open" };
+  if (n < w[0]) return { st: "before", start: hm(w[0]), left: w[0] - n };
+  if (n > w[1] + GRACE) return { st: "after", end: hm(w[1] + GRACE) };
+  return { st: "open", end: hm(w[1] + GRACE), left: w[1] + GRACE - n };
+}
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24">${I[n] || ""}</svg>`;
 
 // ===== API =====
@@ -1130,7 +1149,8 @@ async function pAttendance(rest) {
   if (rest[0]) st.group = +rest[0];
   if (!gs.find((g) => g.id === st.group)) {
     const dow = dowOf(today);
-    st.group = (gs.find((g) => String(g.days).split(",").includes(String(dow))) || gs[0])?.id || null;
+    const todays = gs.filter((g) => String(g.days).split(",").includes(String(dow)));
+    st.group = (todays.find((g) => lessonState(g, today).st === "open") || todays.find((g) => lessonState(g, today).st === "before") || todays[0] || gs[0])?.id || null;
   }
   setHead(admin ? "Davomat" : "Yo'qlama", "");
   if (!gs.length) {
@@ -1158,6 +1178,12 @@ async function pAttendance(rest) {
   const marks = Object.fromEntries(d.items.map((s) => [s.id, s.status || ""]));
   const wasMarked = d.items.some((s) => s.status);
   const isLessonDay = String(g.days).split(",").includes(String(dowOf(st.date)));
+  const lk = d.lock || { open: true };
+  const ro = admin || !lk.open;
+  const dayNames = String(g.days || "").split(",").filter(Boolean).map((x) => KUNLAR[x - 1]).join(", ");
+  const lockMsg = admin ? "" : lk.open
+    ? `<div class="lockbar open">${ic("clock")}<div><b>Dars davom etmoqda</b><span>Yo'qlama ${esc(lk.end || "")} gacha ochiq${lk.left != null ? ` · ${lk.left} daqiqa qoldi` : ""}</span></div></div>`
+    : `<div class="lockbar">${ic("key")}<div><b>${{ before: `Yo'qlama ${esc(lk.start)} da ochiladi`, after: "Bugungi dars vaqti tugagan", past: "O'tgan kun — faqat ko'rish mumkin", future: "Bu kun hali kelmagan", noday: "Bugun bu guruhning darsi yo'q" }[lk.reason] || "Yo'qlama yopiq"}</b><span>${{ before: `Dars boshlanishiga ${lk.left} daqiqa qoldi · ${esc(g.time)}`, after: `Yo'qlama faqat dars vaqtida qilinadi (${esc(lk.start)}–${esc(lk.end)})`, past: "Yo'qlamani faqat dars vaqtida qilish mumkin", future: "", noday: `Dars kunlari: ${esc(dayNames)} · ${esc(g.time || "")}` }[lk.reason] || ""}</span></div></div>`;
   body.innerHTML = `
     <div class="toolbar">
       <div class="datebox">
@@ -1165,18 +1191,19 @@ async function pAttendance(rest) {
         <label class="dlabel"><b>${st.date === today ? "Bugun" : KUNLAR_TOLIQ[dowOf(st.date) - 1]}</b><span>${fmtDate(st.date)}</span><input type="date" id="ad" value="${st.date}" ${admin ? "" : `max="${today}"`}></label>
         <button class="icon-btn" style="border:0" id="dNext" ${!admin && st.date >= today ? "disabled" : ""}>${ic("chevR")}</button>
       </div>
-      ${isLessonDay ? "" : '<span class="muted" style="font-size:12.5px">Bu kunda dars jadvalda yo\'q</span>'}
+      ${isLessonDay || !admin ? "" : '<span class="muted" style="font-size:12.5px">Bu kunda dars jadvalda yo\'q</span>'}
       ${wasMarked ? '<span class="badge b-ok">Yo\'qlama qilingan</span>' : '<span class="badge b-warn">Hali yo\'qlama qilinmagan</span>'}
-      ${admin ? '<span class="muted" style="margin-left:auto;font-size:12.5px">Yo\'qlamani faqat ustoz qiladi</span>' : `<button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>`}
+      ${admin ? '<span class="muted" style="margin-left:auto;font-size:12.5px">Yo\'qlamani faqat ustoz qiladi</span>' : ro ? "" : `<button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>`}
     </div>
-    ${d.items.length && !admin ? `<div class="att-prog"><div class="tr"><i id="attBar"></i></div><span id="attCnt"></span></div>` : ""}
+    ${lockMsg}
+    ${d.items.length && !ro ? `<div class="att-prog"><div class="tr"><i id="attBar"></i></div><span id="attCnt"></span></div>` : ""}
     ${d.items.length ? `<div class="att-list">${d.items.map((s, i) => `
       <div class="att-row" data-s="${s.id}">
         <div class="n">${i + 1}</div><div class="ava" style="width:36px;height:36px;font-size:12px">${esc(initials(s.name))}</div>
         <div class="grow"><div class="nm">${esc(s.name)}</div><div class="ph">${s.parent_phone ? "Ota-ona: " + phoneLink(s.parent_phone) : s.phone ? phoneLink(s.phone) : ""}</div></div>
-        ${admin ? (marks[s.id] ? `<span class="badge ${{ keldi: "b-ok", kechikdi: "b-warn", kelmadi: "b-bad", sababli: "b-gray" }[marks[s.id]]}">${ATT[marks[s.id]][0]}</span>` : '<span class="badge b-gray">Belgilanmagan</span>') : `<div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${ATT_IC[k]}<span>${t}</span></button>`).join("")}</div>`}
+        ${ro ? (marks[s.id] ? `<span class="badge ${{ keldi: "b-ok", kechikdi: "b-warn", kelmadi: "b-bad", sababli: "b-gray" }[marks[s.id]]}">${ATT[marks[s.id]][0]}</span>` : '<span class="badge b-gray">Belgilanmagan</span>') : `<div class="seg">${Object.entries(ATT).map(([k, [t]]) => `<button data-st="${k}" class="${k} ${marks[s.id] === k ? "on" : ""}">${ATT_IC[k]}<span>${t}</span></button>`).join("")}</div>`}
       </div>`).join("")}</div>
-      ${admin ? `<div class="card" style="margin-top:14px;padding:14px 18px" id="attSum"></div>` : `<div class="savebar"><div class="grow" id="attSum"></div><button class="btn volt" id="attSave">${ic("check")}Saqlash</button></div>`}`
+      ${ro ? `<div class="card" style="margin-top:14px;padding:14px 18px" id="attSum"></div>` : `<div class="savebar"><div class="grow" id="attSum"></div><button class="btn volt" id="attSave">${ic("check")}Saqlash</button></div>`}`
       : `<div class="card empty">${ic("users")}<div>Bu guruhda faol o'quvchi yo'q</div></div>`}`;
   const sum = () => {
     const v = Object.values(marks);
@@ -1393,13 +1420,11 @@ async function pTeacherHome() {
   const h = +new Date().getHours();
   setHead(`${h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech"}, ${state.me.name.split(" ")[0]}!`, `${KUNLAR_TOLIQ[dow - 1]}, ${fmtDate(today)}`);
   const marks = await Promise.all(todays.map((g) => api(`attendance?group=${g.id}&date=${today}`).then((d) => d.items.some((s) => s.status)).catch(() => false)));
-  const nowHM = new Date().toTimeString().slice(0, 5);
-  const endOf = (g) => (String(g.time || "").split(/[–-]/)[1] || "23:59").trim();
-  let ni = todays.findIndex((g, i) => !marks[i] && endOf(g) >= nowHM);
-  if (ni < 0) ni = todays.findIndex((g, i) => !marks[i]);
+  let ni = todays.findIndex((g, i) => !marks[i] && lessonState(g, today).st === "open");
+  if (ni < 0) ni = todays.findIndex((g, i) => !marks[i] && lessonState(g, today).st === "before");
   let nextDay = null;
   if (!todays.length) for (let k = 1; k <= 7 && !nextDay; k++) { const dd = ((dow - 1 + k) % 7) + 1; const ls = gs.filter((g) => String(g.days).split(",").includes(String(dd))).sort((a, b) => String(a.time).localeCompare(String(b.time))); if (ls.length) nextDay = [dd, ls[0]]; }
-  const hero = ni >= 0 ? (() => { const g = todays[ni]; return `<div class="t-hero"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} Yo'qlama kutilmoqda</div><div class="hn">${esc(g.name)}</div><div class="hs">${esc(g.course)} · ${esc(g.time || "")}${g.room ? " · " + esc(g.room) : ""} · ${g.students} o'quvchi</div><a class="btn volt" href="#/attendance/${g.id}">${ic("check")}Yo'qlama qilish</a></div>`; })()
+  const hero = ni >= 0 ? (() => { const g = todays[ni]; return `<div class="t-hero"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} ${lessonState(g, today).st === "open" ? "Dars hozir davom etmoqda" : "Navbatdagi dars"}</div><div class="hn">${esc(g.name)}</div><div class="hs">${esc(g.course)} · ${esc(g.time || "")}${g.room ? " · " + esc(g.room) : ""} · ${g.students} o'quvchi</div>${(() => { const ls = lessonState(g, today); return ls.st === "open" ? `<a class="btn volt" href="#/attendance/${g.id}">${ic("check")}Yo'qlama qilish</a>` : `<a class="btn ghost-w" href="#/attendance/${g.id}">${ic("clock")}Yo'qlama ${ls.start} da ochiladi</a>`; })()}</div>`; })()
     : todays.length ? `<div class="t-hero done"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("check")} Ajoyib!</div><div class="hn">Bugungi barcha yo'qlamalar qilingan</div><div class="hs">${todays.length} ta dars · rahmat 🙌</div></div>`
     : `<div class="t-hero rest"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} Bugun dars yo'q</div><div class="hn">${nextDay ? "Keyingi dars: " + KUNLAR_TOLIQ[nextDay[0] - 1] : "Dam olish kuni"}</div><div class="hs">${nextDay ? esc(nextDay[1].name) + " · " + esc(nextDay[1].time || "") : ""}</div></div>`;
   $("#page").innerHTML = hero + `
@@ -1410,7 +1435,7 @@ async function pTeacherHome() {
     </div>
     <div class="grid g2">
       <div class="card"><h3>${ic("clock")} Bugungi darslar</h3>
-        ${todays.length ? todays.map((g, i) => `<div class="lesson"><div class="tm">${esc((g.time || "").split(/[–-]/)[0] || "—")}<small>${esc(g.room || "")}</small></div><div class="grow"><div class="t">${esc(g.name)}</div><div class="s">${esc(g.course)} · ${g.students} o'quvchi</div></div>${marks[i] ? '<span class="badge b-ok">Qilingan</span>' : ""}<a class="btn sm ${marks[i] ? "ghost" : ""}" href="#/attendance/${g.id}">${marks[i] ? "Ko'rish" : "Yo'qlama qilish"}</a></div>`).join("")
+        ${todays.length ? todays.map((g, i) => `<div class="lesson"><div class="tm">${esc((g.time || "").split(/[–-]/)[0] || "—")}<small>${esc(g.room || "")}</small></div><div class="grow"><div class="t">${esc(g.name)}</div><div class="s">${esc(g.course)} · ${g.students} o'quvchi</div></div>${(() => { const ls = lessonState(g, today); if (marks[i]) return `<span class="badge b-ok">Qilingan</span><a class="btn sm ghost" href="#/attendance/${g.id}">Ko'rish</a>`; if (ls.st === "open") return `<a class="btn sm" href="#/attendance/${g.id}">Yo'qlama qilish</a>`; if (ls.st === "before") return `<span class="badge b-blue">${ls.start} da ochiladi</span>`; return `<span class="badge b-bad">Qilinmagan</span>`; })()}</div>`).join("")
           : `<div class="empty" style="padding:24px">Bugun darsingiz yo'q 🙂</div>`}
       </div>
       <div class="card" style="grid-column:1/-1;order:3"><h3>${ic("check")} Haftalik dars jadvalim</h3>

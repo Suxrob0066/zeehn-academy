@@ -496,6 +496,29 @@ async function teachers(req, env, id, url, sub) {
 }
 
 // ---- Davomat ----
+// Yo'qlama faqat dars vaqtida: dars kuni, boshlanishidan tugashiga + GRACE daqiqagacha
+const GRACE_MIN = 15;
+function parseLesson(time) {
+  const m = String(time || "").match(/(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})/);
+  if (!m) return null;
+  return [Number(m[1]) * 60 + Number(m[2]), Number(m[3]) * 60 + Number(m[4])];
+}
+const fmtMin = (n) => `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+function lessonLock(g, date) {
+  const t = nowTz();
+  const nowMin = t.getUTCHours() * 60 + t.getUTCMinutes();
+  const td = today();
+  const dow = ((new Date(date + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;
+  const isDay = String(g.days || "").split(",").includes(String(dow));
+  const w = parseLesson(g.time);
+  const base = { open: false, start: w ? fmtMin(w[0]) : "", end: w ? fmtMin(w[1] + GRACE_MIN) : "", grace: GRACE_MIN, now: fmtMin(nowMin) };
+  if (date !== td) return { ...base, reason: date < td ? "past" : "future" };
+  if (!isDay) return { ...base, reason: "noday" };
+  if (!w) return { ...base, open: true, reason: "notime" };
+  if (nowMin < w[0]) return { ...base, reason: "before", left: w[0] - nowMin };
+  if (nowMin > w[1] + GRACE_MIN) return { ...base, reason: "after" };
+  return { ...base, open: true, reason: "now", left: w[1] + GRACE_MIN - nowMin };
+}
 async function attendance(req, env, me, url) {
   const db = env.DB;
   if (req.method === "GET") {
@@ -519,7 +542,8 @@ async function attendance(req, env, me, url) {
       )
       .bind(gid, date, gid)
       .all();
-    return json({ ok: true, date, items: r.results });
+    const g = await db.prepare("SELECT days,time FROM groups WHERE id=?").bind(gid).first();
+    return json({ ok: true, date, items: r.results, lock: lessonLock(g || {}, date) });
   }
   if (me.role !== "teacher") return err("Yo'qlamani faqat ustoz qiladi", 403);
   const b = await body(req);
@@ -527,7 +551,18 @@ async function attendance(req, env, me, url) {
   const date = S(b.date, 10);
   if (!gid || !isDate(date)) return err("Guruh yoki sana noto'g'ri");
   if (!(await teacherOwnsGroup(env, me, gid))) return err("Ruxsat yo'q", 403);
-  if (me.role === "teacher" && date > today()) return err("Kelajak sana uchun yo'qlama qilib bo'lmaydi");
+  const grp = await db.prepare("SELECT days,time FROM groups WHERE id=?").bind(gid).first();
+  const lock = lessonLock(grp || {}, date);
+  if (!lock.open) {
+    const why = {
+      past: "O'tgan kunlar yo'qlamasini o'zgartirib bo'lmaydi",
+      future: "Kelajak sana uchun yo'qlama qilib bo'lmaydi",
+      noday: "Bugun bu guruhning darsi yo'q",
+      before: `Yo'qlama dars boshlanganda ochiladi (${lock.start})`,
+      after: `Dars vaqti tugagan (${lock.end} gacha edi)`,
+    }[lock.reason];
+    return err(why || "Yo'qlama faqat dars vaqtida qilinadi", 403);
+  }
   const items = Array.isArray(b.items) ? b.items : [];
   const valid = await db.prepare("SELECT id FROM students WHERE group_id=?").bind(gid).all();
   const ok = new Set(valid.results.map((x) => x.id));
