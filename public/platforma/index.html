@@ -183,6 +183,17 @@ tbody tr.click:hover td{background:#F8FAFF}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
 .legend span{display:flex;align-items:center;gap:6px}
 
+.pager{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px}
+.pg-size{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.pg-size .sel{height:36px;border-radius:10px}
+.pg-info{color:var(--muted);font-size:13px}
+.pg-nav{margin-left:auto;display:flex;gap:6px;align-items:center}
+.pg-nav .icon-btn:disabled{opacity:.4;cursor:default}
+.pg-n{min-width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;color:var(--navy)}
+.pg-n:hover{border-color:var(--blue);color:var(--blue)}
+.pg-n.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.pg-dots{color:var(--muted);padding:0 2px}
+@media (max-width:860px){.pg-nav{margin-left:0;width:100%;justify-content:center}}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -379,6 +390,38 @@ async function submitBtn(btn, fn) {
 }
 const genPass = () => { const a = "abcdefghjkmnpqrstuvwxyz23456789"; let s = ""; const r = crypto.getRandomValues(new Uint8Array(8)); r.forEach((x) => (s += a[x % a.length])); return s; };
 const translit = (s) => { const m = { "o'": "o", "g'": "g", "sh": "sh", "ch": "ch" }; return String(s).toLowerCase().replace(/[ʻʼ'`’]/g, "").replace(/[^a-z0-9\s]/g, "").trim().split(/\s+/).slice(0, 2).join("."); };
+
+
+// ===== Sahifalash (10 / 20 / 50 talik) =====
+const PS = {};
+function pagerState(key) {
+  if (!PS[key]) { let sz = 10; try { sz = +localStorage.getItem("zp-size") || 10; } catch {} PS[key] = { page: 1, size: sz }; }
+  return PS[key];
+}
+function pageSlice(items, ps) {
+  const pages = Math.max(1, Math.ceil(items.length / ps.size));
+  if (ps.page > pages) ps.page = pages;
+  if (ps.page < 1) ps.page = 1;
+  const from = (ps.page - 1) * ps.size;
+  return { rows: items.slice(from, from + ps.size), from, pages };
+}
+function pagerHtml(total, ps) {
+  if (!total) return "";
+  const pages = Math.max(1, Math.ceil(total / ps.size));
+  const from = (ps.page - 1) * ps.size;
+  const nums = [];
+  for (let i = 1; i <= pages; i++) if (i === 1 || i === pages || Math.abs(i - ps.page) <= 1) nums.push(i); else if (nums[nums.length - 1] !== "…") nums.push("…");
+  return `<div class="pager">
+    <div class="pg-size">Ko'rsatish: <select class="sel" data-pgsize>${[10, 20, 50, 100].map((n) => `<option value="${n}" ${n === ps.size ? "selected" : ""}>${n} ta</option>`).join("")}</select></div>
+    <div class="pg-info">${from + 1}–${Math.min(total, from + ps.size)} / ${total} ta</div>
+    <div class="pg-nav"><button class="icon-btn" data-pg="${ps.page - 1}" ${ps.page <= 1 ? "disabled" : ""}>${ic("chevL")}</button>${nums.map((n) => n === "…" ? '<span class="pg-dots">…</span>' : `<button class="pg-n ${n === ps.page ? "on" : ""}" data-pg="${n}">${n}</button>`).join("")}<button class="icon-btn" data-pg="${ps.page + 1}" ${ps.page >= pages ? "disabled" : ""}>${ic("chevR")}</button></div>
+  </div>`;
+}
+function bindPager(root, ps, redraw) {
+  const sz = $("[data-pgsize]", root);
+  if (sz) sz.onchange = () => { ps.size = +sz.value; ps.page = 1; try { localStorage.setItem("zp-size", ps.size); } catch {} Object.values(PS).forEach((x) => (x.size = ps.size)); redraw(); };
+  $$("[data-pg]", root).forEach((b) => (b.onclick = () => { ps.page = +b.dataset.pg; redraw(); root.scrollIntoView({ block: "start", behavior: "smooth" }); }));
+}
 
 // ===== Holat =====
 const state = { me: null, today: null, cache: {} };
@@ -585,11 +628,19 @@ async function pStudents(rest) {
     if (!admin) p.set("status", "active");
     if (f.pay) p.set("pay", f.pay);
     const d = await api("students?" + p);
+    data = d;
+    draw();
+  };
+  let data = null;
+  const ps = pagerState("students");
+  const draw = () => {
+    const d = data;
+    const { rows, from } = pageSlice(d.items, ps);
     $("#psub").textContent = `${d.items.length} ta o'quvchi${admin ? ` · to'lov holati: ${fmtMonth(d.month)}` : ""}`;
     $("#stList").innerHTML = d.items.length ? `
       <div class="tbl-wrap"><table><thead><tr><th>#</th><th>O'quvchi</th><th>Telefon</th><th>Kurs / guruh</th><th>Qo'shilgan sana</th>${admin ? "<th>Bu oy to'lov</th><th>Holat</th><th></th>" : "<th>Ota-ona telefoni</th>"}</tr></thead><tbody>
-      ${d.items.map((s, i) => `<tr class="${admin ? "click" : ""}" data-id="${s.id}">
-        <td class="muted">${i + 1}</td>
+      ${rows.map((s, i) => `<tr class="${admin ? "click" : ""}" data-id="${s.id}">
+        <td class="muted">${from + i + 1}</td>
         <td><div class="who"><div class="ava" style="width:34px;height:34px;font-size:12px">${esc(initials(s.name))}</div><div><div class="nm">${esc(s.name)}</div>${s.parent_name ? `<div class="sm">Ota-ona: ${esc(s.parent_name)}</div>` : ""}</div></div></td>
         <td>${phoneLink(s.phone)}</td>
         <td>${s.course ? `<span class="chip"><span class="dot" style="width:8px;height:8px;background:${esc(s.color)}"></span>${esc(s.course)}</span> <span class="muted" style="font-size:12.5px">${esc(s.grp || "")}</span>` : '<span class="muted">Guruhsiz</span>'}</td>
@@ -597,7 +648,8 @@ async function pStudents(rest) {
         ${admin ? `<td>${payBadge(s)}</td><td><span class="badge ${ST[s.status][1]}">${ST[s.status][0]}</span></td>
         <td><div class="row-acts">${s.status === "active" ? `<button class="btn sm volt" data-pay="${s.id}">To'lov</button>` : ""}<button class="icon-btn" data-edit="${s.id}" title="Tahrirlash">${ic("edit")}</button></div></td>` : `<td>${phoneLink(s.parent_phone)}</td>`}
       </tr>`).join("")}
-      </tbody></table></div>` : `<div class="card empty">${ic("users")}<div>O'quvchi topilmadi</div>${admin ? `<button class="btn" style="margin-top:14px" onclick="document.getElementById('addSt').click()">${ic("plus")}O'quvchi qo'shish</button>` : ""}</div>`;
+      </tbody></table></div>${pagerHtml(d.items.length, ps)}` : `<div class="card empty">${ic("users")}<div>O'quvchi topilmadi</div>${admin ? `<button class="btn" style="margin-top:14px" onclick="document.getElementById('addSt').click()">${ic("plus")}O'quvchi qo'shish</button>` : ""}</div>`;
+    bindPager($("#stList"), ps, draw);
     if (admin) {
       $$("#stList tr[data-id]").forEach((tr) => (tr.onclick = () => studentCard(+tr.dataset.id, reload)));
       $$("[data-edit]").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); studentForm(d.items.find((x) => x.id == b.dataset.edit), reload); }));
@@ -605,12 +657,12 @@ async function pStudents(rest) {
     }
   };
   let t;
-  $("#fq").oninput = (e) => { f.q = e.target.value; clearTimeout(t); t = setTimeout(reload, 300); };
-  $("#fg").onchange = (e) => { f.group = e.target.value; reload(); };
+  $("#fq").oninput = (e) => { f.q = e.target.value; ps.page = 1; clearTimeout(t); t = setTimeout(reload, 300); };
+  $("#fg").onchange = (e) => { f.group = e.target.value; ps.page = 1; reload(); };
   if (admin) {
-    $("#fc").onchange = (e) => { f.course = e.target.value; reload(); };
-    $("#fs").onchange = (e) => { f.status = e.target.value; reload(); };
-    $("#fp").onchange = (e) => { f.pay = e.target.value; reload(); };
+    $("#fc").onchange = (e) => { f.course = e.target.value; ps.page = 1; reload(); };
+    $("#fs").onchange = (e) => { f.status = e.target.value; ps.page = 1; reload(); };
+    $("#fp").onchange = (e) => { f.pay = e.target.value; ps.page = 1; reload(); };
     $("#addSt").onclick = () => studentForm(null, reload);
     if (rest[0] === "new") { history.replaceState(null, "", "#/students"); studentForm(null, reload); }
   }
@@ -744,18 +796,20 @@ async function pPayments() {
       </div>
       <div class="tabs"><button data-t="debt" class="${st.tab === "debt" ? "on" : ""}">To'lamaganlar (${debt.length})</button><button data-t="hist" class="${st.tab === "hist" ? "on" : ""}">To'lovlar tarixi (${pays.items.length})</button></div>
       <div id="payBody"></div>`;
-    $("#mPrev").onclick = () => { st.month = addMonth(st.month, -1); draw(); };
-    $("#mNext").onclick = () => { st.month = addMonth(st.month, 1); draw(); };
+    $("#mPrev").onclick = () => { st.month = addMonth(st.month, -1); pagerState("debt").page = pagerState("hist").page = 1; draw(); };
+    $("#mNext").onclick = () => { st.month = addMonth(st.month, 1); pagerState("debt").page = pagerState("hist").page = 1; draw(); };
     $$(".tabs button").forEach((b) => (b.onclick = () => { st.tab = b.dataset.t; draw(); }));
     if (st.tab === "debt") {
       $("#payBody").innerHTML = debt.length ? `<div class="tbl-wrap"><table><thead><tr><th>O'quvchi</th><th>Telefon</th><th>Kurs / guruh</th><th>Oylik</th><th>To'langan</th><th>Qarz</th><th></th></tr></thead><tbody>
-        ${debt.map((s) => `<tr><td><div class="who"><div class="ava" style="width:34px;height:34px;font-size:12px">${esc(initials(s.name))}</div><div class="nm">${esc(s.name)}</div></div></td><td>${phoneLink(s.parent_phone || s.phone)}</td><td>${esc(s.course || "")} <span class="muted">${esc(s.grp || "")}</span></td><td class="money">${money(s.price)}</td><td class="money">${s.paid ? money(s.paid) : "—"}</td><td class="money" style="color:var(--bad);font-weight:600">${money(s.price - (s.paid || 0))}</td><td><div class="row-acts"><button class="btn sm volt" data-pay="${s.id}">To'lov qabul qilish</button></div></td></tr>`).join("")}
-        </tbody></table></div>` : `<div class="card empty">${ic("check")}<div>Bu oy uchun barcha o'quvchilar to'lagan 🎉</div></div>`;
+        ${pageSlice(debt, pagerState("debt")).rows.map((s) => `<tr><td><div class="who"><div class="ava" style="width:34px;height:34px;font-size:12px">${esc(initials(s.name))}</div><div class="nm">${esc(s.name)}</div></div></td><td>${phoneLink(s.parent_phone || s.phone)}</td><td>${esc(s.course || "")} <span class="muted">${esc(s.grp || "")}</span></td><td class="money">${money(s.price)}</td><td class="money">${s.paid ? money(s.paid) : "—"}</td><td class="money" style="color:var(--bad);font-weight:600">${money(s.price - (s.paid || 0))}</td><td><div class="row-acts"><button class="btn sm volt" data-pay="${s.id}">To'lov qabul qilish</button></div></td></tr>`).join("")}
+        </tbody></table></div>${pagerHtml(debt.length, pagerState("debt"))}` : `<div class="card empty">${ic("check")}<div>Bu oy uchun barcha o'quvchilar to'lagan 🎉</div></div>`;
+      bindPager($("#payBody"), pagerState("debt"), draw);
       $$("[data-pay]").forEach((b) => (b.onclick = () => { const s = debt.find((x) => x.id == b.dataset.pay); payForm({ ...s, price: s.price - (s.paid || 0) }, st.month, draw); }));
     } else {
       $("#payBody").innerHTML = pays.items.length ? `<div class="tbl-wrap"><table><thead><tr><th>Sana</th><th>O'quvchi</th><th>Kurs</th><th>Summa</th><th>Usul</th><th>Izoh</th><th></th></tr></thead><tbody>
-        ${pays.items.map((p) => `<tr><td>${fmtDate(p.paid_at)}</td><td><b>${esc(p.student)}</b></td><td>${esc(p.course || "")} <span class="muted">${esc(p.grp || "")}</span></td><td class="money"><b>${money(p.amount)}</b></td><td><span class="chip">${esc(p.method)}</span></td><td class="muted">${esc(p.note || "")}</td><td><div class="row-acts"><button class="icon-btn del" data-dp="${p.id}">${ic("trash")}</button></div></td></tr>`).join("")}
-        </tbody></table></div>` : `<div class="card empty">${ic("wallet")}<div>Bu oyda hali to'lov yo'q</div></div>`;
+        ${pageSlice(pays.items, pagerState("hist")).rows.map((p) => `<tr><td>${fmtDate(p.paid_at)}</td><td><b>${esc(p.student)}</b></td><td>${esc(p.course || "")} <span class="muted">${esc(p.grp || "")}</span></td><td class="money"><b>${money(p.amount)}</b></td><td><span class="chip">${esc(p.method)}</span></td><td class="muted">${esc(p.note || "")}</td><td><div class="row-acts"><button class="icon-btn del" data-dp="${p.id}">${ic("trash")}</button></div></td></tr>`).join("")}
+        </tbody></table></div>${pagerHtml(pays.items.length, pagerState("hist"))}` : `<div class="card empty">${ic("wallet")}<div>Bu oyda hali to'lov yo'q</div></div>`;
+      bindPager($("#payBody"), pagerState("hist"), draw);
       $$("[data-dp]").forEach((b) => (b.onclick = async () => {
         if (!(await confirmBox("Bu to'lov yozuvi o'chirilsinmi?"))) return;
         try { await api("payments/" + b.dataset.dp, { method: "DELETE" }); toast("O'chirildi"); draw(); } catch (e) { toast(e.message, 1); }
@@ -1058,11 +1112,12 @@ async function pLeads() {
   $("#page").innerHTML = `
     <div class="tabs">${[["", "Hammasi", d.items.length], ...Object.entries(LS).map(([k, [t]]) => [k, t, d.items.filter((x) => x.status === k).length])].map(([k, t, n]) => `<button data-f="${k}" class="${f === k ? "on" : ""}">${t} (${n})</button>`).join("")}</div>
     ${items.length ? `<div class="tbl-wrap"><table><thead><tr><th>Sana</th><th>Ism</th><th>Telefon</th><th>Xabar</th><th>Holat</th><th></th></tr></thead><tbody>
-      ${items.map((l) => `<tr><td class="muted" style="white-space:nowrap">${fmtDate(l.created_at)}<div style="font-size:12px">${esc(l.created_at.slice(11, 16))}</div></td><td><b>${esc(l.name)}</b></td><td>${phoneLink(l.phone)}</td><td class="wrap" style="min-width:220px;max-width:340px">${esc(l.message || "—")}</td>
+      ${pageSlice(items, pagerState("leads")).rows.map((l) => `<tr><td class="muted" style="white-space:nowrap">${fmtDate(l.created_at)}<div style="font-size:12px">${esc(l.created_at.slice(11, 16))}</div></td><td><b>${esc(l.name)}</b></td><td>${phoneLink(l.phone)}</td><td class="wrap" style="min-width:220px;max-width:340px">${esc(l.message || "—")}</td>
         <td><select class="sel" data-s="${l.id}" style="height:34px">${Object.entries(LS).map(([k, [t]]) => `<option value="${k}" ${l.status === k ? "selected" : ""}>${t}</option>`).join("")}</select></td>
         <td><div class="row-acts">${l.status !== "yozildi" ? `<button class="btn sm volt" data-st="${l.id}">${ic("user_plus")}O'quvchi qilish</button>` : ""}<button class="icon-btn del" data-d="${l.id}">${ic("trash")}</button></div></td></tr>`).join("")}
-    </tbody></table></div>` : `<div class="card empty">${ic("inbox")}<div>Ariza yo'q</div></div>`}`;
-  $$(".tabs [data-f]").forEach((b) => (b.onclick = () => { state.cache.leadF = b.dataset.f; pLeads(); }));
+    </tbody></table></div>${pagerHtml(items.length, pagerState("leads"))}` : `<div class="card empty">${ic("inbox")}<div>Ariza yo'q</div></div>`}`;
+  bindPager($("#page"), pagerState("leads"), pLeads);
+  $$(".tabs [data-f]").forEach((b) => (b.onclick = () => { state.cache.leadF = b.dataset.f; pagerState("leads").page = 1; pLeads(); }));
   $$("[data-s]").forEach((s) => (s.onchange = async () => { try { await api("leads/" + s.dataset.s, { method: "PUT", body: { status: s.value } }); toast("Holat yangilandi"); refreshLeadCount(); } catch (e) { toast(e.message, 1); } }));
   $$("[data-d]").forEach((b) => (b.onclick = async () => { if (!(await confirmBox("Ariza o'chirilsinmi?"))) return; await api("leads/" + b.dataset.d, { method: "DELETE" }); toast("O'chirildi"); pLeads(); refreshLeadCount(); }));
   $$("[data-st]").forEach((b) => (b.onclick = async () => { const l = d.items.find((x) => x.id == b.dataset.st); await groupsList(); studentForm(null, () => { pLeads(); refreshLeadCount(); }, { name: l.name, phone: l.phone, note: l.message, lead_id: l.id }); }));
