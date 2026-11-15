@@ -79,7 +79,7 @@ svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .g2{grid-template-columns:1.4fr 1fr}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:16px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start;cursor:default}
-a.stat{cursor:pointer}a.stat:hover{border-color:var(--blue)}
+a.stat{cursor:pointer;transition:.15s}a.stat:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(0,70,224,.5)}a.stat:active{transform:scale(.98)}
 .stat .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
 .stat .v{font-size:24px;font-weight:700;line-height:1.1}
 .stat .v.money{font-size:18px;padding-top:4px}
@@ -1430,9 +1430,9 @@ async function pTeacherHome() {
     : `<div class="t-hero rest"><img class="bgz" src="/icon-512.png" alt=""><div class="lbl">${ic("clock")} Bugun dars yo'q</div><div class="hn">${nextDay ? "Keyingi dars: " + KUNLAR_TOLIQ[nextDay[0] - 1] : "Dam olish kuni"}</div><div class="hs">${nextDay ? esc(nextDay[1].name) + " · " + esc(nextDay[1].time || "") : ""}</div></div>`;
   $("#page").innerHTML = hero + `
     <div class="stats">
-      <div class="stat hero"><div class="ic">${ic("layers")}</div><div><div class="v">${gs.length}</div><div class="l">Guruhlarim</div></div></div>
-      <div class="stat"><div class="ic b">${ic("users")}</div><div><div class="v">${totalSt}</div><div class="l">O'quvchilarim</div></div></div>
-      <div class="stat"><div class="ic v">${ic("clock")}</div><div><div class="v">${todays.length}</div><div class="l">Bugungi darslar</div></div></div>
+      <a class="stat hero" href="#/settings"><div class="ic">${ic("layers")}</div><div><div class="v">${gs.length}</div><div class="l">Guruhlarim</div></div></a>
+      <a class="stat" href="#/students"><div class="ic b">${ic("users")}</div><div><div class="v">${totalSt}</div><div class="l">O'quvchilarim</div></div></a>
+      <a class="stat" href="${todays.length ? "#/attendance/" + todays[0].id : "#/attendance"}"><div class="ic v">${ic("clock")}</div><div><div class="v">${todays.length}</div><div class="l">Bugungi darslar</div></div></a>
     </div>
     <div class="grid g2">
       <div class="card"><h3>${ic("clock")} Bugungi darslar</h3>
