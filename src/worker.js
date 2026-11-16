@@ -77,7 +77,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/send") return handleSend(request, env);
     if (url.pathname.startsWith("/api/p/")) return handlePlatform(request, env, url);
-    if (["/ustoz", "/ustoz/", "/admin", "/admin/"].includes(url.pathname)) return Response.redirect(url.origin + "/platforma/", 302);
+    if (["/ustoz", "/ustoz/", "/admin", "/admin/", "/oquvchi", "/oquvchi/"].includes(url.pathname)) return Response.redirect(url.origin + "/platforma/", 302);
     if (url.pathname === "/platforma") return Response.redirect(url.origin + "/platforma/", 301);
     return env.ASSETS.fetch(request);
   },

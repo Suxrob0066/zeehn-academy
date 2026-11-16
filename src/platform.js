@@ -56,10 +56,19 @@ const isMonth = (s) => /^\d{4}-\d{2}$/.test(s);
 async function currentUser(req, env) {
   const tok = getCookie(req, "zs");
   if (!tok) return null;
+  const ses = await env.DB.prepare("SELECT user_id,kind,expires FROM sessions WHERE token=?").bind(tok).first();
+  if (!ses || ses.expires < Date.now()) return null;
+  if (ses.kind === "student") {
+    const st = await env.DB.prepare(
+      "SELECT s.id,s.name,s.login,s.phone,s.status,s.group_id FROM students s WHERE s.id=? AND s.login IS NOT NULL"
+    ).bind(ses.user_id).first();
+    if (!st || st.status === "left") return null;
+    return { ...st, role: "student", active: 1 };
+  }
   const row = await env.DB.prepare(
-    "SELECT u.id,u.role,u.name,u.login,u.phone,u.subject,u.active,u.is_owner,s.expires FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=?"
-  ).bind(tok).first();
-  if (!row || !row.active || row.expires < Date.now()) return null;
+    "SELECT u.id,u.role,u.name,u.login,u.phone,u.subject,u.active,u.is_owner FROM users u WHERE u.id=?"
+  ).bind(ses.user_id).first();
+  if (!row || !row.active) return null;
   return row;
 }
 
@@ -85,7 +94,12 @@ async function login(req, env) {
   const b = await body(req);
   const loginName = S(b.login, 60);
   const password = String(b.password || "");
-  const u = await env.DB.prepare("SELECT * FROM users WHERE login=?").bind(loginName).first();
+  let u = await env.DB.prepare("SELECT * FROM users WHERE login=?").bind(loginName).first();
+  let kind = "user";
+  if (!u) {
+    const st = await env.DB.prepare("SELECT id,name,login,pass,status FROM students WHERE login=? COLLATE NOCASE AND pass IS NOT NULL").bind(loginName).first();
+    if (st) { u = { ...st, role: "student", active: st.status !== "left" ? 1 : 0 }; kind = "student"; }
+  }
   if (!u || !(await verifyPassword(password, u.pass))) {
     await env.DB.prepare("INSERT INTO login_fails(ip,ts) VALUES(?,?)").bind(ip, Date.now()).run();
     return err("Login yoki parol noto'g'ri", 401);
@@ -95,7 +109,7 @@ async function login(req, env) {
   const tok = randToken();
   const exp = Date.now() + SESSION_DAYS * 86400 * 1000;
   await env.DB.batch([
-    env.DB.prepare("INSERT INTO sessions(token,user_id,expires) VALUES(?,?,?)").bind(tok, u.id, exp),
+    env.DB.prepare("INSERT INTO sessions(token,user_id,expires,kind) VALUES(?,?,?,?)").bind(tok, u.id, exp, kind),
     env.DB.prepare("DELETE FROM sessions WHERE expires<?").bind(Date.now()),
     env.DB.prepare("DELETE FROM login_fails WHERE ts<?").bind(since),
   ]);
@@ -121,7 +135,7 @@ async function changeMyPassword(req, env, me) {
   const tok = getCookie(req, "zs");
   await env.DB.batch([
     env.DB.prepare("UPDATE users SET pass=? WHERE id=?").bind(await hashPassword(np), me.id),
-    env.DB.prepare("DELETE FROM sessions WHERE user_id=? AND token<>?").bind(me.id, tok),
+    env.DB.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user' AND token<>?").bind(me.id, tok),
   ]);
   return json({ ok: true });
 }
@@ -331,6 +345,8 @@ async function students(req, env, id, me, url) {
       .bind(id)
       .first();
     if (!s) return err("Topilmadi", 404);
+    delete s.pass;
+    s.has_login = !!s.login;
     const [p, a] = await db.batch([
       db.prepare("SELECT * FROM payments WHERE student_id=? ORDER BY month DESC, id DESC").bind(id),
       db.prepare("SELECT status,COUNT(*) n FROM attendance WHERE student_id=? GROUP BY status").bind(id),
@@ -374,7 +390,7 @@ async function students(req, env, id, me, url) {
     const where = cond.length ? "WHERE " + cond.join(" AND ") : "";
     const r = await db
       .prepare(
-        `SELECT * FROM (SELECT s.id,s.name,s.phone,s.parent_name,s.parent_phone,s.group_id,s.joined_at,s.status,s.note,s.birth_date,
+        `SELECT * FROM (SELECT s.id,s.name,s.phone,s.parent_name,s.parent_phone,s.group_id,s.joined_at,s.status,s.note,s.birth_date,s.login,
            g.name grp,g.course_id,g.teacher_id,c.name course,c.color,c.price,
            (SELECT SUM(amount) FROM payments p WHERE p.student_id=s.id AND p.month=?) paid
          FROM students s LEFT JOIN groups g ON g.id=s.group_id LEFT JOIN courses c ON c.id=g.course_id) s
@@ -475,7 +491,7 @@ async function teachers(req, env, id, url, sub) {
     if (np.length < 6) return err("Parol kamida 6 belgi bo'lsin");
     await db.batch([
       db.prepare("UPDATE users SET pass=? WHERE id=? AND role='teacher'").bind(await hashPassword(np), id),
-      db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id),
+      db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user'").bind(id),
     ]);
     return json({ ok: true });
   }
@@ -483,7 +499,7 @@ async function teachers(req, env, id, url, sub) {
     const used = await db.prepare("SELECT COUNT(*) n FROM groups WHERE teacher_id=?").bind(id).first();
     if (used.n) return err("Bu ustozga guruhlar biriktirilgan. Avval guruhlarni boshqa ustozga o'tkazing yoki ustozni nofaol qiling.");
     await db.batch([
-      db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id),
+      db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user'").bind(id),
       db.prepare("DELETE FROM users WHERE id=? AND role='teacher'").bind(id),
     ]);
     return json({ ok: true });
@@ -505,7 +521,7 @@ async function teachers(req, env, id, url, sub) {
     return json({ ok: true, id: r.meta.last_row_id });
   }
   const st = [db.prepare("UPDATE users SET name=?,phone=?,subject=?,login=?,active=? WHERE id=? AND role='teacher'").bind(name, S(b.phone, 30), S(b.subject, 80), login, active, id)];
-  if (!active) st.push(db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id));
+  if (!active) st.push(db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user'").bind(id));
   await db.batch(st);
   return json({ ok: true });
 }
@@ -619,13 +635,13 @@ async function admins(req, env, id, sub, me) {
     if (np.length < 6) return err("Parol kamida 6 belgi bo'lsin");
     await db.batch([
       db.prepare("UPDATE users SET pass=? WHERE id=? AND role='admin' AND is_owner=0").bind(await hashPassword(np), id),
-      db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id),
+      db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user'").bind(id),
     ]);
     return json({ ok: true });
   }
   if (req.method === "DELETE") {
     await db.batch([
-      db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id),
+      db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user'").bind(id),
       db.prepare("DELETE FROM users WHERE id=? AND role='admin' AND is_owner=0").bind(id),
     ]);
     return json({ ok: true });
@@ -647,7 +663,7 @@ async function admins(req, env, id, sub, me) {
     return json({ ok: true, id: r.meta.last_row_id });
   }
   const st = [db.prepare("UPDATE users SET name=?,phone=?,login=?,active=? WHERE id=? AND role='admin' AND (is_owner=0 OR id=?)").bind(name, S(b.phone, 30), login, id === me.id ? 1 : active, id, me.id)];
-  if (!active && id !== me.id) st.push(db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id));
+  if (!active && id !== me.id) st.push(db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='user'").bind(id));
   await db.batch(st);
   return json({ ok: true });
 }
@@ -682,6 +698,264 @@ export async function saveLead(env, name, phone, message) {
   } catch (e) {}
 }
 
+
+// ================= O'QUVCHI KABINETI va VAZIFALAR =================
+
+const loginTaken = async (env, login, exceptStudent = 0) => {
+  const a = await env.DB.prepare("SELECT 1 FROM users WHERE login=?").bind(login).first();
+  if (a) return true;
+  const b = await env.DB.prepare("SELECT 1 FROM students WHERE login=? COLLATE NOCASE AND id<>?").bind(login, exceptStudent).first();
+  return !!b;
+};
+const translitLogin = (name) =>
+  String(name || "")
+    .toLowerCase()
+    .replace(/[ʻʼ'`’‘]/g, "")
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .join(".") || "oquvchi";
+const genPw = () => {
+  const a = "abcdefghjkmnpqrstuvwxyz23456789";
+  return [...crypto.getRandomValues(new Uint8Array(8))].map((x) => a[x % a.length]).join("");
+};
+async function uniqueStudentLogin(env, name, id) {
+  const base = translitLogin(name);
+  let l = base, k = 1;
+  while (await loginTaken(env, l, id)) l = base + ++k;
+  return l;
+}
+
+// Admin: o'quvchiga login berish / olib qo'yish
+async function studentAccess(req, env, id) {
+  const db = env.DB;
+  if (req.method === "DELETE") {
+    await db.batch([
+      db.prepare("UPDATE students SET login=NULL, pass=NULL WHERE id=?").bind(id),
+      db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='student'").bind(id),
+    ]);
+    return json({ ok: true });
+  }
+  const st = await db.prepare("SELECT id,name,login FROM students WHERE id=?").bind(id).first();
+  if (!st) return err("Topilmadi", 404);
+  const b = await body(req);
+  let login = S(b.login, 40).toLowerCase() || st.login || (await uniqueStudentLogin(env, st.name, id));
+  if (!/^[a-z0-9._-]{3,40}$/.test(login)) return err("Login kamida 3 belgi: lotin harflari, raqam, . _ -");
+  if (await loginTaken(env, login, id)) return err("Bu login band. Boshqasini tanlang.");
+  const pw = String(b.password || "") || genPw();
+  if (pw.length < 6) return err("Parol kamida 6 belgi bo'lsin");
+  await db.batch([
+    db.prepare("UPDATE students SET login=?, pass=? WHERE id=?").bind(login, await hashPassword(pw), id),
+    db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='student'").bind(id),
+  ]);
+  return json({ ok: true, login, password: pw, name: st.name });
+}
+// Admin: login yo'q o'quvchilarga ommaviy login berish
+async function studentAccessBulk(req, env) {
+  const db = env.DB;
+  const b = await body(req);
+  const ids = (Array.isArray(b.ids) ? b.ids : []).map((x) => I(x)).filter(Boolean).slice(0, 300);
+  if (!ids.length) return err("O'quvchi tanlanmagan");
+  const out = [];
+  for (const id of ids) {
+    const st = await db.prepare("SELECT id,name,login,group_id FROM students WHERE id=? AND status<>'left'").bind(id).first();
+    if (!st || st.login) continue;
+    const login = await uniqueStudentLogin(env, st.name, id);
+    const pw = genPw();
+    await db.prepare("UPDATE students SET login=?, pass=? WHERE id=?").bind(login, await hashPassword(pw), id).run();
+    out.push({ id, name: st.name, login, password: pw });
+  }
+  return json({ ok: true, items: out });
+}
+
+// ---- Vazifalar (ustoz / admin) ----
+async function assignments(req, env, id, me, url) {
+  const db = env.DB;
+  if (req.method === "GET" && id) {
+    const a = await db
+      .prepare("SELECT a.*,g.name grp,g.teacher_id,c.name course,c.color FROM assignments a JOIN groups g ON g.id=a.group_id JOIN courses c ON c.id=g.course_id WHERE a.id=?")
+      .bind(id)
+      .first();
+    if (!a) return err("Topilmadi", 404);
+    if (!(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
+    const r = await db
+      .prepare(
+        `SELECT s.id student_id,s.name,s.login IS NOT NULL has_login,sb.id,sb.text,sb.photo,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
+         FROM students s LEFT JOIN submissions sb ON sb.student_id=s.id AND sb.assignment_id=?
+         WHERE s.group_id=? AND s.status='active' ORDER BY sb.submitted_at IS NULL, s.name`
+      )
+      .bind(id, a.group_id)
+      .all();
+    return json({ ok: true, assignment: a, items: r.results });
+  }
+  if (req.method === "GET") {
+    const gid = I(url.searchParams.get("group"));
+    const cond = [];
+    const args = [];
+    if (gid) { cond.push("a.group_id=?"); args.push(gid); }
+    if (me.role === "teacher") { cond.push("g.teacher_id=?"); args.push(me.id); }
+    const r = await db
+      .prepare(
+        `SELECT a.id,a.group_id,a.title,a.due_date,a.max_score,a.created_at,g.name grp,c.color,
+          (SELECT COUNT(*) FROM students s WHERE s.group_id=a.group_id AND s.status='active') total,
+          (SELECT COUNT(*) FROM submissions sb WHERE sb.assignment_id=a.id) submitted,
+          (SELECT COUNT(*) FROM submissions sb WHERE sb.assignment_id=a.id AND sb.score IS NULL) unchecked
+         FROM assignments a JOIN groups g ON g.id=a.group_id JOIN courses c ON c.id=g.course_id
+         ${cond.length ? "WHERE " + cond.join(" AND ") : ""} ORDER BY a.id DESC LIMIT 300`
+      )
+      .bind(...args)
+      .all();
+    return json({ ok: true, items: r.results });
+  }
+  if (req.method === "DELETE") {
+    const a = await db.prepare("SELECT group_id FROM assignments WHERE id=?").bind(id).first();
+    if (!a || !(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
+    await db.batch([db.prepare("DELETE FROM submissions WHERE assignment_id=?").bind(id), db.prepare("DELETE FROM assignments WHERE id=?").bind(id)]);
+    return json({ ok: true });
+  }
+  const b = await body(req);
+  const gid = I(b.group_id);
+  const title = S(b.title, 150);
+  if (!gid) return err("Guruhni tanlang");
+  if (title.length < 2) return err("Vazifa nomini kiriting");
+  if (!(await teacherOwnsGroup(env, me, gid))) return err("Ruxsat yo'q", 403);
+  const due = isDate(S(b.due_date, 10)) ? S(b.due_date, 10) : "";
+  const maxS = Math.min(100, Math.max(1, I(b.max_score) || 10));
+  const link = S(b.link, 500);
+  if (link && !/^https?:\/\//i.test(link)) return err("Havola http:// yoki https:// bilan boshlansin");
+  if (req.method === "POST") {
+    const r = await db
+      .prepare("INSERT INTO assignments(group_id,teacher_id,title,body,link,due_date,max_score) VALUES(?,?,?,?,?,?,?)")
+      .bind(gid, me.role === "teacher" ? me.id : null, title, S(b.body, 4000), link, due, maxS)
+      .run();
+    return json({ ok: true, id: r.meta.last_row_id });
+  }
+  const old = await db.prepare("SELECT group_id FROM assignments WHERE id=?").bind(id).first();
+  if (!old || !(await teacherOwnsGroup(env, me, old.group_id))) return err("Ruxsat yo'q", 403);
+  await db
+    .prepare("UPDATE assignments SET group_id=?,title=?,body=?,link=?,due_date=?,max_score=? WHERE id=?")
+    .bind(gid, title, S(b.body, 4000), link, due, maxS, id)
+    .run();
+  return json({ ok: true });
+}
+// Ustoz javobni baholaydi
+async function gradeSubmission(req, env, id, me) {
+  const db = env.DB;
+  const sb = await db.prepare("SELECT sb.id,a.group_id,a.max_score FROM submissions sb JOIN assignments a ON a.id=sb.assignment_id WHERE sb.id=?").bind(id).first();
+  if (!sb || !(await teacherOwnsGroup(env, me, sb.group_id))) return err("Ruxsat yo'q", 403);
+  const b = await body(req);
+  const score = b.score === "" || b.score == null ? null : I(b.score);
+  if (score != null && (score < 0 || score > sb.max_score)) return err(`Baho 0 dan ${sb.max_score} gacha bo'lsin`);
+  await db
+    .prepare("UPDATE submissions SET score=?, feedback=?, checked_at=CASE WHEN ? IS NULL THEN NULL ELSE datetime('now','+5 hours') END WHERE id=?")
+    .bind(score, S(b.feedback, 1000), score, id)
+    .run();
+  return json({ ok: true });
+}
+
+// ---- O'quvchi uchun API (/api/p/s/*) ----
+async function studentApi(req, env, me, parts, url) {
+  const db = env.DB;
+  const [, res, rawId, sub] = parts;
+  const id = I(rawId);
+  const st = await db
+    .prepare(
+      `SELECT s.id,s.name,s.phone,s.parent_name,s.parent_phone,s.joined_at,s.status,s.login,s.photo,s.group_id,
+        g.name grp,g.days,g.time,g.room,c.name course,c.color,c.price,u.name teacher,u.phone teacher_phone,u.photo teacher_photo
+       FROM students s LEFT JOIN groups g ON g.id=s.group_id LEFT JOIN courses c ON c.id=g.course_id LEFT JOIN users u ON u.id=g.teacher_id WHERE s.id=?`
+    )
+    .bind(me.id)
+    .first();
+  if (!st) return err("Topilmadi", 404);
+
+  if (res === "home") {
+    const m = thisMonth();
+    const [pay, att, pend, last] = await db.batch([
+      db.prepare("SELECT COALESCE(SUM(amount),0) n FROM payments WHERE student_id=? AND month=?").bind(me.id, m),
+      db.prepare("SELECT status,COUNT(*) n FROM attendance WHERE student_id=? GROUP BY status").bind(me.id),
+      db.prepare(
+        `SELECT a.id,a.title,a.due_date,a.max_score FROM assignments a WHERE a.group_id=? AND NOT EXISTS (SELECT 1 FROM submissions sb WHERE sb.assignment_id=a.id AND sb.student_id=?) ORDER BY (a.due_date='' ), a.due_date, a.id DESC LIMIT 20`
+      ).bind(st.group_id || 0, me.id),
+      db.prepare(
+        `SELECT a.title,sb.score,a.max_score,sb.feedback,sb.checked_at,a.id FROM submissions sb JOIN assignments a ON a.id=sb.assignment_id WHERE sb.student_id=? AND sb.score IS NOT NULL ORDER BY sb.checked_at DESC LIMIT 3`
+      ).bind(me.id),
+    ]);
+    const paid = pay.results[0].n;
+    const { pass, ...pub } = st;
+    return json({
+      ok: true,
+      today: today(),
+      student: { ...pub, price: undefined },
+      pay: !st.price ? (paid ? "paid" : "none") : !paid ? "unpaid" : paid < st.price ? "partial" : "paid",
+      attendance: att.results,
+      pending: pend.results,
+      graded: last.results,
+    });
+  }
+  if (res === "tasks" && req.method === "GET" && !id) {
+    const r = await db
+      .prepare(
+        `SELECT a.id,a.title,a.body,a.link,a.due_date,a.max_score,a.created_at,sb.id sub_id,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
+         FROM assignments a LEFT JOIN submissions sb ON sb.assignment_id=a.id AND sb.student_id=?
+         WHERE a.group_id=? ORDER BY a.id DESC LIMIT 200`
+      )
+      .bind(me.id, st.group_id || 0)
+      .all();
+    return json({ ok: true, today: today(), items: r.results });
+  }
+  if (res === "tasks" && id) {
+    const a = await db.prepare("SELECT * FROM assignments WHERE id=? AND group_id=?").bind(id, st.group_id || 0).first();
+    if (!a) return err("Vazifa topilmadi", 404);
+    const mine = await db.prepare("SELECT * FROM submissions WHERE assignment_id=? AND student_id=?").bind(id, me.id).first();
+    if (req.method === "GET") return json({ ok: true, task: a, submission: mine || null, today: today() });
+    // Javob yuborish
+    if (mine && mine.score != null) return err("Javob baholangan, endi o'zgartirib bo'lmaydi");
+    const b = await body(req);
+    const text = S(b.text, 5000);
+    const photo = String(b.photo || "");
+    if (photo && !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(photo)) return err("Rasm formati noto'g'ri");
+    if (photo.length > 900000) return err("Rasm juda katta");
+    if (!text && !photo) return err("Javob yozing yoki rasm biriktiring");
+    await db
+      .prepare(
+        `INSERT INTO submissions(assignment_id,student_id,text,photo,submitted_at) VALUES(?,?,?,?,datetime('now','+5 hours'))
+         ON CONFLICT(assignment_id,student_id) DO UPDATE SET text=excluded.text,photo=excluded.photo,submitted_at=excluded.submitted_at`
+      )
+      .bind(id, me.id, text, photo)
+      .run();
+    return json({ ok: true });
+  }
+  if (res === "attendance") {
+    const month = isMonth(url.searchParams.get("month") || "") ? url.searchParams.get("month") : thisMonth();
+    const r = await db.prepare("SELECT date,status FROM attendance WHERE student_id=? AND date LIKE ? ORDER BY date").bind(me.id, month + "%").all();
+    const all = await db.prepare("SELECT status,COUNT(*) n FROM attendance WHERE student_id=? GROUP BY status").bind(me.id).all();
+    return json({ ok: true, month, items: r.results, totals: all.results, days: st.days });
+  }
+  if (res === "password" && req.method === "POST") {
+    const b = await body(req);
+    const cur = await db.prepare("SELECT pass FROM students WHERE id=?").bind(me.id).first();
+    if (!(await verifyPassword(String(b.old || ""), cur.pass))) return err("Hozirgi parol noto'g'ri");
+    const np = String(b.new || "");
+    if (np.length < 6) return err("Yangi parol kamida 6 belgi bo'lsin");
+    const tok = getCookie(req, "zs");
+    await db.batch([
+      db.prepare("UPDATE students SET pass=? WHERE id=?").bind(await hashPassword(np), me.id),
+      db.prepare("DELETE FROM sessions WHERE user_id=? AND kind='student' AND token<>?").bind(me.id, tok),
+    ]);
+    return json({ ok: true });
+  }
+  if (res === "photo" && req.method === "POST") {
+    const b = await body(req);
+    const photo = String(b.photo || "");
+    if (photo && !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(photo)) return err("Rasm formati noto'g'ri");
+    if (photo.length > 300000) return err("Rasm juda katta");
+    await db.prepare("UPDATE students SET photo=? WHERE id=?").bind(photo, me.id).run();
+    return json({ ok: true });
+  }
+  return err("Topilmadi", 404);
+}
+
 // ---------- Router ----------
 export async function handlePlatform(req, env, url) {
   if (!env.DB) return err("Baza ulanmagan", 500);
@@ -702,6 +976,18 @@ export async function handlePlatform(req, env, url) {
     const me = await currentUser(req, env);
     if (!me) return err("Kirish talab qilinadi", 401);
 
+    // O'quvchi faqat o'z bo'limidan foydalanadi
+    if (me.role === "student") {
+      if (res === "me") {
+        const ph = await env.DB.prepare("SELECT photo FROM students WHERE id=?").bind(me.id).first();
+        return json({ ok: true, user: { id: me.id, role: "student", name: me.name, login: me.login, photo: (ph && ph.photo) || "" }, today: today() });
+      }
+      if (res === "s") return await studentApi(req, env, me, parts, url);
+      return err("Ruxsat yo'q", 403);
+    }
+    if (res === "assignments") return await assignments(req, env, id, me, url);
+    if (res === "submissions" && id && req.method === "PUT") return await gradeSubmission(req, env, id, me);
+
     if (res === "me") {
       if (rawId === "password" && req.method === "POST") return await changeMyPassword(req, env, me);
       if (rawId === "photo" && req.method === "POST") return await setMyPhoto(req, env, me);
@@ -719,6 +1005,8 @@ export async function handlePlatform(req, env, url) {
     if (res === "payments") return await payments(req, env, id, me, url);
     if (res === "teachers") return await teachers(req, env, id, url, sub);
     if (res === "leads") return await leads(req, env, id);
+    if (res === "students-access" && req.method === "POST") return await studentAccessBulk(req, env);
+    if (res === "access" && id) return await studentAccess(req, env, id);
     if (res === "admins") {
       if (!me.is_owner) return err("Bu bo'lim faqat rahbar uchun", 403);
       return await admins(req, env, id, sub, me);
