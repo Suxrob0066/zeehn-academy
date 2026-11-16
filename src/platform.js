@@ -151,6 +151,19 @@ async function myProfile(env, me) {
   }
   return json({ ok: true, user: u, groups, students, lessons: marks });
 }
+// Rahbar va administrator o'z ism, telefon va loginini o'zgartira oladi (ustozlarni admin boshqaradi)
+async function setMyInfo(req, env, me) {
+  if (me.role !== "admin") return err("Ma'lumotlaringizni administrator o'zgartiradi", 403);
+  const b = await body(req);
+  const name = S(b.name, 80);
+  const login = S(b.login, 40).toLowerCase();
+  if (name.length < 2) return err("Ismni kiriting");
+  if (!/^[a-z0-9._-]{3,40}$/.test(login)) return err("Login kamida 3 belgi: lotin harflari, raqam, . _ -");
+  const dup = await env.DB.prepare("SELECT id FROM users WHERE login=? AND id<>?").bind(login, me.id).first();
+  if (dup) return err("Bu login band. Boshqasini tanlang.");
+  await env.DB.prepare("UPDATE users SET name=?,phone=?,login=? WHERE id=?").bind(name, S(b.phone, 30), login, me.id).run();
+  return json({ ok: true });
+}
 async function setMyPhoto(req, env, me) {
   const b = await body(req);
   const photo = String(b.photo || "");
@@ -693,6 +706,7 @@ export async function handlePlatform(req, env, url) {
       if (rawId === "password" && req.method === "POST") return await changeMyPassword(req, env, me);
       if (rawId === "photo" && req.method === "POST") return await setMyPhoto(req, env, me);
       if (rawId === "profile") return await myProfile(env, me);
+      if (rawId === "info" && req.method === "POST") return await setMyInfo(req, env, me);
       return json({ ok: true, user: { id: me.id, role: me.role, owner: !!me.is_owner, name: me.name, login: me.login, photo: await photoOf(env, me.id) }, today: today() });
     }
     if (res === "groups") return await groups(req, env, id, me);

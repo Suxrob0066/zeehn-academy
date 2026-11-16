@@ -1414,13 +1414,13 @@ async function pSettings() {
         <div class="prof-id">
           <h2>${esc(u.name)}</h2>
           <div class="muted">${teacher ? esc(u.subject || "Ustoz") : state.me.owner ? "Rahbar" : "Administrator"} · Zeehn Innovation Academy</div>
-          <div class="prof-acts"><label class="btn sm" for="pFile">${ic("camera")}${u.photo ? "Rasmni almashtirish" : "Rasm yuklash"}</label>${u.photo ? `<button class="btn sm ghost" id="pDel">${ic("trash")}O'chirish</button>` : ""}</div>
+          <div class="prof-acts">${teacher ? "" : `<button class="btn sm ghost" id="pEdit">${ic("edit")}Ma'lumotlarni tahrirlash</button>`}<label class="btn sm" for="pFile">${ic("camera")}${u.photo ? "Rasmni almashtirish" : "Rasm yuklash"}</label>${u.photo ? `<button class="btn sm ghost" id="pDel">${ic("trash")}O'chirish</button>` : ""}</div>
         </div>
       </div>
       <div class="prof-stats">
         <div><span>Telefon</span><b>${u.phone ? phoneLink(u.phone) : "—"}</b></div>
         <div><span>Login</span><b style="font-family:ui-monospace,monospace">${esc(u.login)}</b></div>
-        ${teacher ? `<div><span>Guruhlar</span><b>${d.groups.length} ta</b></div><div><span>O'quvchilar</span><b>${d.students} ta</b></div><div><span>Yo'qlama qilingan darslar</span><b>${d.lessons} ta</b></div>` : `<div><span>Rol</span><b>Administrator</b></div>`}
+        ${teacher ? `<div><span>Guruhlar</span><b>${d.groups.length} ta</b></div><div><span>O'quvchilar</span><b>${d.students} ta</b></div><div><span>Yo'qlama qilingan darslar</span><b>${d.lessons} ta</b></div>` : `<div><span>Rol</span><b>${state.me.owner ? "Rahbar" : "Administrator"}</b></div>`}
         <div><span>Platformada</span><b>${fmtDate(u.created_at)} dan</b></div>
       </div>
     </div>
@@ -1454,6 +1454,29 @@ async function pSettings() {
   };
   if ($("#pDel")) $("#pDel").onclick = async () => { if (await confirmBox("Profil rasmi o'chirilsinmi?")) savePhoto("").catch((er) => toast(er.message, 1)); };
   $("#pOut").onclick = () => $("#logout").click();
+  if ($("#pEdit")) $("#pEdit").onclick = () => {
+    const m = modal({
+      title: "Ma'lumotlarni tahrirlash",
+      body: `<form class="form" id="mf">
+        <div class="f full"><label>Ism familiya *</label><input class="inp" name="name" value="${esc(u.name)}"></div>
+        <div class="f"><label>Telefon</label><input class="inp" name="phone" value="${esc(u.phone || "+998 ")}" inputmode="tel"></div>
+        <div class="f"><label>Login *</label><input class="inp" name="login" value="${esc(u.login)}" autocapitalize="off"><span class="hint">Keyingi safar shu login bilan kirasiz</span></div>
+      </form>`,
+      foot: `<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Saqlash</button>`,
+    });
+    m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+      const b = formData(m.$("#mf"));
+      if (b.phone.replace(/\D/g, "").length <= 3) b.phone = "";
+      try {
+        await api("me/info", { method: "POST", body: b });
+        m.close(); toast("Ma'lumotlar saqlandi");
+        state.me.name = b.name; state.me.login = b.login.toLowerCase();
+        $(".me .nm").textContent = b.name;
+        $("#meAva").innerHTML = avaHtml(state.me.name, state.me.photo);
+        pSettings();
+      } catch (e) { m.err(e.message); }
+    });
+  };
   eyeify($("#pwf"));
   $("#pwf").onsubmit = (e) => {
     e.preventDefault();
