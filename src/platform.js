@@ -654,7 +654,7 @@ async function leads(req, env, id) {
   if (req.method === "POST") {
     const name = S(b.name, 80);
     if (name.length < 2) return err("Ismni kiriting");
-    const r = await db.prepare("INSERT INTO leads(name,phone,message,status) VALUES(?,?,?,'yangi')").bind(name, S(b.phone, 30), S(b.message, 1000)).run();
+    const r = await db.prepare("INSERT INTO leads(name,phone,message,status,created_at) VALUES(?,?,?,'yangi',datetime('now','+5 hours'))").bind(name, S(b.phone, 30), S(b.message, 1000)).run();
     return json({ ok: true, id: r.meta.last_row_id });
   }
   const status = ["yangi", "boglanildi", "yozildi", "rad"].includes(b.status) ? b.status : "yangi";
@@ -665,7 +665,7 @@ async function leads(req, env, id) {
 export async function saveLead(env, name, phone, message) {
   if (!env.DB) return;
   try {
-    await env.DB.prepare("INSERT INTO leads(name,phone,message) VALUES(?,?,?)").bind(name, phone, message).run();
+    await env.DB.prepare("INSERT INTO leads(name,phone,message,created_at) VALUES(?,?,?,datetime('now','+5 hours'))").bind(name, phone, message).run();
   } catch (e) {}
 }
 

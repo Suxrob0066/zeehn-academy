@@ -691,15 +691,25 @@ async function route() {
   try { await fn(rest); } catch (e) { $("#page").innerHTML = `<div class="card empty">${ic("alert")}<div>${esc(e.message)}</div></div>`; }
   window.scrollTo(0, 0);
 }
-async function refreshLeadCount() {
+let lastLeadId = null;
+async function refreshLeadCount(poll) {
   if (state.me?.role !== "admin") return;
   try {
     const d = await api("leads");
     const n = d.items.filter((x) => x.status === "yangi").length;
     const el = $("#leadCnt");
     if (el) { el.textContent = n; el.classList.toggle("hidden", !n); }
+    const top = d.items[0]?.id || 0;
+    if (poll && lastLeadId !== null && top > lastLeadId) {
+      const nw = d.items.filter((x) => x.id > lastLeadId);
+      toast(`Saytdan yangi ariza: ${nw[0].name}${nw.length > 1 ? ` va yana ${nw.length - 1} ta` : ""}`);
+      if (location.hash.startsWith("#/leads") && !$(".modal-bg")) pLeads();
+    }
+    lastLeadId = top;
   } catch {}
 }
+// Yangi arizalarni har 30 soniyada tekshirib turamiz
+setInterval(() => { if (!document.hidden) refreshLeadCount(true); }, 30000);
 
 // ===== ADMIN: Bosh sahifa =====
 async function pDash() {
