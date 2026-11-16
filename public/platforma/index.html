@@ -452,6 +452,7 @@ a.s-stat:active{transform:scale(.97)}
 .s-ext{display:flex;gap:10px;align-items:flex-start;background:#E6EEFF;border-radius:12px;padding:12px;margin-bottom:12px}
 .s-ext svg{color:var(--blue);flex:none;width:22px;height:22px}
 .s-ext b{display:block;font-size:14px}.s-ext span{font-size:12.5px;color:#22408F}
+.f .tsel,.tsel{width:120px!important;flex:none;font-variant-numeric:tabular-nums;font-weight:600}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -1839,6 +1840,14 @@ function bulkAccess(items, done) {
 }
 
 // ===== Vazifalar (ustoz / admin) =====
+// 24 soatlik vaqt tanlash (AM/PM siz, har 30 daqiqada)
+function timeSelect(name, val) {
+  const opts = [];
+  for (let h = 6; h <= 23; h++) for (const m of ["00", "30"]) opts.push(`${String(h).padStart(2, "0")}:${m}`);
+  opts.push("23:59");
+  if (val && !opts.includes(val)) opts.push(val), opts.sort();
+  return `<select class="sel tsel" name="${name}">${opts.map((o) => `<option value="${o}" ${o === val ? "selected" : ""}>${o === "23:59" ? "23:59 (kun oxiri)" : o}</option>`).join("")}</select>`;
+}
 // Muddat (sana + soat) va qolgan vaqt
 const nowLocal = () => new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 16).replace("T", " ");
 const dlOf = (t) => (t.due_date ? `${t.due_date} ${t.due_time || "23:59"}` : "");
@@ -1941,7 +1950,7 @@ function taskForm(a, gs, gid) {
 
       <div class="f full"><label>Uy vazifasi</label><textarea class="inp" name="body" rows="5" placeholder="Videoni ko'rib, nima qilish kerakligini yozing...">${esc(a.body)}</textarea></div>
       <div class="f full"><label>Qo'shimcha material havolasi (ixtiyoriy)</label><input class="inp" name="link" value="${esc(a.link)}" placeholder="https://..."></div>
-      <div class="f"><label>Topshirish muddati (deadline) *</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="due_date" value="${esc(a.due_date)}" style="flex:1"><input class="inp" type="time" name="due_time" value="${esc(a.due_time || "20:00")}" style="width:120px"></div>
+      <div class="f"><label>Topshirish muddati (deadline) *</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="due_date" value="${esc(a.due_date)}" style="flex:1">${timeSelect("due_time", a.due_time || "20:00")}</div>
         <div class="qdl">${[["Ertaga", 1], ["2 kun", 2], ["3 kun", 3], ["1 hafta", 7]].map(([t, k]) => `<button type="button" data-dl="${plus(k)}">${t}</button>`).join("")}</div></div>
       <div class="f"><label>Eng yuqori baho</label><select class="sel" name="max_score">${[5, 10, 20, 100].map((n) => `<option value="${n}" ${n == a.max_score ? "selected" : ""}>${n} ball</option>`).join("")}</select></div>
       <label class="f full chk"><input type="checkbox" name="late_ok" ${a.late_ok ? "checked" : ""}> Muddatdan keyin ham qabul qilinsin (kechikkan deb belgilanadi)</label>
@@ -2020,7 +2029,7 @@ function extendForm(a, x, done) {
     title: "Topshirishni ochib berish",
     body: `<p style="line-height:1.6;margin-bottom:14px"><b>${esc(x.name)}</b> uchun <b>${esc(a.title)}</b> vazifasini qayta ochasiz. Belgilangan vaqtgacha u javob yubora oladi — boshqalar uchun muddat o'zgarmaydi.</p>
       <form class="form" id="exf">
-        <div class="f full"><label>Qachongacha</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="until_date" value="${defD}" style="flex:1"><input class="inp" type="time" name="until_time" value="${defT}" style="width:120px"></div>
+        <div class="f full"><label>Qachongacha</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="until_date" value="${defD}" style="flex:1">${timeSelect("until_time", defT)}</div>
           <div class="qdl">${[["Bugun", 0], ["Ertaga", 1], ["2 kun", 2], ["3 kun", 3]].map(([l, k]) => `<button type="button" data-q="${plus(k)}">${l}</button>`).join("")}</div></div>
         <div class="f full"><label>Sababi (ixtiyoriy)</label><input class="inp" name="reason" value="${esc(x.ext_reason || "")}" placeholder="Masalan: kasal edi"></div>
         ${x.score != null ? `<label class="f full chk"><input type="checkbox" name="reset_grade"> Bahoni bekor qilib, qayta topshirishga ruxsat berish</label>` : ""}
