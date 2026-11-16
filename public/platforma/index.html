@@ -1050,7 +1050,7 @@ function groupForm(g) {
     body: `<form class="form" id="gf">
       <div class="f"><label>Guruh nomi *</label><input class="inp" name="name" value="${esc(g.name)}" placeholder="Masalan: IELTS-1"></div>
       <div class="f"><label>Kurs *</label><select class="sel" name="course_id"><option value="">— Tanlang —</option>${cs.filter((c) => c.active || c.id == g.course_id).map((c) => `<option value="${c.id}" ${c.id == g.course_id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>${cs.length ? "" : '<span class="hint">Avval kurs qo\'shing</span>'}</div>
-      <div class="f full"><label>Ustoz</label><select class="sel" name="teacher_id"><option value="">— Biriktirilmagan —</option>${ts.filter((t) => t.active || t.id == g.teacher_id).map((t) => `<option value="${t.id}" ${t.id == g.teacher_id ? "selected" : ""}>${esc(t.name)}${t.subject ? " · " + esc(t.subject) : ""}</option>`).join("")}</select></div>
+      <div class="f full"><label>Ustoz <span class="muted" style="font-weight:400">— bitta ustozga bir nechta guruh biriktirish mumkin</span></label><select class="sel" name="teacher_id"><option value="">— Biriktirilmagan —</option>${ts.filter((t) => t.active || t.id == g.teacher_id).map((t) => `<option value="${t.id}" ${t.id == g.teacher_id ? "selected" : ""}>${esc(t.name)}${t.subject ? " · " + esc(t.subject) : ""}</option>`).join("")}</select></div>
       <div class="f full"><label>Dars kunlari</label><div class="daypick">${KUNLAR.map((k, i) => `<button type="button" data-d="${i + 1}" class="${sel.includes(String(i + 1)) ? "on" : ""}">${k}</button>`).join("")}</div>
         <div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn sm ghost" data-preset="1,3,5">Du-Ch-Ju</button><button type="button" class="btn sm ghost" data-preset="2,4,6">Se-Pa-Sh</button><button type="button" class="btn sm ghost" data-preset="1,2,3,4,5">Har kuni</button></div></div>
       <div class="f"><label>Dars vaqti</label><input class="inp" name="time" id="gtime" value="${esc(g.time)}" placeholder="14:00–16:00"><span class="hint">Boshlanish vaqtini yozsangiz, 2 soatlik dars avtomatik to'ldiriladi</span></div>
@@ -1129,6 +1129,13 @@ function teacherForm(t) {
   }
   m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
     const b = formData(m.$("#tf"));
+    const norm = (x) => String(x || "").toLowerCase().replace(/[^a-z]/g, "");
+    const twin = isNew && (state.cache.teachers || []).find((x) => norm(x.name) === norm(b.name));
+    if (twin && !m.twinOk) {
+      m.err(`"${twin.name}" ismli ustoz allaqachon bor (login: ${twin.login}). Bitta ustozga bir nechta guruh biriktirish mumkin — yangi hisob ochish shart emas. Guruhlar bo'limida guruhni ochib, "Ustoz" maydonidan uni tanlang. Baribir yangi hisob kerak bo'lsa, "Ustoz yaratish"ni yana bosing.`);
+      m.twinOk = true;
+      return;
+    }
     if (b.phone.replace(/\D/g, "").length <= 3) b.phone = "";
     if (!isNew) b.active = b.active === "1";
     try {
