@@ -786,11 +786,11 @@ async function assignments(req, env, id, me, url) {
     if (!(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
     const r = await db
       .prepare(
-        `SELECT s.id student_id,s.name,s.login IS NOT NULL has_login,sb.id,sb.text,sb.photo,sb.submitted_at,sb.score,sb.feedback,sb.checked_at,sb.late
-         FROM students s LEFT JOIN submissions sb ON sb.student_id=s.id AND sb.assignment_id=?
+        `SELECT s.id student_id,s.name,s.login IS NOT NULL has_login,sb.id,sb.text,sb.photo,sb.submitted_at,sb.score,sb.feedback,sb.checked_at,sb.late,ex.until ext_until,ex.reason ext_reason
+         FROM students s LEFT JOIN submissions sb ON sb.student_id=s.id AND sb.assignment_id=? LEFT JOIN extensions ex ON ex.student_id=s.id AND ex.assignment_id=?
          WHERE s.group_id=? AND s.status='active' ORDER BY sb.submitted_at IS NULL, s.name`
       )
-      .bind(id, a.group_id)
+      .bind(id, id, a.group_id)
       .all();
     return json({ ok: true, assignment: { ...a, deadline: deadlineOf(a), closed: isLate(a) }, items: r.results, now: nowStr() });
   }
@@ -853,6 +853,32 @@ async function assignments(req, env, id, me, url) {
     .run();
   return json({ ok: true });
 }
+// Ustoz/admin: o'quvchiga shaxsiy muhlat berish (vazifani qayta ochish)
+async function extendTask(req, env, id, me) {
+  const db = env.DB;
+  const a = await db.prepare("SELECT group_id FROM assignments WHERE id=?").bind(id).first();
+  if (!a || !(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
+  const b = await body(req);
+  const sid = I(b.student_id);
+  const st = await db.prepare("SELECT id FROM students WHERE id=? AND group_id=?").bind(sid, a.group_id).first();
+  if (!st) return err("O'quvchi bu guruhda emas");
+  if (req.method === "DELETE") {
+    await db.prepare("DELETE FROM extensions WHERE assignment_id=? AND student_id=?").bind(id, sid).run();
+    return json({ ok: true });
+  }
+  const d = S(b.until_date, 10), t = /^\d{2}:\d{2}$/.test(S(b.until_time, 5)) ? S(b.until_time, 5) : "23:59";
+  if (!isDate(d)) return err("Sanani tanlang");
+  const until = `${d} ${t}`;
+  if (until <= nowStr()) return err("Muhlat hozirgi vaqtdan keyin bo'lishi kerak");
+  await db
+    .prepare(`INSERT INTO extensions(assignment_id,student_id,until,reason,created_by) VALUES(?,?,?,?,?)
+      ON CONFLICT(assignment_id,student_id) DO UPDATE SET until=excluded.until,reason=excluded.reason,created_by=excluded.created_by,created_at=datetime('now','+5 hours')`)
+    .bind(id, sid, until, S(b.reason, 300), me.id)
+    .run();
+  // Baholangan bo'lsa, qayta topshirish uchun bahoni bekor qilamiz
+  if (b.reset_grade) await db.prepare("UPDATE submissions SET score=NULL, checked_at=NULL WHERE assignment_id=? AND student_id=?").bind(id, sid).run();
+  return json({ ok: true, until });
+}
 // Ustoz javobni baholaydi
 async function gradeSubmission(req, env, id, me) {
   const db = env.DB;
@@ -889,7 +915,7 @@ async function studentApi(req, env, me, parts, url) {
       db.prepare("SELECT COALESCE(SUM(amount),0) n FROM payments WHERE student_id=? AND month=?").bind(me.id, m),
       db.prepare("SELECT status,COUNT(*) n FROM attendance WHERE student_id=? GROUP BY status").bind(me.id),
       db.prepare(
-        `SELECT a.id,a.title,a.due_date,a.due_time,a.late_ok,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score FROM assignments a WHERE a.group_id=? AND NOT EXISTS (SELECT 1 FROM submissions sb WHERE sb.assignment_id=a.id AND sb.student_id=?) ORDER BY (a.due_date='' ), a.due_date, a.id DESC LIMIT 20`
+        `SELECT a.id,a.title,a.due_date,a.due_time,a.late_ok,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score,(SELECT until FROM extensions ex WHERE ex.assignment_id=a.id AND ex.student_id=${Number(me.id)}) ext_until FROM assignments a WHERE a.group_id=? AND NOT EXISTS (SELECT 1 FROM submissions sb WHERE sb.assignment_id=a.id AND sb.student_id=?) ORDER BY (a.due_date='' ), a.due_date, a.id DESC LIMIT 20`
       ).bind(st.group_id || 0, me.id),
       db.prepare(
         `SELECT a.title,sb.score,a.max_score,sb.feedback,sb.checked_at,a.id FROM submissions sb JOIN assignments a ON a.id=sb.assignment_id WHERE sb.student_id=? AND sb.score IS NOT NULL ORDER BY sb.checked_at DESC LIMIT 3`
@@ -910,11 +936,11 @@ async function studentApi(req, env, me, parts, url) {
   if (res === "tasks" && req.method === "GET" && !id) {
     const r = await db
       .prepare(
-        `SELECT a.id,a.title,a.body,a.link,a.due_date,a.due_time,a.late_ok,a.lesson_date,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score,a.created_at,sb.id sub_id,sb.late,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
+        `SELECT a.id,a.title,a.body,a.link,a.due_date,a.due_time,a.late_ok,a.lesson_date,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score,a.created_at,sb.id sub_id,sb.late,(SELECT until FROM extensions ex WHERE ex.assignment_id=a.id AND ex.student_id=?) ext_until,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
          FROM assignments a LEFT JOIN submissions sb ON sb.assignment_id=a.id AND sb.student_id=?
          WHERE a.group_id=? ORDER BY a.id DESC LIMIT 200`
       )
-      .bind(me.id, st.group_id || 0)
+      .bind(me.id, me.id, st.group_id || 0)
       .all();
     return json({ ok: true, today: today(), now: nowStr(), items: r.results });
   }
@@ -922,11 +948,13 @@ async function studentApi(req, env, me, parts, url) {
     const a = await db.prepare("SELECT * FROM assignments WHERE id=? AND group_id=?").bind(id, st.group_id || 0).first();
     if (!a) return err("Vazifa topilmadi", 404);
     const mine = await db.prepare("SELECT * FROM submissions WHERE assignment_id=? AND student_id=?").bind(id, me.id).first();
-    if (req.method === "GET") return json({ ok: true, task: { ...a, deadline: deadlineOf(a), closed: isLate(a) && !a.late_ok }, submission: mine || null, today: today(), now: nowStr() });
+    const ext = await db.prepare("SELECT until,reason FROM extensions WHERE assignment_id=? AND student_id=?").bind(id, me.id).first();
+    const extOpen = ext && nowStr() <= ext.until;
+    if (req.method === "GET") return json({ ok: true, task: { ...a, deadline: deadlineOf(a), closed: isLate(a) && !a.late_ok && !extOpen, ext: ext || null, ext_open: !!extOpen }, submission: mine || null, today: today(), now: nowStr() });
     // Javob yuborish
     if (mine && mine.score != null) return err("Javob baholangan, endi o'zgartirib bo'lmaydi");
     const late = isLate(a);
-    if (late && !a.late_ok) return err("Topshirish muddati tugagan. Javob qabul qilinmaydi.");
+    if (late && !a.late_ok && !extOpen) return err("Topshirish muddati tugagan. Javob qabul qilinmaydi.");
     const b = await body(req);
     const text = S(b.text, 5000);
     const photo = String(b.photo || "");
@@ -938,7 +966,7 @@ async function studentApi(req, env, me, parts, url) {
         `INSERT INTO submissions(assignment_id,student_id,text,photo,submitted_at,late) VALUES(?,?,?,?,datetime('now','+5 hours'),?)
          ON CONFLICT(assignment_id,student_id) DO UPDATE SET text=excluded.text,photo=excluded.photo,submitted_at=excluded.submitted_at,late=excluded.late`
       )
-      .bind(id, me.id, text, photo, late ? 1 : 0)
+      .bind(id, me.id, text, photo, late ? (extOpen ? 2 : 1) : 0)
       .run();
     return json({ ok: true });
   }
@@ -1071,6 +1099,7 @@ export async function handlePlatform(req, env, url) {
     }
     if (res === "assignments") return await assignments(req, env, id, me, url);
     if (res === "submissions" && id && req.method === "PUT") return await gradeSubmission(req, env, id, me);
+    if (res === "extend" && id) return await extendTask(req, env, id, me);
 
     if (res === "me") {
       if (rawId === "password" && req.method === "POST") return await changeMyPassword(req, env, me);

@@ -442,6 +442,16 @@ a.s-stat:active{transform:scale(.97)}
 .s-closed svg{color:var(--bad);flex:none;width:22px;height:22px}
 .s-closed b{display:block;font-size:14px}.s-closed span{font-size:12.5px;color:#8A1F26}
 .s-closed.warn{background:var(--warnbg)}.s-closed.warn svg{color:var(--warn)}.s-closed.warn span{color:#7A5200}
+.ext-txt{color:var(--blue);font-weight:600}
+.ext-hint{display:flex;gap:8px;align-items:flex-start;background:var(--warnbg);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12.5px;color:#7A5200;line-height:1.5}
+.ext-hint svg{width:18px;height:18px;flex:none;color:var(--warn)}
+.list-item .btn.sm{flex:none}
+.card .list-item{flex-wrap:wrap}
+.li-acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto;justify-content:flex-end}
+.card .list-item .grow{min-width:110px}
+.s-ext{display:flex;gap:10px;align-items:flex-start;background:#E6EEFF;border-radius:12px;padding:12px;margin-bottom:12px}
+.s-ext svg{color:var(--blue);flex:none;width:22px;height:22px}
+.s-ext b{display:block;font-size:14px}.s-ext span{font-size:12.5px;color:#22408F}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -1987,15 +1997,42 @@ async function taskDetail(id) {
       </div>
       <div class="card">
         <h3>${ic("users")} Javoblar <span class="muted" style="font-weight:400;font-size:13px">· ${sub} / ${d.items.length} topshirdi</span></h3>
+        ${a.closed ? `<div class="ext-hint">${ic("clock")}<span>Muddat tugagan. Ulgurmagan o'quvchiga <b>"Ochib berish"</b> tugmasi orqali shaxsiy muhlat bering. Hammaga uzaytirish uchun — <b>Tahrirlash</b>.</span></div>` : ""}
         ${d.items.length ? d.items.map((x) => `
           <div class="list-item ${x.id ? "click-row" : ""}" ${x.id ? `data-sub="${x.id}"` : ""}>
             <div class="ava" style="width:36px;height:36px;font-size:12px">${esc(initials(x.name))}</div>
-            <div class="grow"><div class="t">${esc(x.name)}</div><div class="s">${x.id ? "Yuborildi: " + fmtDate(x.submitted_at) + " " + esc(String(x.submitted_at).slice(11, 16)) : x.has_login ? "Hali topshirmagan" : "Kabinetga login berilmagan"}</div></div>
-            ${x.late ? '<span class="badge b-bad nodot">Kechikkan</span>' : ""}${x.id ? x.score != null ? `<span class="badge b-ok">${x.score} / ${a.max_score}</span>` : '<span class="badge b-warn">Tekshirish</span>' : '<span class="badge b-gray">Yo\'q</span>'}
+            <div class="grow"><div class="t">${esc(x.name)}</div><div class="s">${x.id ? "Yuborildi: " + fmtDate(x.submitted_at) + " " + esc(String(x.submitted_at).slice(11, 16)) : x.has_login ? "Hali topshirmagan" : "Kabinetga login berilmagan"}${x.ext_until ? ` · <span class="ext-txt">${nowLocal() <= x.ext_until ? "Muhlat" : "Muhlat tugagan"}: ${fmtDate(x.ext_until)} ${esc(x.ext_until.slice(11))}</span>` : ""}</div></div>
+            <div class="li-acts">${a.closed || x.ext_until ? `<button class="btn sm ${x.ext_until && nowLocal() <= x.ext_until ? "ghost" : "volt"}" data-ext="${x.student_id}" title="Vazifa topshirishni ochib berish">${ic("key")}${x.ext_until && nowLocal() <= x.ext_until ? "Muhlat" : "Ochib berish"}</button>` : ""}
+            ${x.late == 2 ? '<span class="badge b-blue nodot">Muhlat bilan</span>' : x.late ? '<span class="badge b-bad nodot">Kechikkan</span>' : ""}${x.id ? x.score != null ? `<span class="badge b-ok">${x.score} / ${a.max_score}</span>` : '<span class="badge b-warn">Tekshirish</span>' : '<span class="badge b-gray">Yo\'q</span>'}</div>
           </div>`).join("") : '<div class="empty" style="padding:20px">Guruhda faol o\'quvchi yo\'q</div>'}
       </div>
     </div>`;
   $$("[data-sub]").forEach((r) => (r.onclick = () => gradeForm(a, d.items.find((x) => x.id == r.dataset.sub), () => taskDetail(id))));
+  $$("[data-ext]").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); extendForm(a, d.items.find((x) => x.student_id == b.dataset.ext), () => taskDetail(id)); }));
+}
+// O'quvchiga shaxsiy muhlat: vazifani qayta ochib berish
+function extendForm(a, x, done) {
+  const t = new Date(Date.now() + 5 * 3600 * 1000 + 86400000);
+  const defD = x.ext_until ? x.ext_until.slice(0, 10) : t.toISOString().slice(0, 10);
+  const defT = x.ext_until ? x.ext_until.slice(11, 16) : "20:00";
+  const plus = (k) => new Date(Date.now() + 5 * 3600 * 1000 + k * 86400000).toISOString().slice(0, 10);
+  const m = modal({
+    title: "Topshirishni ochib berish",
+    body: `<p style="line-height:1.6;margin-bottom:14px"><b>${esc(x.name)}</b> uchun <b>${esc(a.title)}</b> vazifasini qayta ochasiz. Belgilangan vaqtgacha u javob yubora oladi — boshqalar uchun muddat o'zgarmaydi.</p>
+      <form class="form" id="exf">
+        <div class="f full"><label>Qachongacha</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="until_date" value="${defD}" style="flex:1"><input class="inp" type="time" name="until_time" value="${defT}" style="width:120px"></div>
+          <div class="qdl">${[["Bugun", 0], ["Ertaga", 1], ["2 kun", 2], ["3 kun", 3]].map(([l, k]) => `<button type="button" data-q="${plus(k)}">${l}</button>`).join("")}</div></div>
+        <div class="f full"><label>Sababi (ixtiyoriy)</label><input class="inp" name="reason" value="${esc(x.ext_reason || "")}" placeholder="Masalan: kasal edi"></div>
+        ${x.score != null ? `<label class="f full chk"><input type="checkbox" name="reset_grade"> Bahoni bekor qilib, qayta topshirishga ruxsat berish</label>` : ""}
+      </form>`,
+    foot: `${x.ext_until ? `<button class="btn danger left" id="rm">${ic("trash")}Muhlatni bekor qilish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">${ic("key")}Ochib berish</button>`,
+  });
+  $$("[data-q]", m.el).forEach((b) => (b.onclick = () => (m.$("[name=until_date]").value = b.dataset.q)));
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const b = formData(m.$("#exf")); b.student_id = x.student_id;
+    try { const r = await api("extend/" + a.id, { method: "POST", body: b }); m.close(); toast(`${x.name.split(" ")[0]} uchun ${fmtDate(r.until)} ${r.until.slice(11)} gacha ochildi`); done(); } catch (e) { m.err(e.message); }
+  });
+  if (m.$("#rm")) m.$("#rm").onclick = async () => { try { await api("extend/" + a.id, { method: "DELETE", body: { student_id: x.student_id } }); m.close(); toast("Muhlat bekor qilindi"); done(); } catch (e) { toast(e.message, 1); } };
 }
 function gradeForm(a, x, done) {
   const steps = Math.min(a.max_score, 10);
@@ -2065,10 +2102,11 @@ async function sHome() {
     ${d.graded.length ? `<div class="s-sec"><h3>So'nggi baholar</h3>${d.graded.map((g) => `<a class="s-task" href="#/tasks/${g.id}"><div class="s-score">${g.score}<small>/${g.max_score}</small></div><div class="grow"><b>${esc(g.title)}</b><span>${esc(g.feedback || "Izoh yo'q")}</span></div>${ic("chevR")}</a>`).join("")}</div>` : ""}</div></div>`;
 }
 function sTaskRow(t, today) {
-  const dl = dlOf(t);
+  const ext = t.ext_until && nowLocal() <= t.ext_until ? t.ext_until : "";
+  const dl = ext || dlOf(t);
   const over = dl && nowLocal() > dl;
   const st = t.score != null ? `<div class="s-score">${t.score}<small>/${t.max_score}</small></div>` : t.sub_id ? `<div class="s-ico ok">${ic("check")}</div>` : `<div class="s-ico ${over ? "late" : ""}">${ic(t.has_video ? "play" : "task")}</div>`;
-  const sub = t.score != null ? "Baholandi" : t.sub_id ? (t.late ? "Kechikib topshirildi" : "Topshirildi · tekshirilmoqda") : !dl ? "Muddatsiz" : over ? (t.late_ok ? "Muddat o'tgan · hali topshirish mumkin" : "Muddat tugagan") : `${fmtDate(t.due_date)}${t.due_time ? ", " + t.due_time : ""} · ${leftText(dl)}`;
+  const sub = t.score != null ? "Baholandi" : t.sub_id ? (t.late ? "Kechikib topshirildi" : "Topshirildi · tekshirilmoqda") : !dl ? "Muddatsiz" : over ? (t.late_ok ? "Muddat o'tgan · hali topshirish mumkin" : "Muddat tugagan") : ext ? `Muhlat berildi · ${leftText(dl)}` : `${fmtDate(t.due_date)}${t.due_time ? ", " + t.due_time : ""} · ${leftText(dl)}`;
   return `<a class="s-task" href="#/tasks/${t.id}">${st}<div class="grow"><b>${esc(t.title)}</b><span class="${over && !t.sub_id ? "late" : ""}">${t.has_video ? "🎬 " : ""}${sub}</span></div>${ic("chevR")}</a>`;
 }
 async function sTasks(rest) {
@@ -2101,8 +2139,8 @@ async function sTask(id) {
     </div><div>
     <div class="s-card">
       <h3 style="font-size:16px;margin-bottom:12px">${graded ? "Sizning javobingiz" : sb ? "Javobingiz yuborilgan ✓" : "Javobingiz"}</h3>
-      ${graded || closed ? `${closed ? `<div class="s-closed">${ic("clock")}<div><b>Topshirish muddati tugagan</b><span>${fmtDate(t.due_date)}${t.due_time ? ", " + t.due_time : ""} gacha edi. ${sb ? "Yuborgan javobingiz ustozga yetib bordi." : "Javob endi qabul qilinmaydi."}</span></div></div>` : ""}${sb && sb.text ? `<div class="task-body">${esc(sb.text)}</div>` : ""}${sb && sb.photo ? `<img src="${sb.photo}" class="s-photo">` : ""}`
-        : `${t.deadline && nowLocal() > t.deadline ? '<div class="s-closed warn">' + ic("clock") + '<div><b>Muddat o\'tgan</b><span>Ustoz kechikib topshirishga ruxsat bergan — javobingiz "kechikkan" deb belgilanadi.</span></div></div>' : ""}${sb ? '<p class="muted" style="font-size:13px;margin-bottom:10px">Ustoz tekshirguncha javobni o\'zgartirishingiz mumkin.</p>' : ""}
+      ${graded || closed ? `${closed ? `<div class="s-closed">${ic("clock")}<div><b>Topshirish muddati tugagan</b><span>${fmtDate(t.due_date)}${t.due_time ? ", " + t.due_time : ""} gacha edi. ${sb ? "Yuborgan javobingiz ustozga yetib bordi." : "Sababli ulgurmagan bo'lsangiz, ustozingizga ayting — u vazifani siz uchun qayta ochib bera oladi."}</span></div></div>` : ""}${sb && sb.text ? `<div class="task-body">${esc(sb.text)}</div>` : ""}${sb && sb.photo ? `<img src="${sb.photo}" class="s-photo">` : ""}`
+        : `${t.ext_open ? `<div class="s-ext">${ic("key")}<div><b>Sizga qo'shimcha muhlat berildi</b><span>${fmtDate(t.ext.until)}, ${esc(t.ext.until.slice(11))} gacha topshiring${t.ext.reason ? " · " + esc(t.ext.reason) : ""} · ${leftText(t.ext.until)}</span></div></div>` : t.deadline && nowLocal() > t.deadline ? '<div class="s-closed warn">' + ic("clock") + '<div><b>Muddat o\'tgan</b><span>Ustoz kechikib topshirishga ruxsat bergan — javobingiz "kechikkan" deb belgilanadi.</span></div></div>' : ""}${sb ? '<p class="muted" style="font-size:13px;margin-bottom:10px">Ustoz tekshirguncha javobni o\'zgartirishingiz mumkin.</p>' : ""}
         <textarea class="inp s-answer" id="ans" rows="6" placeholder="Javobingizni shu yerga yozing...">${esc(sb?.text || "")}</textarea>
         <div id="phWrap"></div>
         <label class="btn ghost s-attach" id="phLbl">${ic("camera")}<span>${photo ? "Rasmni almashtirish" : "Rasm biriktirish (daftar, ekran)"}</span><input type="file" accept="image/*" id="phIn" hidden></label>`}
