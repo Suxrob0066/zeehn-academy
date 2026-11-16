@@ -284,6 +284,7 @@ code{font-family:ui-monospace,monospace;background:var(--cloud);padding:1px 6px;
   .role-student .page{padding-bottom:48px}
   .s-cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start}
   .s-cols.wide-right{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+  .att-hist{margin-top:0}
   .s-cols .s-sec:first-child{margin-top:0}
   .s-stats{margin-bottom:0}
   .s-tasklist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -360,6 +361,53 @@ a.s-stat:active{transform:scale(.97)}
 .lg{display:inline-block;width:12px;height:12px;border-radius:4px}
 .lg.keldi{background:var(--ok)}.lg.kechikdi{background:var(--warn)}.lg.kelmadi{background:var(--bad)}.lg.sababli{background:var(--gray)}.lg.ls{background:var(--cloud);border:1px solid var(--line)}
 @media (max-width:860px){.task-list{grid-template-columns:1fr}.role-teacher .tabbar a{font-size:10px}}
+/* O'quvchi davomati */
+.att-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.att-layout>*{margin:0!important}
+.att-layout .att-sum{order:1}.att-layout .att-grid{order:2}.att-layout .att-cal{order:3}.att-layout .att-hist{order:4}
+@media (min-width:861px){.att-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"sum cal" "grid cal" "hist cal";align-items:start;gap:16px 22px}
+.att-layout .att-sum{grid-area:sum}.att-layout .att-grid{grid-area:grid}.att-layout .att-hist{grid-area:hist}.att-layout .att-cal{grid-area:cal;align-self:start}}
+.cal{grid-template-columns:repeat(7,minmax(0,1fr))!important}
+.cal .cd{min-width:0}
+.s-month-top{background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:14px;max-width:360px}
+.att-sum{display:flex;align-items:center;gap:18px}
+.ring{width:124px;height:124px;flex:none}
+.ring .rv{font:700 24px Poppins,sans-serif;fill:var(--navy)}
+.ring .rl{font:500 11px Poppins,sans-serif;fill:var(--muted)}
+.att-txt>b{display:block;font-size:17px}
+.att-txt{flex:1;min-width:0}
+.att-txt>span{display:block;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}
+.att-all{font-size:12.5px;color:var(--muted);margin-top:8px}
+.att-all b{color:var(--navy)}
+.att-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.att-box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.att-box i{font-style:normal;width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;margin-bottom:4px}
+.att-box b{font-size:22px;line-height:1.1}
+.att-box span{font-size:12px;color:var(--muted)}
+.att-box.keldi i{background:var(--okbg);color:var(--ok)}.att-box.kechikdi i{background:var(--warnbg);color:var(--warn)}.att-box.kelmadi i{background:var(--badbg);color:var(--bad)}.att-box.sababli i{background:var(--graybg);color:var(--gray)}
+.att-hist h3,.att-cal h3{font-size:16px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.att-hist h3 .muted{font-weight:400;font-size:13px}
+.ah-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.ah-row:last-child{border-bottom:0}
+.ah-date{width:42px;height:42px;border-radius:12px;background:var(--cloud);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;flex:none}
+.ah-date b{font-size:15px}.ah-date span{font-size:10px;color:var(--muted);font-weight:600}
+.ah-row .grow{flex:1}
+.ah-st{font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px;white-space:nowrap}
+.ah-st.keldi{background:var(--okbg);color:var(--ok)}.ah-st.kechikdi{background:var(--warnbg);color:var(--warn)}.ah-st.kelmadi{background:var(--badbg);color:var(--bad)}.ah-st.sababli{background:var(--graybg);color:var(--gray)}.ah-st.miss,.ah-st.plan{background:#F3F5FA;color:var(--gray)}
+.cal .cd{position:relative;flex-direction:column;gap:0}
+.cal .cd.empty{visibility:hidden;aspect-ratio:auto!important;height:auto!important;min-height:0}
+.cal .cd.off{color:#C2C9DB;font-weight:500}
+.cal .cd.plan{background:#fff;color:var(--blue);border:1.5px dashed #9DB8FF}
+.cal .cd.miss{background:#F3F5FA;color:var(--gray)}
+.cal .cd i{font-style:normal;font-size:10px;line-height:1;opacity:.9;margin-top:1px}
+.cal .cd.td{box-shadow:inset 0 0 0 2.5px var(--blue)}
+.cal .cd.td.plan{background:#E6EEFF}
+.att-legend{display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:14px;font-size:12px;color:var(--muted)}
+.att-legend span{display:flex;align-items:center;gap:6px}
+.att-legend .lg{width:18px;height:18px;border-radius:6px;font-style:normal;font-size:10px;font-weight:800;color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.lg.plan{background:#fff;box-shadow:inset 0 0 0 1.5px #BFD0FF}.lg.miss{background:#F3F5FA;border:1px solid var(--line)}
+@media (max-width:860px){.att-grid{grid-template-columns:repeat(4,1fr);gap:8px}.att-box{padding:10px}.att-box b{font-size:19px}.ring{width:104px;height:104px}.s-month-top{max-width:none}}
+@media (min-width:861px){.att-cal .cal .cd{height:56px}}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -1971,36 +2019,69 @@ function shrinkImage(file, max, q) {
 async function sAttendance() {
   const st = state.cache.sAtt || (state.cache.sAtt = { month: (state.today || new Date().toISOString()).slice(0, 7) });
   const d = await api("s/attendance?month=" + st.month);
-  const tot = Object.fromEntries(d.totals.map((x) => [x.status, x.n]));
-  const all = d.totals.reduce((a, x) => a + x.n, 0);
-  const pct = all ? Math.round((((tot.keldi || 0) + (tot.kechikdi || 0)) / all) * 100) : null;
+  const today = state.today || new Date().toISOString().slice(0, 10);
+  const totAll = Object.fromEntries(d.totals.map((x) => [x.status, x.n]));
+  const allN = d.totals.reduce((a, x) => a + x.n, 0);
+  const allPct = allN ? Math.round((((totAll.keldi || 0) + (totAll.kechikdi || 0)) / allN) * 100) : null;
   const map = Object.fromEntries(d.items.map((x) => [x.date, x.status]));
+  const mc = (k) => d.items.filter((x) => x.status === k).length;
+  const mN = d.items.length;
+  const mPct = mN ? Math.round(((mc("keldi") + mc("kechikdi")) / mN) * 100) : null;
   const [y, m] = st.month.split("-").map(Number);
   const nDays = new Date(Date.UTC(y, m, 0)).getUTCDate();
   const first = dowOf(`${st.month}-01`);
-  const ld = String(d.days || "").split(",");
-  setHead("Davomat", pct == null ? "Hali yo'qlama yo'q" : `Umumiy davomat: ${pct}%`);
+  const ld = String(d.days || "").split(",").filter(Boolean);
+  const AIC = { keldi: "✓", kechikdi: "!", kelmadi: "✕", sababli: "S" };
+  // Oy davomidagi barcha dars kunlari (o'tgan + kelgusi)
+  const lessons = [];
   let cells = "";
-  for (let i = 1; i < first; i++) cells += "<span></span>";
+
   for (let i = 1; i <= nDays; i++) {
     const ds = `${st.month}-${String(i).padStart(2, "0")}`;
     const v = map[ds];
-    const lesson = ld.includes(String(dowOf(ds)));
-    cells += `<span class="cd ${v || (lesson ? "ls" : "")} ${ds === state.today ? "td" : ""}" title="${v ? ATT[v][0] : ""}">${i}</span>`;
+    const isL = ld.includes(String(dowOf(ds)));
+    let cls = "off", tip = "Dars yo'q";
+    if (v) { cls = v; tip = ATT[v][0]; }
+    else if (isL && ds < today) { cls = "miss"; tip = "Belgilanmagan"; }
+    else if (isL) { cls = "plan"; tip = ds === today ? "Bugun dars" : "Dars bo'ladi"; }
+    if (v || isL) lessons.push({ ds, v, cls, tip });
+    cells += `<span class="cd ${cls} ${ds === today ? "td" : ""}" ${i === 1 ? `style="grid-column-start:${first}"` : ""} title="${fmtDate(ds)} — ${tip}"><b>${i}</b>${v ? `<i>${AIC[v]}</i>` : ""}</span>`;
   }
-  $("#page").innerHTML = `<div class="s-cols wide-right"><div>
-    <div class="s-stats">
-      <div class="s-stat"><b style="color:var(--ok)">${tot.keldi || 0}</b><span>Keldi</span></div>
-      <div class="s-stat"><b style="color:var(--warn)">${tot.kechikdi || 0}</b><span>Kechikdi</span></div>
-      <div class="s-stat"><b style="color:var(--bad)">${tot.kelmadi || 0}</b><span>Kelmadi</span></div>
-    </div>
-    <div class="s-card s-desk-note" style="margin-top:14px"><b style="display:block;margin-bottom:6px">Umumiy davomat</b><div style="font-size:34px;font-weight:700;color:var(--blue)">${pct == null ? "—" : pct + "%"}</div><div class="muted" style="font-size:13px;margin-top:4px">Darslarga qatnashish foizi. Kelmagan kunlaringiz qizil rangda ko'rsatiladi.</div></div>
-    </div><div>
-    <div class="s-card">
-      <div class="s-month"><button class="icon-btn" id="mp">${ic("chevL")}</button><b>${fmtMonth(st.month)}</b><button class="icon-btn" id="mn">${ic("chevR")}</button></div>
-      <div class="cal">${KUNLAR.map((k) => `<span class="wh">${k}</span>`).join("")}${cells}</div>
-      <div class="legend" style="justify-content:center"><span><i class="lg keldi"></i>Keldi</span><span><i class="lg kechikdi"></i>Kechikdi</span><span><i class="lg kelmadi"></i>Kelmadi</span><span><i class="lg sababli"></i>Sababli</span><span><i class="lg ls"></i>Dars kuni</span></div>
-    </div></div></div>`;
+  const ring = (pct) => { const r = 52, c = 2 * Math.PI * r, off = pct == null ? c : c * (1 - pct / 100); const col = pct == null ? "#C9D6F5" : pct >= 80 ? "var(--ok)" : pct >= 60 ? "var(--warn)" : "var(--bad)"; return `<svg viewBox="0 0 120 120" class="ring"><circle cx="60" cy="60" r="${r}" stroke="#E8EEFC" stroke-width="12" fill="none"/><circle cx="60" cy="60" r="${r}" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" class="rv">${pct == null ? "—" : pct + "%"}</text><text x="60" y="78" text-anchor="middle" class="rl">davomat</text></svg>`; };
+  const verdict = mPct == null ? ["Bu oyda hali yo'qlama yo'q", "Ustoz darsda yo'qlama qilgach, natijalar shu yerda chiqadi."]
+    : mPct >= 90 ? ["A'lo! 🎉", "Darslarni deyarli qoldirmayapsiz. Shunday davom eting!"]
+    : mPct >= 75 ? ["Yaxshi 👍", "Ozgina ko'proq e'tibor bersangiz, natija a'lo bo'ladi."]
+    : ["Ko'proq qatnashing ⚠️", "Dars qoldirish o'zlashtirishga ta'sir qiladi."];
+  setHead("Davomat", "Darslarga qatnashishingiz");
+  const past = lessons.filter((l) => l.ds <= today).reverse();
+  const nextL = lessons.find((l) => l.ds > today || (l.ds === today && !l.v));
+  $("#page").innerHTML = `
+    <div class="s-month s-month-top"><button class="icon-btn" id="mp" aria-label="Oldingi oy">${ic("chevL")}</button><b>${fmtMonth(st.month)}</b><button class="icon-btn" id="mn" aria-label="Keyingi oy">${ic("chevR")}</button></div>
+    <div class="att-layout">
+      <div class="s-card att-sum">
+        ${ring(mPct)}
+        <div class="att-txt"><b>${verdict[0]}</b><span>${verdict[1]}</span>
+          ${allPct != null ? `<div class="att-all">Umumiy davomat (barcha oylar): <b>${allPct}%</b></div>` : ""}
+          ${nextL ? `<div class="att-all">Keyingi dars: <b>${nextL.ds === today ? "Bugun" : KUNLAR_TOLIQ[dowOf(nextL.ds) - 1] + ", " + fmtDate(nextL.ds)}</b></div>` : ""}
+        </div>
+      </div>
+      <div class="att-grid">
+        <div class="att-box keldi"><i>✓</i><b>${mc("keldi")}</b><span>Keldi</span></div>
+        <div class="att-box kechikdi"><i>!</i><b>${mc("kechikdi")}</b><span>Kechikdi</span></div>
+        <div class="att-box kelmadi"><i>✕</i><b>${mc("kelmadi")}</b><span>Kelmadi</span></div>
+        <div class="att-box sababli"><i>S</i><b>${mc("sababli")}</b><span>Sababli</span></div>
+      </div>
+      <div class="s-card att-cal">
+        <h3>Taqvim</h3>
+        <div class="cal">${KUNLAR.map((k) => `<span class="wh">${k}</span>`).join("")}${cells}</div>
+        <div class="att-legend">
+          <span><i class="lg keldi">✓</i>Keldi</span><span><i class="lg kechikdi">!</i>Kechikdi</span><span><i class="lg kelmadi">✕</i>Kelmadi</span><span><i class="lg sababli">S</i>Sababli</span><span><i class="lg plan"></i>Dars kuni</span><span><i class="lg miss"></i>Belgilanmagan</span>
+        </div>
+      </div>
+      <div class="s-card att-hist"><h3>Darslar tarixi <span class="muted">${fmtMonth(st.month)}</span></h3>
+        ${past.length ? past.map((l) => `<div class="ah-row"><div class="ah-date"><b>${+l.ds.slice(8)}</b><span>${KUNLAR[dowOf(l.ds) - 1]}</span></div><div class="grow">${fmtDate(l.ds)}${l.ds === today ? ' <span class="muted">· bugun</span>' : ""}</div><span class="ah-st ${l.cls}">${l.v ? AIC[l.v] + " " + ATT[l.v][0] : l.cls === "miss" ? "Belgilanmagan" : "Kutilmoqda"}</span></div>`).join("") : `<div class="muted" style="padding:10px 0;font-size:13px">Bu oyda hali dars bo'lmagan</div>`}
+      </div>
+    </div>`;
   $("#mp").onclick = () => { st.month = addMonth(st.month, -1); sAttendance(); };
   $("#mn").onclick = () => { st.month = addMonth(st.month, 1); sAttendance(); };
 }
