@@ -649,13 +649,13 @@ const NAV_TEACHER = [
 
 function shell() {
   const me = state.me;
-  const nav = me.role === "admin" ? NAV_ADMIN : NAV_TEACHER;
+  const nav = me.role === "admin" ? (me.owner ? [...NAV_ADMIN.slice(0, -1), ["admins", "key", "Administratorlar"], NAV_ADMIN[NAV_ADMIN.length - 1]] : NAV_ADMIN) : NAV_TEACHER;
   $("#root").innerHTML = `
   <div class="app role-${me.role}" id="app">
     <aside class="side">
       <a href="#/" class="logo"><span class="brand " style="--h:34px;"><img class="bmark" src="/img/logo-mark-blue.png" alt=""><img class="bword" src="/img/logo-word-blue.png" alt="Zeehn Innovation Academy"></span></a>
       <nav class="nav">${nav.map(([h, i, t]) => h === "sep" ? `<div class="sep">${t}</div>` : `<a href="#/${h}" data-r="${h}">${ic(i)}<span>${t}</span>${h === "leads" ? '<b class="cnt hidden" id="leadCnt"></b>' : ""}</a>`).join("")}</nav>
-      <div class="me"><a class="me-link" href="#/settings" title="Profilim"><span id="meAva">${avaHtml(me.name, me.photo)}</span><div style="min-width:0"><div class="nm">${esc(me.name)}</div><div class="rl">${me.role === "admin" ? "Administrator" : "Ustoz"}</div></div></a><button title="Chiqish" id="logout">${ic("out")}</button></div>
+      <div class="me"><a class="me-link" href="#/settings" title="Profilim"><span id="meAva">${avaHtml(me.name, me.photo)}</span><div style="min-width:0"><div class="nm">${esc(me.name)}</div><div class="rl">${me.role === "admin" ? (me.owner ? "Rahbar" : "Administrator") : "Ustoz"}</div></div></a><button title="Chiqish" id="logout">${ic("out")}</button></div>
     </aside>
     <div class="scrim" id="scrim"></div>
     <main class="main">
@@ -685,7 +685,7 @@ async function route() {
   loading();
   const admin = state.me.role === "admin";
   const pages = admin
-    ? { "": pDash, students: pStudents, payments: pPayments, attendance: pAttendance, courses: pCourses, groups: pGroups, teachers: pTeachers, leads: pLeads, settings: pSettings }
+    ? { "": pDash, students: pStudents, payments: pPayments, attendance: pAttendance, courses: pCourses, groups: pGroups, teachers: pTeachers, leads: pLeads, admins: pAdmins, settings: pSettings }
     : { "": pTeacherHome, attendance: pAttendance, students: pStudents, settings: pSettings };
   const fn = pages[r] || pages[""];
   try { await fn(rest); } catch (e) { $("#page").innerHTML = `<div class="card empty">${ic("alert")}<div>${esc(e.message)}</div></div>`; }
@@ -722,12 +722,17 @@ async function pDash() {
   </div>
   <div class="grid g2">
     <div class="grid" style="align-content:start">
-      <div class="card">
-        <h3>${ic("money")} ${OYLAR[+d.month.slice(5) - 1]} oyi tushumi <a class="more" href="#/payments">Batafsil →</a></h3>
+      ${state.me.owner ? `<div class="card">
+        <h3>${ic("money")} ${OYLAR[+d.month.slice(5) - 1]} oyi tushumi <span class="badge b-blue nodot" style="font-size:11px">Faqat rahbarga</span> <a class="more" href="#/payments">Batafsil →</a></h3>
         <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap"><div style="font-size:28px;font-weight:700" class="money">${money(d.income)}</div><div class="muted" style="padding-bottom:5px">/ ${money(d.expected)} kutilmoqda</div></div>
         <div class="bar" style="height:10px"><i style="width:${pct}%;background:var(--blue)"></i></div>
         <div class="muted" style="font-size:12.5px;margin-top:8px">${pct}% yig'ildi</div>
-      </div>
+      </div>` : `<div class="card">
+        <h3>${ic("wallet")} ${OYLAR[+d.month.slice(5) - 1]} oyi to'lov holati <a class="more" href="#/payments">Batafsil →</a></h3>
+        <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap"><div style="font-size:28px;font-weight:700">${d.students - d.unpaid} / ${d.students}</div><div class="muted" style="padding-bottom:5px">o'quvchi to'lov qilgan</div></div>
+        <div class="bar" style="height:10px"><i style="width:${d.students ? Math.round(((d.students - d.unpaid) / d.students) * 100) : 0}%;background:var(--ok)"></i></div>
+        <div class="muted" style="font-size:12.5px;margin-top:8px">${d.unpaid} ta o'quvchi hali to'lamagan</div>
+      </div>`}
       <div class="card">
         <h3>${ic("clock")} Bugungi darslar <a class="more" href="#/groups">Barcha guruhlar →</a></h3>
         ${d.todayGroups.length ? d.todayGroups.map((g) => `
@@ -735,7 +740,7 @@ async function pDash() {
             <span class="dot" style="background:${esc(g.color)}"></span>
             <div class="grow"><div class="t">${esc(g.name)} <span class="muted" style="font-weight:400">· ${esc(g.course)}</span></div><div class="s">${esc(g.time || "Vaqt ko'rsatilmagan")}${g.room ? " · " + esc(g.room) : ""} · ${esc(g.teacher || "Ustoz biriktirilmagan")}</div></div>
             ${g.marked ? `<span class="badge b-ok">${g.present}/${g.students} keldi</span>` : `<span class="badge b-warn">Yo'qlama qilinmagan</span>`}
-            <a class="btn sm ghost" href="#/attendance/${g.id}">Ko'rish</a>
+            <a class="btn sm ghost" href="#/attendance/${g.id}">Yo'qlama</a>
           </div>`).join("") : `<div class="empty" style="padding:24px">Bugun dars jadvalida guruh yo'q</div>`}
       </div>
     </div>
@@ -946,12 +951,15 @@ async function pPayments() {
           <button class="icon-btn" style="border:0" id="mPrev">${ic("chevL")}</button><b style="min-width:130px;text-align:center">${fmtMonth(st.month)}</b><button class="icon-btn" style="border:0" id="mNext">${ic("chevR")}</button>
         </div>
       </div>
-      <div class="stats">
+      ${state.me.owner ? `<div class="stats">
         <div class="stat hero"><div class="ic">${ic("money")}</div><div><div class="v money">${money(income)}</div><div class="l">Tushgan to'lovlar</div></div></div>
         <div class="stat"><div class="ic b">${ic("wallet")}</div><div><div class="v money">${money(expected)}</div><div class="l">Kutilayotgan summa</div></div></div>
         <div class="stat"><div class="ic r">${ic("alert")}</div><div><div class="v money">${money(debtSum)}</div><div class="l">Qarzdorlik · ${debt.length} o'quvchi</div></div></div>
         <div class="stat"><div class="ic g">${ic("check")}</div><div><div class="v">${paidN} / ${items.length}</div><div class="l">To'liq to'laganlar</div></div></div>
-      </div>
+      </div>` : `<div class="stats">
+        <div class="stat hero"><div class="ic">${ic("check")}</div><div><div class="v">${paidN} / ${items.length}</div><div class="l">To'liq to'laganlar</div></div></div>
+        <div class="stat"><div class="ic r">${ic("alert")}</div><div><div class="v">${debt.length}</div><div class="l">To'lamagan yoki qisman to'lagan</div></div></div>
+      </div>`}
       <div class="tabs"><button data-t="debt" class="${st.tab === "debt" ? "on" : ""}">To'lamaganlar (${debt.length})</button><button data-t="hist" class="${st.tab === "hist" ? "on" : ""}">To'lovlar tarixi (${pays.items.length})</button></div>
       <div id="payBody"></div>`;
     $("#mPrev").onclick = () => { st.month = addMonth(st.month, -1); pagerState("debt").page = pagerState("hist").page = 1; draw(); };
@@ -1169,7 +1177,7 @@ async function pAttendance(rest) {
     <div class="att-head">
       ${admin ? `<select class="sel" id="ag" style="min-width:240px">${gs.map((x) => `<option value="${x.id}" ${x.id === st.group ? "selected" : ""}>${esc(x.name)} · ${esc(x.course)}${x.time ? " · " + esc(x.time) : ""}</option>`).join("")}</select>`
         : `<div class="gchips">${gs.map((x) => `<button data-g="${x.id}" class="${x.id === st.group ? "on" : ""}"><span class="dot" style="background:${esc(x.color)}"></span><b>${esc(x.name)}</b><small>${esc(x.time || "")}</small></button>`).join("")}</div>`}
-      <div class="tabs" style="margin:0"><button data-v="day" class="${st.view === "day" ? "on" : ""}">${admin ? "Kunlik davomat" : "Kunlik yo'qlama"}</button><button data-v="month" class="${st.view === "month" ? "on" : ""}">Oylik jadval</button></div>
+      <div class="tabs" style="margin:0"><button data-v="day" class="${st.view === "day" ? "on" : ""}">Kunlik yo'qlama</button><button data-v="month" class="${st.view === "month" ? "on" : ""}">Oylik jadval</button></div>
     </div>
     <div id="attBody"></div>`;
   const pickG = (id) => { st.group = id; history.replaceState(null, "", "#/attendance/" + st.group); pAttendance([st.group]); };
@@ -1186,7 +1194,7 @@ async function pAttendance(rest) {
   const wasMarked = d.items.some((s) => s.status);
   const isLessonDay = String(g.days).split(",").includes(String(dowOf(st.date)));
   const lk = d.lock || { open: true };
-  const ro = admin || !lk.open;
+  const ro = admin ? st.date > today : !lk.open;
   const dayNames = String(g.days || "").split(",").filter(Boolean).map((x) => KUNLAR[x - 1]).join(", ");
   const lockMsg = admin ? "" : lk.open
     ? `<div class="lockbar open">${ic("clock")}<div><b>Dars davom etmoqda</b><span>Yo'qlama ${esc(lk.end || "")} gacha ochiq${lk.left != null ? ` · ${lk.left} daqiqa qoldi` : ""}</span></div></div>`
@@ -1200,7 +1208,7 @@ async function pAttendance(rest) {
       </div>
       ${isLessonDay || !admin ? "" : '<span class="muted" style="font-size:12.5px">Bu kunda dars jadvalda yo\'q</span>'}
       ${wasMarked ? '<span class="badge b-ok">Yo\'qlama qilingan</span>' : '<span class="badge b-warn">Hali yo\'qlama qilinmagan</span>'}
-      ${admin ? '<span class="muted" style="margin-left:auto;font-size:12.5px">Yo\'qlamani faqat ustoz qiladi</span>' : ro ? "" : `<button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>`}
+      ${ro ? "" : `<button class="btn sm ghost" id="allIn" style="margin-left:auto">${ic("check")}Hammasi keldi</button>`}
     </div>
     ${lockMsg}
     ${d.items.length && !ro ? `<div class="att-prog"><div class="tr"><i id="attBar"></i></div><span id="attCnt"></span></div>` : ""}
@@ -1306,6 +1314,73 @@ function leadForm() {
   m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => { try { await api("leads", { method: "POST", body: formData(m.$("#lf2")) }); m.close(); toast("Ariza qo'shildi"); pLeads(); } catch (e) { m.err(e.message); } });
 }
 
+
+// ===== RAHBAR: Administratorlar =====
+async function pAdmins() {
+  if (!state.me.owner) { location.hash = "#/"; return; }
+  const d = await api("admins");
+  const list = d.items;
+  setHead("Administratorlar", "Platformaga kira oladigan administratorlar. To'lovlarning umumiy summalari faqat sizga (rahbarga) ko'rinadi.", `<button class="btn" id="addA">${ic("plus")}Administrator qo'shish</button>`);
+  $("#addA").onclick = () => adminForm(null);
+  $("#page").innerHTML = `<div class="cards">${list.map((a) => `
+    <div class="ccard ${a.active ? "" : "off"}">
+      <div style="display:flex;gap:12px;align-items:center">${avaHtml(a.name, a.photo, 48, "background:var(--blue);color:#fff")}<div style="flex:1;min-width:0"><h4>${esc(a.name)}</h4><div class="meta">${a.is_owner ? "Rahbar" : "Administrator"}</div></div>${a.is_owner ? '<span class="badge b-blue">Siz</span>' : a.active ? '<span class="badge b-ok">Faol</span>' : '<span class="badge b-gray">Nofaol</span>'}</div>
+      <div class="meta" style="margin-top:14px;display:grid;gap:6px"><div>Login: <b style="color:var(--navy);font-family:ui-monospace,monospace">${esc(a.login)}</b></div><div>Telefon: ${phoneLink(a.phone)}</div></div>
+      ${a.is_owner ? `<div class="foot"><a class="btn sm ghost" href="#/settings">${ic("gear")}Profilim</a></div>` : `<div class="foot"><button class="btn sm ghost" data-e="${a.id}">${ic("edit")}Tahrirlash</button><button class="btn sm ghost" data-p="${a.id}">${ic("key")}Yangi parol</button></div>`}
+    </div>`).join("")}</div>
+    <div class="card" style="margin-top:16px"><h3>${ic("key")} Kim nimani ko'radi</h3>
+      <div class="tbl-wrap" style="border:0"><table style="min-width:520px"><thead><tr><th></th><th>Rahbar (siz)</th><th>Administrator</th><th>Ustoz</th></tr></thead><tbody>
+        <tr><td>O'quvchilar, guruhlar, kurslar</td><td>✅</td><td>✅</td><td>Faqat o'z guruhlari</td></tr>
+        <tr><td>To'lov qilgan / qilmagan</td><td>✅</td><td>✅</td><td>✅ (o'z o'quvchilari)</td></tr>
+        <tr><td>To'lov qabul qilish</td><td>✅</td><td>✅</td><td>—</td></tr>
+        <tr><td>Oylik tushum va umumiy summalar</td><td>✅</td><td>—</td><td>—</td></tr>
+        <tr><td>Yo'qlama qilish</td><td>✅ istalgan vaqtda</td><td>✅ istalgan vaqtda</td><td>✅ faqat dars vaqtida</td></tr>
+        <tr><td>Administratorlarni boshqarish</td><td>✅</td><td>—</td><td>—</td></tr>
+      </tbody></table></div></div>`;
+  $$("[data-e]").forEach((b) => (b.onclick = () => adminForm(list.find((a) => a.id == b.dataset.e))));
+  $$("[data-p]").forEach((b) => (b.onclick = () => {
+    const a = list.find((x) => x.id == b.dataset.p);
+    const m = modal({ title: "Yangi parol berish", body: `<p style="margin-bottom:14px"><b>${esc(a.name)}</b> uchun yangi parol.</p><div class="f"><label>Yangi parol</label><div class="pw"><input class="inp" id="np" value="${genPass()}"><button type="button" class="icon-btn" id="gp">${ic("refresh")}</button></div></div>`, foot: `<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">Parolni saqlash</button>` });
+    m.$("#gp").onclick = () => (m.$("#np").value = genPass());
+    m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => { const pw = m.$("#np").value; try { await api(`admins/${a.id}/password`, { method: "POST", body: { password: pw } }); m.close(); showCred(a.name, a.login, pw); } catch (e) { m.err(e.message); } });
+  }));
+}
+function adminForm(a) {
+  const isNew = !a;
+  a = a || { active: 1 };
+  const m = modal({
+    title: isNew ? "Yangi administrator" : "Administratorni tahrirlash",
+    body: `<form class="form" id="af">
+      <div class="f full"><label>Ism familiya *</label><input class="inp" name="name" id="an" value="${esc(a.name)}"></div>
+      <div class="f"><label>Telefon</label><input class="inp" name="phone" value="${esc(a.phone || "+998 ")}" inputmode="tel"></div>
+      <div class="f"><label>Login *</label><input class="inp" name="login" id="al" value="${esc(a.login)}" autocapitalize="off"></div>
+      ${isNew ? `<div class="f full"><label>Parol *</label><div class="pw"><input class="inp" name="password" id="ap" value="${genPass()}"><button type="button" class="icon-btn" id="gp">${ic("refresh")}</button></div></div>`
+        : `<div class="f"><label>Holati</label><select class="sel" name="active"><option value="1">Faol</option><option value="0" ${a.active ? "" : "selected"}>Nofaol — kira olmaydi</option></select></div>`}
+    </form>`,
+    foot: `${!isNew ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">${isNew ? "Yaratish" : "Saqlash"}</button>`,
+  });
+  if (isNew) {
+    let touched = false;
+    m.$("#al").oninput = () => (touched = true);
+    m.$("#an").oninput = (e) => { if (!touched) m.$("#al").value = translit(e.target.value); };
+    m.$("#gp").onclick = () => (m.$("#ap").value = genPass());
+  }
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    const b = formData(m.$("#af"));
+    if (b.phone.replace(/\D/g, "").length <= 3) b.phone = "";
+    if (!isNew) b.active = b.active === "1";
+    try {
+      await api("admins" + (isNew ? "" : "/" + a.id), { method: isNew ? "POST" : "PUT", body: b });
+      m.close(); route();
+      if (isNew) showCred(b.name, b.login.toLowerCase(), b.password); else toast("Saqlandi");
+    } catch (e) { m.err(e.message); }
+  });
+  if (!isNew) m.$("#del").onclick = async () => {
+    if (!(await confirmBox(`<b>${esc(a.name)}</b> administrator hisobi o'chirilsinmi?`))) return;
+    try { await api("admins/" + a.id, { method: "DELETE" }); m.close(); toast("O'chirildi"); route(); } catch (e) { toast(e.message, 1); }
+  };
+}
+
 // ===== Sozlamalar =====
 async function pSettings() {
   const d = await api("me/profile");
@@ -1321,7 +1396,7 @@ async function pSettings() {
         </div>
         <div class="prof-id">
           <h2>${esc(u.name)}</h2>
-          <div class="muted">${teacher ? esc(u.subject || "Ustoz") : "Administrator"} · Zeehn Innovation Academy</div>
+          <div class="muted">${teacher ? esc(u.subject || "Ustoz") : state.me.owner ? "Rahbar" : "Administrator"} · Zeehn Innovation Academy</div>
           <div class="prof-acts"><label class="btn sm" for="pFile">${ic("camera")}${u.photo ? "Rasmni almashtirish" : "Rasm yuklash"}</label>${u.photo ? `<button class="btn sm ghost" id="pDel">${ic("trash")}O'chirish</button>` : ""}</div>
         </div>
       </div>
@@ -1403,7 +1478,7 @@ async function teacherStudents(gs, f) {
       <div class="ts-group"><div class="ts-gh"><span class="dot" style="background:${esc(g.color)}"></span><b>${esc(g.name)}</b><span class="muted">· ${esc(g.course)} · ${esc(g.time || "")}</span><span class="cnt">${items.filter((s) => s.group_id === g.id).length}</span></div>
       ${items.filter((s) => s.group_id === g.id).map((s) => `
         <div class="ts-row"><div class="ava">${esc(initials(s.name))}</div>
-          <div class="grow"><div class="nm">${esc(s.name)}</div><div class="sm">${s.parent_name ? "Ota-ona: " + esc(s.parent_name) : esc(s.phone || "")}</div></div>
+          <div class="grow"><div class="nm">${esc(s.name)} ${{ paid: '<span class="badge b-ok">To\'lagan</span>', partial: '<span class="badge b-warn">Qisman</span>', unpaid: '<span class="badge b-bad">To\'lamagan</span>' }[s.pay] || ""}</div><div class="sm">${s.parent_name ? "Ota-ona: " + esc(s.parent_name) : esc(s.phone || "")}</div></div>
           ${s.phone ? `<a class="call" href="tel:${esc(s.phone.replace(/[^\d+]/g, ""))}" title="O'quvchiga qo'ng'iroq">${ic("phone")}<small>O'quvchi</small></a>` : ""}
           ${s.parent_phone ? `<a class="call p" href="tel:${esc(s.parent_phone.replace(/[^\d+]/g, ""))}" title="Ota-onaga qo'ng'iroq">${ic("phone")}<small>Ota-ona</small></a>` : ""}
         </div>`).join("")}</div>`).join("") : `<div class="card empty">${ic("users")}<div>O'quvchi topilmadi</div></div>`;

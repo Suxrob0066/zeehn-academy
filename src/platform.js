@@ -57,7 +57,7 @@ async function currentUser(req, env) {
   const tok = getCookie(req, "zs");
   if (!tok) return null;
   const row = await env.DB.prepare(
-    "SELECT u.id,u.role,u.name,u.login,u.phone,u.subject,u.active,s.expires FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=?"
+    "SELECT u.id,u.role,u.name,u.login,u.phone,u.subject,u.active,u.is_owner,s.expires FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=?"
   ).bind(tok).first();
   if (!row || !row.active || row.expires < Date.now()) return null;
   return row;
@@ -161,7 +161,7 @@ async function setMyPhoto(req, env, me) {
 }
 
 // ---- Statistika ----
-async function stats(env) {
+async function stats(env, me) {
   const m = thisMonth();
   const d = today();
   const dow = ((nowTz().getUTCDay() + 6) % 7) + 1; // 1=Du ... 7=Ya
@@ -210,8 +210,8 @@ async function stats(env) {
     groups: c.results[0].n,
     teachers: e.results[0].n,
     unpaid: f.results[0].n,
-    income: g.results[0].n,
-    expected: expected.n,
+    income: me.is_owner ? g.results[0].n : null,
+    expected: me.is_owner ? expected.n : null,
     newLeads: h.results[0].n,
     byCourse: i.results,
     todayGroups: j.results,
@@ -370,7 +370,9 @@ async function students(req, env, id, me, url) {
       .bind(...args)
       .all();
     let items = r.results;
-    if (me.role === "teacher") items = items.map(({ paid, price, ...x }) => x);
+    // Ustoz faqat holatni ko'radi (summalarsiz)
+    if (me.role === "teacher")
+      items = items.map(({ paid, price, ...x }) => ({ ...x, pay: !price ? (paid ? "paid" : "none") : !paid ? "unpaid" : paid < price ? "partial" : "paid" }));
     return json({ ok: true, month, items });
   }
   if (me.role !== "admin") return err("Ruxsat yo'q", 403);
@@ -545,7 +547,6 @@ async function attendance(req, env, me, url) {
     const g = await db.prepare("SELECT days,time FROM groups WHERE id=?").bind(gid).first();
     return json({ ok: true, date, items: r.results, lock: lessonLock(g || {}, date) });
   }
-  if (me.role !== "teacher") return err("Yo'qlamani faqat ustoz qiladi", 403);
   const b = await body(req);
   const gid = I(b.group_id);
   const date = S(b.date, 10);
@@ -553,7 +554,10 @@ async function attendance(req, env, me, url) {
   if (!(await teacherOwnsGroup(env, me, gid))) return err("Ruxsat yo'q", 403);
   const grp = await db.prepare("SELECT days,time FROM groups WHERE id=?").bind(gid).first();
   const lock = lessonLock(grp || {}, date);
-  if (!lock.open) {
+  // Administrator istalgan o'tgan yoki bugungi kun uchun yo'qlama qila oladi; ustoz faqat dars vaqtida
+  if (me.role === "admin") {
+    if (date > today()) return err("Kelajak sana uchun yo'qlama qilib bo'lmaydi");
+  } else if (!lock.open) {
     const why = {
       past: "O'tgan kunlar yo'qlamasini o'zgartirib bo'lmaydi",
       future: "Kelajak sana uchun yo'qlama qilib bo'lmaydi",
@@ -586,6 +590,53 @@ async function attendance(req, env, me, url) {
   }
   if (st.length) await db.batch(st);
   return json({ ok: true, saved: st.length });
+}
+
+// ---- Administratorlar (faqat rahbar boshqaradi) ----
+async function admins(req, env, id, sub, me) {
+  const db = env.DB;
+  if (req.method === "GET") {
+    const r = await db.prepare("SELECT id,name,phone,login,active,is_owner,created_at,photo FROM users WHERE role='admin' ORDER BY is_owner DESC, name").all();
+    return json({ ok: true, items: r.results });
+  }
+  if (id && id === me.id && (req.method === "DELETE" || sub === "password")) return err("O'z hisobingizni Profil bo'limida boshqaring");
+  const b = await body(req);
+  if (sub === "password") {
+    const np = String(b.password || "");
+    if (np.length < 6) return err("Parol kamida 6 belgi bo'lsin");
+    await db.batch([
+      db.prepare("UPDATE users SET pass=? WHERE id=? AND role='admin' AND is_owner=0").bind(await hashPassword(np), id),
+      db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id),
+    ]);
+    return json({ ok: true });
+  }
+  if (req.method === "DELETE") {
+    await db.batch([
+      db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id),
+      db.prepare("DELETE FROM users WHERE id=? AND role='admin' AND is_owner=0").bind(id),
+    ]);
+    return json({ ok: true });
+  }
+  const name = S(b.name, 80);
+  const login = S(b.login, 40).toLowerCase();
+  if (name.length < 2) return err("Ismni kiriting");
+  if (!/^[a-z0-9._-]{3,40}$/.test(login)) return err("Login kamida 3 belgi: lotin harflari, raqam, . _ -");
+  const dup = await db.prepare("SELECT id FROM users WHERE login=? AND id<>?").bind(login, id || 0).first();
+  if (dup) return err("Bu login band. Boshqasini tanlang.");
+  const active = b.active === false || b.active === 0 ? 0 : 1;
+  if (req.method === "POST") {
+    const pw = String(b.password || "");
+    if (pw.length < 6) return err("Parol kamida 6 belgi bo'lsin");
+    const r = await db
+      .prepare("INSERT INTO users(role,name,phone,login,pass,active,is_owner) VALUES('admin',?,?,?,?,?,0)")
+      .bind(name, S(b.phone, 30), login, await hashPassword(pw), active)
+      .run();
+    return json({ ok: true, id: r.meta.last_row_id });
+  }
+  const st = [db.prepare("UPDATE users SET name=?,phone=?,login=?,active=? WHERE id=? AND role='admin' AND (is_owner=0 OR id=?)").bind(name, S(b.phone, 30), login, id === me.id ? 1 : active, id, me.id)];
+  if (!active && id !== me.id) st.push(db.prepare("DELETE FROM sessions WHERE user_id=?").bind(id));
+  await db.batch(st);
+  return json({ ok: true });
 }
 
 // ---- Arizalar ----
@@ -642,18 +693,22 @@ export async function handlePlatform(req, env, url) {
       if (rawId === "password" && req.method === "POST") return await changeMyPassword(req, env, me);
       if (rawId === "photo" && req.method === "POST") return await setMyPhoto(req, env, me);
       if (rawId === "profile") return await myProfile(env, me);
-      return json({ ok: true, user: { id: me.id, role: me.role, name: me.name, login: me.login, photo: await photoOf(env, me.id) }, today: today() });
+      return json({ ok: true, user: { id: me.id, role: me.role, owner: !!me.is_owner, name: me.name, login: me.login, photo: await photoOf(env, me.id) }, today: today() });
     }
     if (res === "groups") return await groups(req, env, id, me);
     if (res === "attendance") return await attendance(req, env, me, url);
     if (res === "students") return await students(req, env, id, me, url);
 
     if (me.role !== "admin") return err("Ruxsat yo'q", 403);
-    if (res === "stats") return await stats(env);
+    if (res === "stats") return await stats(env, me);
     if (res === "courses") return await courses(req, env, id);
     if (res === "payments") return await payments(req, env, id, me, url);
     if (res === "teachers") return await teachers(req, env, id, url, sub);
     if (res === "leads") return await leads(req, env, id);
+    if (res === "admins") {
+      if (!me.is_owner) return err("Bu bo'lim faqat rahbar uchun", 403);
+      return await admins(req, env, id, sub, me);
+    }
     return err("Topilmadi", 404);
   } catch (e) {
     return err("Server xatosi: " + (e && e.message ? e.message : e), 500);
