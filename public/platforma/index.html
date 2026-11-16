@@ -454,6 +454,11 @@ a.s-stat:active{transform:scale(.97)}
 .s-ext svg{color:var(--blue);flex:none;width:22px;height:22px}
 .s-ext b{display:block;font-size:14px}.s-ext span{font-size:12.5px;color:#22408F}
 .f .tsel,.tsel{width:120px!important;flex:none;font-variant-numeric:tabular-nums;font-weight:600}
+.numsuf{position:relative;display:flex;align-items:center}
+.numsuf .inp{width:100%;padding-right:56px;font-weight:600;font-size:15px}
+.numsuf span{position:absolute;right:14px;color:var(--muted);font-size:13px;font-weight:600;pointer-events:none}
+.numsuf input{-moz-appearance:textfield;appearance:textfield}
+.numsuf input::-webkit-outer-spin-button,.numsuf input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -1953,7 +1958,7 @@ function taskForm(a, gs, gid) {
       <div class="f full"><label>Qo'shimcha material havolasi (ixtiyoriy)</label><input class="inp" name="link" value="${esc(a.link)}" placeholder="https://..."></div>
       <div class="f"><label>Topshirish muddati (deadline) *</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="due_date" value="${esc(a.due_date)}" style="flex:1">${timeSelect("due_time", a.due_time || "20:00")}</div>
         <div class="qdl">${[["Ertaga", 1], ["2 kun", 2], ["3 kun", 3], ["1 hafta", 7]].map(([t, k]) => `<button type="button" data-dl="${plus(k)}">${t}</button>`).join("")}</div></div>
-      <div class="f"><label>Eng yuqori baho</label><select class="sel" name="max_score">${[5, 10, 20, 100].map((n) => `<option value="${n}" ${n == a.max_score ? "selected" : ""}>${n} ball</option>`).join("")}</select></div>
+      <div class="f"><label>Eng yuqori baho</label><div class="numsuf"><input class="inp" type="number" name="max_score" min="1" max="100" step="1" inputmode="numeric" value="${esc(a.max_score || 10)}"><span>ball</span></div><span class="hint">1 dan 100 gacha</span></div>
       <label class="f full chk"><input type="checkbox" name="late_ok" ${a.late_ok ? "checked" : ""}> Muddatdan keyin ham qabul qilinsin (kechikkan deb belgilanadi)</label>
     </form>`,
     foot: `${a.id ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">${a.id ? "Saqlash" : "Vazifani berish"}</button>`,
@@ -1978,6 +1983,8 @@ function taskForm(a, gs, gid) {
     b.video_key = fileMode ? vkey : ""; b.video_name = fileMode ? vname : "";
     if (fileMode) b.video_url = "";
     if (!b.due_date) return m.err("Topshirish muddatini belgilang");
+    const ms = parseInt(b.max_score, 10);
+    if (!(ms >= 1 && ms <= 100)) return m.err("Eng yuqori baho 1 dan 100 gacha bo'lsin");
     try {
       const r = await api("assignments" + (a.id ? "/" + a.id : ""), { method: a.id ? "PUT" : "POST", body: b });
       m.close(); toast(a.id ? "Saqlandi" : "Vazifa berildi — o'quvchilar ko'radi");
@@ -2054,15 +2061,18 @@ function gradeForm(a, x, done) {
       ${x.text ? `<div class="task-body" style="background:var(--cloud);padding:14px;border-radius:12px">${esc(x.text)}</div>` : ""}
       ${x.photo ? `<a href="${x.photo}" target="_blank"><img src="${x.photo}" style="max-width:100%;max-height:460px;object-fit:contain;background:var(--cloud);border-radius:12px;margin-top:12px;border:1px solid var(--line)"></a>` : ""}
       <form class="form" id="gf2" style="margin-top:18px">
-        <div class="f full"><label>Baho (0–${a.max_score})</label><div class="scorepick">${opts.map((n) => `<button type="button" data-n="${n}" class="${x.score == n ? "on" : ""}">${n}</button>`).join("")}</div><input type="hidden" name="score" value="${x.score ?? ""}"></div>
+        <div class="f full"><label>Baho (0–${a.max_score})</label><div class="numsuf" style="max-width:200px"><input class="inp" type="number" name="score" min="0" max="${a.max_score}" step="1" inputmode="numeric" value="${x.score ?? ""}" placeholder="0"><span>/ ${a.max_score}</span></div><div class="scorepick" style="margin-top:8px">${opts.map((n) => `<button type="button" data-n="${n}" class="${x.score == n ? "on" : ""}">${n}</button>`).join("")}</div></div>
         <div class="f full"><label>O'quvchiga izoh</label><textarea class="inp" name="feedback" rows="3" placeholder="Barakalla! / Xatolarni tuzating...">${esc(x.feedback)}</textarea></div>
       </form>`,
     foot: `<button class="btn ghost" data-close>Yopish</button><button class="btn ok" id="save">${ic("check")}Bahoni saqlash</button>`,
   });
   $$("[data-n]", m.el).forEach((b) => (b.onclick = () => { $$("[data-n]", m.el).forEach((z) => z.classList.toggle("on", z === b)); m.$("[name=score]").value = b.dataset.n; }));
+  m.$("[name=score]").oninput = (e) => $$("[data-n]", m.el).forEach((z) => z.classList.toggle("on", z.dataset.n === e.target.value));
   m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
     const b = formData(m.$("#gf2"));
-    if (b.score === "") return m.err("Bahoni tanlang");
+    if (b.score === "") return m.err("Bahoni kiriting");
+    const sc = Number(b.score);
+    if (!Number.isInteger(sc) || sc < 0 || sc > a.max_score) return m.err(`Baho 0 dan ${a.max_score} gacha bo'lsin`);
     try { await api("submissions/" + x.id, { method: "PUT", body: b }); m.close(); toast("Baho qo'yildi"); done(); } catch (e) { m.err(e.message); }
   });
 }
