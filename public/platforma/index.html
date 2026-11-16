@@ -261,19 +261,42 @@ code{font-family:ui-monospace,monospace;background:var(--cloud);padding:1px 6px;
 
 /* ===== O'quvchi kabineti (telefon uchun) ===== */
 .s-top{display:none}
-.role-student .side,.role-student .burger,.role-student .scrim{display:none!important}
-.role-student .main{margin-left:0}
-.role-student .s-top{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 16px 4px;max-width:640px;margin:0 auto}
-.role-student .top,.role-student .page{max-width:640px;margin:0 auto}
-.role-student .top{padding:10px 16px 4px}
-.role-student .top h1{font-size:22px}
-.role-student .page{padding:10px 16px calc(110px + env(safe-area-inset-bottom))}
-.role-student .tabbar{display:flex;position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:640px;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
-@media (min-width:861px){.role-student .tabbar{bottom:16px;border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 40px -20px rgba(0,70,224,.4);width:calc(100% - 32px)}}
-.role-student .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;color:var(--gray);font-size:11px;font-weight:600}
-.role-student .tabbar a svg{width:23px;height:23px}
-.role-student .tabbar a.on{color:var(--blue)}
-.role-student .tabbar a.on svg{background:#E6EEFF;border-radius:10px;padding:3px;width:44px;height:30px}
+/* O'quvchi: telefon (<=860px) — pastki menyu; kompyuter — yon menyu */
+.role-student .burger,.role-student .scrim{display:none!important}
+@media (max-width:860px){
+  .role-student .side{display:none!important}
+  .role-student .main{margin-left:0}
+  .role-student .s-top{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 16px 4px;max-width:640px;margin:0 auto}
+  .role-student .top,.role-student .page{max-width:640px;margin:0 auto}
+  .role-student .top{padding:10px 16px 4px}
+  .role-student .top h1{font-size:22px}
+  .role-student .page{padding:10px 16px calc(110px + env(safe-area-inset-bottom))}
+  .role-student .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .role-student .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;color:var(--gray);font-size:11px;font-weight:600}
+  .role-student .tabbar a svg{width:23px;height:23px}
+  .role-student .tabbar a.on{color:var(--blue)}
+  .role-student .tabbar a.on svg{background:#E6EEFF;border-radius:10px;padding:3px;width:44px;height:30px}
+}
+@media (min-width:861px){
+  .role-student .tabbar,.role-student .s-top{display:none!important}
+  .role-student .top,.role-student .page{max-width:1160px}
+  .role-student .top{padding-top:28px}
+  .role-student .page{padding-bottom:48px}
+  .s-cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start}
+  .s-cols.wide-right{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+  .s-cols .s-sec:first-child{margin-top:0}
+  .s-stats{margin-bottom:0}
+  .s-tasklist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .s-tasklist .s-task{margin-bottom:0}
+  .s-tabs{max-width:520px}
+  .s-hero{padding:26px}
+  .s-hero .hn{font-size:30px}
+  .s-send{position:static}
+  .s-task:hover{border-color:var(--blue);box-shadow:0 10px 24px -16px rgba(0,70,224,.5)}
+  .cal{gap:8px}.cal .cd{font-size:15px;aspect-ratio:auto;height:50px}
+  .s-desk-note{display:block!important}
+}
+.s-desk-note{display:none}
 .s-hero{position:relative;overflow:hidden;border-radius:22px;padding:20px;color:#fff;background:radial-gradient(130% 130% at 0% 0%,#5B92FF,#1E5BF0 50%,#0046E0)}
 .s-hero::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:var(--c);opacity:.35;filter:blur(10px)}
 .s-hero .lbl{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;position:relative}
@@ -757,7 +780,7 @@ const NAV_TEACHER = [
 
 function shell() {
   const me = state.me;
-  const nav = me.role === "student" ? [] : me.role === "admin" ? (me.owner ? [...NAV_ADMIN.slice(0, -1), ["admins", "key", "Administratorlar"], NAV_ADMIN[NAV_ADMIN.length - 1]] : NAV_ADMIN) : NAV_TEACHER;
+  const nav = me.role === "student" ? [["", "home", "Asosiy"], ["tasks", "task", "Vazifalar"], ["attendance", "check", "Davomat"], ["settings", "user", "Profil"]] : me.role === "admin" ? (me.owner ? [...NAV_ADMIN.slice(0, -1), ["admins", "key", "Administratorlar"], NAV_ADMIN[NAV_ADMIN.length - 1]] : NAV_ADMIN) : NAV_TEACHER;
   $("#root").innerHTML = `
   <div class="app role-${me.role}" id="app">
     <aside class="side">
@@ -1851,7 +1874,7 @@ async function sHome() {
   const nl = nextLesson(s.days, s.time, d.today);
   const h = +new Date().getHours();
   setHead(`${h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech"}, ${s.name.split(" ")[0]}! 👋`, `${KUNLAR_TOLIQ[dowOf(d.today) - 1]}, ${fmtDate(d.today)}`);
-  $("#page").innerHTML = `
+  $("#page").innerHTML = `<div class="s-cols"><div>
     <div class="s-hero" style="--c:${esc(s.color || "#0046E0")}">
       <div class="lbl">${ic("book")} ${esc(s.course || "Kurs biriktirilmagan")}</div>
       <div class="hn">${esc(s.grp || "Guruh biriktirilmagan")}</div>
@@ -1862,11 +1885,11 @@ async function sHome() {
       <a href="#/tasks" class="s-stat"><b>${d.pending.length}</b><span>Bajarilmagan vazifa</span></a>
       <a href="#/attendance" class="s-stat"><b>${pct == null ? "—" : pct + "%"}</b><span>Davomat</span></a>
       <div class="s-stat"><span class="badge ${payLabel[d.pay][1]}" style="margin:4px 0 6px">${payLabel[d.pay][0]}</span><span>${OYLAR[+d.today.slice(5, 7) - 1]} to'lovi</span></div>
-    </div>
+    </div></div><div>
     <div class="s-sec"><h3>Bajarilishi kerak <a href="#/tasks">Hammasi</a></h3>
       ${d.pending.length ? d.pending.slice(0, 5).map((t) => sTaskRow(t, d.today)).join("") : `<div class="s-empty">${ic("check")}<b>Barakalla!</b><span>Hamma vazifalar topshirilgan</span></div>`}
     </div>
-    ${d.graded.length ? `<div class="s-sec"><h3>So'nggi baholar</h3>${d.graded.map((g) => `<a class="s-task" href="#/tasks/${g.id}"><div class="s-score">${g.score}<small>/${g.max_score}</small></div><div class="grow"><b>${esc(g.title)}</b><span>${esc(g.feedback || "Izoh yo'q")}</span></div>${ic("chevR")}</a>`).join("")}</div>` : ""}`;
+    ${d.graded.length ? `<div class="s-sec"><h3>So'nggi baholar</h3>${d.graded.map((g) => `<a class="s-task" href="#/tasks/${g.id}"><div class="s-score">${g.score}<small>/${g.max_score}</small></div><div class="grow"><b>${esc(g.title)}</b><span>${esc(g.feedback || "Izoh yo'q")}</span></div>${ic("chevR")}</a>`).join("")}</div>` : ""}</div></div>`;
 }
 function sTaskRow(t, today) {
   const late = t.due_date && t.due_date < today;
@@ -1882,7 +1905,7 @@ async function sTasks(rest) {
   setHead("Vazifalar", `${d.items.length} ta vazifa`);
   $("#page").innerHTML = `
     <div class="s-tabs">${[["new", "Yangi"], ["sent", "Topshirilgan"], ["done", "Baholangan"]].map(([k, t]) => `<button data-f="${k}" class="${f === k ? "on" : ""}">${t}<i>${groups[k].length}</i></button>`).join("")}</div>
-    <div class="s-sec" style="margin-top:12px">${groups[f].length ? groups[f].map((t) => sTaskRow(t, d.today)).join("") : `<div class="s-empty">${ic(f === "new" ? "check" : "task")}<b>${f === "new" ? "Yangi vazifa yo'q" : "Bu yerda hali hech narsa yo'q"}</b><span>${f === "new" ? "Ustoz vazifa berganda shu yerda chiqadi" : ""}</span></div>`}</div>`;
+    <div class="s-sec" style="margin-top:12px">${groups[f].length ? `<div class="s-tasklist">${groups[f].map((t) => sTaskRow(t, d.today)).join("")}</div>` : `<div class="s-empty">${ic(f === "new" ? "check" : "task")}<b>${f === "new" ? "Yangi vazifa yo'q" : "Bu yerda hali hech narsa yo'q"}</b><span>${f === "new" ? "Ustoz vazifa berganda shu yerda chiqadi" : ""}</span></div>`}</div>`;
   $$(".s-tabs button").forEach((b) => (b.onclick = () => { state.cache.sTaskF = b.dataset.f; sTasks([]); }));
 }
 async function sTask(id) {
@@ -1891,13 +1914,14 @@ async function sTask(id) {
   setHead(t.title, "", `<a class="btn ghost sm" href="#/tasks">${ic("chevL")}Orqaga</a>`);
   const graded = sb && sb.score != null;
   let photo = sb?.photo || "";
-  $("#page").innerHTML = `
+  $("#page").innerHTML = `<div class="s-cols wide-right"><div>
     <div class="s-card">
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${dueInfo(t.due_date, d.today)}<span class="chip">${t.max_score} ball</span></div>
       ${t.body ? `<div class="task-body">${esc(t.body)}</div>` : '<div class="muted">Ustoz tavsif yozmagan</div>'}
       ${t.link ? `<a class="btn ghost" style="margin-top:14px;width:100%" href="${esc(t.link)}" target="_blank" rel="noopener">${ic("link")}Materialni ochish</a>` : ""}
     </div>
     ${graded ? `<div class="s-grade"><div class="s-score big">${sb.score}<small>/${t.max_score}</small></div><div><b>Ustoz bahosi</b><span>${esc(sb.feedback || "Izoh yozilmagan")}</span></div></div>` : ""}
+    </div><div>
     <div class="s-card">
       <h3 style="font-size:16px;margin-bottom:12px">${graded ? "Sizning javobingiz" : sb ? "Javobingiz yuborilgan ✓" : "Javobingiz"}</h3>
       ${graded ? `${sb.text ? `<div class="task-body">${esc(sb.text)}</div>` : ""}${sb.photo ? `<img src="${sb.photo}" class="s-photo">` : ""}`
@@ -1906,7 +1930,7 @@ async function sTask(id) {
         <div id="phWrap"></div>
         <label class="btn ghost s-attach" id="phLbl">${ic("camera")}<span>${photo ? "Rasmni almashtirish" : "Rasm biriktirish (daftar, ekran)"}</span><input type="file" accept="image/*" id="phIn" hidden></label>`}
     </div>
-    ${graded ? "" : `<div class="s-send"><button class="btn" id="sendAns">${ic("send")}${sb ? "Javobni yangilash" : "Javobni yuborish"}</button></div>`}`;
+    ${graded ? "" : `<div class="s-send"><button class="btn" id="sendAns">${ic("send")}${sb ? "Javobni yangilash" : "Javobni yuborish"}</button></div>`}</div></div>`;
   if (graded) return;
   const drawPh = () => {
     $("#phWrap").innerHTML = photo ? `<div class="s-ph"><img src="${photo}"><button type="button" id="phDel">${ic("x")}</button></div>` : "";
@@ -1964,17 +1988,19 @@ async function sAttendance() {
     const lesson = ld.includes(String(dowOf(ds)));
     cells += `<span class="cd ${v || (lesson ? "ls" : "")} ${ds === state.today ? "td" : ""}" title="${v ? ATT[v][0] : ""}">${i}</span>`;
   }
-  $("#page").innerHTML = `
+  $("#page").innerHTML = `<div class="s-cols wide-right"><div>
     <div class="s-stats">
       <div class="s-stat"><b style="color:var(--ok)">${tot.keldi || 0}</b><span>Keldi</span></div>
       <div class="s-stat"><b style="color:var(--warn)">${tot.kechikdi || 0}</b><span>Kechikdi</span></div>
       <div class="s-stat"><b style="color:var(--bad)">${tot.kelmadi || 0}</b><span>Kelmadi</span></div>
     </div>
+    <div class="s-card s-desk-note" style="margin-top:14px"><b style="display:block;margin-bottom:6px">Umumiy davomat</b><div style="font-size:34px;font-weight:700;color:var(--blue)">${pct == null ? "—" : pct + "%"}</div><div class="muted" style="font-size:13px;margin-top:4px">Darslarga qatnashish foizi. Kelmagan kunlaringiz qizil rangda ko'rsatiladi.</div></div>
+    </div><div>
     <div class="s-card">
       <div class="s-month"><button class="icon-btn" id="mp">${ic("chevL")}</button><b>${fmtMonth(st.month)}</b><button class="icon-btn" id="mn">${ic("chevR")}</button></div>
       <div class="cal">${KUNLAR.map((k) => `<span class="wh">${k}</span>`).join("")}${cells}</div>
       <div class="legend" style="justify-content:center"><span><i class="lg keldi"></i>Keldi</span><span><i class="lg kechikdi"></i>Kechikdi</span><span><i class="lg kelmadi"></i>Kelmadi</span><span><i class="lg sababli"></i>Sababli</span><span><i class="lg ls"></i>Dars kuni</span></div>
-    </div>`;
+    </div></div></div>`;
   $("#mp").onclick = () => { st.month = addMonth(st.month, -1); sAttendance(); };
   $("#mn").onclick = () => { st.month = addMonth(st.month, 1); sAttendance(); };
 }
@@ -1982,7 +2008,7 @@ async function sProfile() {
   const d = await api("s/home");
   const s = d.student;
   setHead("Profil", "");
-  $("#page").innerHTML = `
+  $("#page").innerHTML = `<div class="s-cols"><div>
     <div class="s-card" style="text-align:center">
       <div class="prof-ava" style="display:inline-block">${avaHtml(s.name, s.photo, 104, "font-size:34px;border:4px solid #fff;box-shadow:0 12px 30px -14px rgba(0,70,224,.6)")}<label class="prof-cam">${ic("camera")}<input type="file" accept="image/*" id="sFile" hidden></label></div>
       <h2 style="font-size:22px;margin-top:10px">${esc(s.name)}</h2>
@@ -1994,7 +2020,7 @@ async function sProfile() {
       <div><span>Xona</span><b>${esc(s.room || "—")}</b></div>
       <div><span>Kursga qo'shilgan</span><b>${fmtDate(s.joined_at)}</b></div>
       <div><span>Login</span><b style="font-family:ui-monospace,monospace">${esc(s.login)}</b></div>
-    </div>
+    </div></div><div>
     <div class="s-card"><h3 style="font-size:16px;margin-bottom:12px">Parolni almashtirish</h3>
       <form class="form" id="pwf" style="grid-template-columns:1fr">
         <div class="f"><label>Hozirgi parol</label><input class="inp" type="password" name="old" autocomplete="current-password"></div>
@@ -2003,7 +2029,7 @@ async function sProfile() {
       </form>
     </div>
     <button class="btn danger" id="sOut" style="width:100%;height:50px">${ic("out")}Chiqish</button>
-    <p class="muted" style="text-align:center;font-size:12px;margin:16px 0">Zeehn Innovation Academy · ${esc(location.host)}</p>`;
+    <p class="muted" style="text-align:center;font-size:12px;margin:16px 0">Zeehn Innovation Academy · ${esc(location.host)}</p></div></div>`;
   eyeify($("#pwf"));
   $("#pwf").onsubmit = (e) => { e.preventDefault(); const b = formData(e.target); submitBtn($("button.btn", e.target), async () => { try { await api("s/password", { method: "POST", body: b }); toast("Parol almashtirildi"); e.target.reset(); } catch (er) { toast(er.message, 1); } }); };
   $("#sOut").onclick = () => $("#logout").click();
