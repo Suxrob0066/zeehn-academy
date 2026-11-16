@@ -1,0 +1,7 @@
+ALTER TABLE assignments ADD COLUMN video_url TEXT DEFAULT '';
+ALTER TABLE assignments ADD COLUMN video_key TEXT DEFAULT '';
+ALTER TABLE assignments ADD COLUMN video_name TEXT DEFAULT '';
+ALTER TABLE assignments ADD COLUMN due_time TEXT DEFAULT '';
+ALTER TABLE assignments ADD COLUMN lesson_date TEXT DEFAULT '';
+ALTER TABLE assignments ADD COLUMN late_ok INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE submissions ADD COLUMN late INTEGER NOT NULL DEFAULT 0;

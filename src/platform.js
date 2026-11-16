@@ -769,6 +769,11 @@ async function studentAccessBulk(req, env) {
   return json({ ok: true, items: out });
 }
 
+// Muddat: due_date + due_time (bo'lmasa 23:59), Toshkent vaqti bilan
+const deadlineOf = (a) => (a.due_date ? `${a.due_date} ${a.due_time || "23:59"}` : "");
+const nowStr = () => nowTz().toISOString().slice(0, 16).replace("T", " ");
+const isLate = (a) => { const d = deadlineOf(a); return !!d && nowStr() > d; };
+
 // ---- Vazifalar (ustoz / admin) ----
 async function assignments(req, env, id, me, url) {
   const db = env.DB;
@@ -781,13 +786,13 @@ async function assignments(req, env, id, me, url) {
     if (!(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
     const r = await db
       .prepare(
-        `SELECT s.id student_id,s.name,s.login IS NOT NULL has_login,sb.id,sb.text,sb.photo,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
+        `SELECT s.id student_id,s.name,s.login IS NOT NULL has_login,sb.id,sb.text,sb.photo,sb.submitted_at,sb.score,sb.feedback,sb.checked_at,sb.late
          FROM students s LEFT JOIN submissions sb ON sb.student_id=s.id AND sb.assignment_id=?
          WHERE s.group_id=? AND s.status='active' ORDER BY sb.submitted_at IS NULL, s.name`
       )
       .bind(id, a.group_id)
       .all();
-    return json({ ok: true, assignment: a, items: r.results });
+    return json({ ok: true, assignment: { ...a, deadline: deadlineOf(a), closed: isLate(a) }, items: r.results, now: nowStr() });
   }
   if (req.method === "GET") {
     const gid = I(url.searchParams.get("group"));
@@ -797,7 +802,7 @@ async function assignments(req, env, id, me, url) {
     if (me.role === "teacher") { cond.push("g.teacher_id=?"); args.push(me.id); }
     const r = await db
       .prepare(
-        `SELECT a.id,a.group_id,a.title,a.due_date,a.max_score,a.created_at,g.name grp,c.color,
+        `SELECT a.id,a.group_id,a.title,a.due_date,a.due_time,a.lesson_date,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score,a.created_at,g.name grp,c.color,
           (SELECT COUNT(*) FROM students s WHERE s.group_id=a.group_id AND s.status='active') total,
           (SELECT COUNT(*) FROM submissions sb WHERE sb.assignment_id=a.id) submitted,
           (SELECT COUNT(*) FROM submissions sb WHERE sb.assignment_id=a.id AND sb.score IS NULL) unchecked
@@ -809,8 +814,9 @@ async function assignments(req, env, id, me, url) {
     return json({ ok: true, items: r.results });
   }
   if (req.method === "DELETE") {
-    const a = await db.prepare("SELECT group_id FROM assignments WHERE id=?").bind(id).first();
+    const a = await db.prepare("SELECT group_id,video_key FROM assignments WHERE id=?").bind(id).first();
     if (!a || !(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
+    if (a.video_key && env.VIDEOS) { try { await env.VIDEOS.delete(a.video_key); } catch (e) {} }
     await db.batch([db.prepare("DELETE FROM submissions WHERE assignment_id=?").bind(id), db.prepare("DELETE FROM assignments WHERE id=?").bind(id)]);
     return json({ ok: true });
   }
@@ -821,21 +827,29 @@ async function assignments(req, env, id, me, url) {
   if (title.length < 2) return err("Vazifa nomini kiriting");
   if (!(await teacherOwnsGroup(env, me, gid))) return err("Ruxsat yo'q", 403);
   const due = isDate(S(b.due_date, 10)) ? S(b.due_date, 10) : "";
+  const dueTime = /^\d{2}:\d{2}$/.test(S(b.due_time, 5)) ? S(b.due_time, 5) : "";
+  const lessonDate = isDate(S(b.lesson_date, 10)) ? S(b.lesson_date, 10) : "";
   const maxS = Math.min(100, Math.max(1, I(b.max_score) || 10));
   const link = S(b.link, 500);
   if (link && !/^https?:\/\//i.test(link)) return err("Havola http:// yoki https:// bilan boshlansin");
+  const vurl = S(b.video_url, 500);
+  if (vurl && !/^https?:\/\//i.test(vurl)) return err("Video havolasi http:// yoki https:// bilan boshlansin");
+  const vkey = /^v\/[A-Za-z0-9._-]+$/.test(S(b.video_key, 200)) ? S(b.video_key, 200) : "";
+  const vname = S(b.video_name, 200);
+  const lateOk = b.late_ok === true || b.late_ok === "1" || b.late_ok === 1 ? 1 : 0;
   if (req.method === "POST") {
     const r = await db
-      .prepare("INSERT INTO assignments(group_id,teacher_id,title,body,link,due_date,max_score) VALUES(?,?,?,?,?,?,?)")
-      .bind(gid, me.role === "teacher" ? me.id : null, title, S(b.body, 4000), link, due, maxS)
+      .prepare("INSERT INTO assignments(group_id,teacher_id,title,body,link,due_date,max_score,due_time,lesson_date,video_url,video_key,video_name,late_ok) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)")
+      .bind(gid, me.role === "teacher" ? me.id : null, title, S(b.body, 4000), link, due, maxS, dueTime, lessonDate, vurl, vkey, vname, lateOk)
       .run();
     return json({ ok: true, id: r.meta.last_row_id });
   }
-  const old = await db.prepare("SELECT group_id FROM assignments WHERE id=?").bind(id).first();
+  const old = await db.prepare("SELECT group_id,video_key FROM assignments WHERE id=?").bind(id).first();
   if (!old || !(await teacherOwnsGroup(env, me, old.group_id))) return err("Ruxsat yo'q", 403);
+  if (old.video_key && old.video_key !== vkey && env.VIDEOS) { try { await env.VIDEOS.delete(old.video_key); } catch (e) {} }
   await db
-    .prepare("UPDATE assignments SET group_id=?,title=?,body=?,link=?,due_date=?,max_score=? WHERE id=?")
-    .bind(gid, title, S(b.body, 4000), link, due, maxS, id)
+    .prepare("UPDATE assignments SET group_id=?,title=?,body=?,link=?,due_date=?,max_score=?,due_time=?,lesson_date=?,video_url=?,video_key=?,video_name=?,late_ok=? WHERE id=?")
+    .bind(gid, title, S(b.body, 4000), link, due, maxS, dueTime, lessonDate, vurl, vkey, vname, lateOk, id)
     .run();
   return json({ ok: true });
 }
@@ -875,7 +889,7 @@ async function studentApi(req, env, me, parts, url) {
       db.prepare("SELECT COALESCE(SUM(amount),0) n FROM payments WHERE student_id=? AND month=?").bind(me.id, m),
       db.prepare("SELECT status,COUNT(*) n FROM attendance WHERE student_id=? GROUP BY status").bind(me.id),
       db.prepare(
-        `SELECT a.id,a.title,a.due_date,a.max_score FROM assignments a WHERE a.group_id=? AND NOT EXISTS (SELECT 1 FROM submissions sb WHERE sb.assignment_id=a.id AND sb.student_id=?) ORDER BY (a.due_date='' ), a.due_date, a.id DESC LIMIT 20`
+        `SELECT a.id,a.title,a.due_date,a.due_time,a.late_ok,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score FROM assignments a WHERE a.group_id=? AND NOT EXISTS (SELECT 1 FROM submissions sb WHERE sb.assignment_id=a.id AND sb.student_id=?) ORDER BY (a.due_date='' ), a.due_date, a.id DESC LIMIT 20`
       ).bind(st.group_id || 0, me.id),
       db.prepare(
         `SELECT a.title,sb.score,a.max_score,sb.feedback,sb.checked_at,a.id FROM submissions sb JOIN assignments a ON a.id=sb.assignment_id WHERE sb.student_id=? AND sb.score IS NOT NULL ORDER BY sb.checked_at DESC LIMIT 3`
@@ -896,21 +910,23 @@ async function studentApi(req, env, me, parts, url) {
   if (res === "tasks" && req.method === "GET" && !id) {
     const r = await db
       .prepare(
-        `SELECT a.id,a.title,a.body,a.link,a.due_date,a.max_score,a.created_at,sb.id sub_id,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
+        `SELECT a.id,a.title,a.body,a.link,a.due_date,a.due_time,a.late_ok,a.lesson_date,(a.video_url<>'' OR a.video_key<>'') has_video,a.max_score,a.created_at,sb.id sub_id,sb.late,sb.submitted_at,sb.score,sb.feedback,sb.checked_at
          FROM assignments a LEFT JOIN submissions sb ON sb.assignment_id=a.id AND sb.student_id=?
          WHERE a.group_id=? ORDER BY a.id DESC LIMIT 200`
       )
       .bind(me.id, st.group_id || 0)
       .all();
-    return json({ ok: true, today: today(), items: r.results });
+    return json({ ok: true, today: today(), now: nowStr(), items: r.results });
   }
   if (res === "tasks" && id) {
     const a = await db.prepare("SELECT * FROM assignments WHERE id=? AND group_id=?").bind(id, st.group_id || 0).first();
     if (!a) return err("Vazifa topilmadi", 404);
     const mine = await db.prepare("SELECT * FROM submissions WHERE assignment_id=? AND student_id=?").bind(id, me.id).first();
-    if (req.method === "GET") return json({ ok: true, task: a, submission: mine || null, today: today() });
+    if (req.method === "GET") return json({ ok: true, task: { ...a, deadline: deadlineOf(a), closed: isLate(a) && !a.late_ok }, submission: mine || null, today: today(), now: nowStr() });
     // Javob yuborish
     if (mine && mine.score != null) return err("Javob baholangan, endi o'zgartirib bo'lmaydi");
+    const late = isLate(a);
+    if (late && !a.late_ok) return err("Topshirish muddati tugagan. Javob qabul qilinmaydi.");
     const b = await body(req);
     const text = S(b.text, 5000);
     const photo = String(b.photo || "");
@@ -919,10 +935,10 @@ async function studentApi(req, env, me, parts, url) {
     if (!text && !photo) return err("Javob yozing yoki rasm biriktiring");
     await db
       .prepare(
-        `INSERT INTO submissions(assignment_id,student_id,text,photo,submitted_at) VALUES(?,?,?,?,datetime('now','+5 hours'))
-         ON CONFLICT(assignment_id,student_id) DO UPDATE SET text=excluded.text,photo=excluded.photo,submitted_at=excluded.submitted_at`
+        `INSERT INTO submissions(assignment_id,student_id,text,photo,submitted_at,late) VALUES(?,?,?,?,datetime('now','+5 hours'),?)
+         ON CONFLICT(assignment_id,student_id) DO UPDATE SET text=excluded.text,photo=excluded.photo,submitted_at=excluded.submitted_at,late=excluded.late`
       )
-      .bind(id, me.id, text, photo)
+      .bind(id, me.id, text, photo, late ? 1 : 0)
       .run();
     return json({ ok: true });
   }
@@ -956,6 +972,71 @@ async function studentApi(req, env, me, parts, url) {
   return err("Topilmadi", 404);
 }
 
+
+// ---- Dars videolari (Cloudflare R2, binding: VIDEOS) ----
+const PART = 20 * 1024 * 1024;
+async function videoUpload(req, env, me, url, step) {
+  if (!env.VIDEOS) return err("Video saqlash (R2) hali yoqilmagan", 501);
+  if (me.role === "student") return err("Ruxsat yo'q", 403);
+  if (step === "init" && req.method === "POST") {
+    const b = await body(req);
+    const name = S(b.name, 150) || "video.mp4";
+    const type = /^video\//.test(String(b.type || "")) ? String(b.type) : "video/mp4";
+    const ext = (name.match(/\.([a-z0-9]{2,5})$/i) || [, "mp4"])[1].toLowerCase();
+    const key = `v/${Date.now()}-${randToken().slice(0, 10)}.${ext}`;
+    const up = await env.VIDEOS.createMultipartUpload(key, { httpMetadata: { contentType: type } });
+    return json({ ok: true, key, uploadId: up.uploadId, partSize: PART });
+  }
+  const key = url.searchParams.get("key") || "";
+  const uploadId = url.searchParams.get("uploadId") || "";
+  if (!/^v\/[A-Za-z0-9._-]+$/.test(key) || !uploadId) return err("Noto'g'ri so'rov");
+  const up = env.VIDEOS.resumeMultipartUpload(key, uploadId);
+  if (step === "part" && req.method === "PUT") {
+    const n = I(url.searchParams.get("n"));
+    if (!n || n < 1 || n > 10000) return err("Qism raqami noto'g'ri");
+    const part = await up.uploadPart(n, req.body);
+    return json({ ok: true, part: { partNumber: part.partNumber, etag: part.etag } });
+  }
+  if (step === "complete" && req.method === "POST") {
+    const b = await body(req);
+    const parts = (b.parts || []).map((p) => ({ partNumber: I(p.partNumber), etag: String(p.etag) }));
+    await up.complete(parts);
+    return json({ ok: true, key });
+  }
+  if (step === "abort" && req.method === "POST") {
+    try { await up.abort(); } catch (e) {}
+    return json({ ok: true });
+  }
+  return err("Topilmadi", 404);
+}
+async function videoStream(req, env, me, id) {
+  if (!env.VIDEOS) return err("Video saqlash yoqilmagan", 501);
+  const a = await env.DB.prepare("SELECT group_id,video_key FROM assignments WHERE id=?").bind(id).first();
+  if (!a || !a.video_key) return err("Video topilmadi", 404);
+  if (me.role === "student") { if (me.group_id !== a.group_id) return err("Ruxsat yo'q", 403); }
+  else if (!(await teacherOwnsGroup(env, me, a.group_id))) return err("Ruxsat yo'q", 403);
+  const range = req.headers.get("Range");
+  let opts = {};
+  let m;
+  if (range && (m = range.match(/bytes=(\d*)-(\d*)/))) {
+    const head = await env.VIDEOS.head(a.video_key);
+    if (!head) return err("Video topilmadi", 404);
+    const size = head.size;
+    let start, end;
+    if (m[1] === "") { start = Math.max(0, size - Number(m[2] || 0)); end = size - 1; }
+    else { start = Number(m[1]); end = m[2] !== "" ? Math.min(Number(m[2]), size - 1) : Math.min(size - 1, start + 8 * 1024 * 1024 - 1); }
+    if (start >= size || start > end) return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+    const obj = await env.VIDEOS.get(a.video_key, { range: { offset: start, length: end - start + 1 } });
+    return new Response(obj.body, {
+      status: 206,
+      headers: { "Content-Type": head.httpMetadata?.contentType || "video/mp4", "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": String(end - start + 1), "Accept-Ranges": "bytes", "Cache-Control": "private, max-age=3600" },
+    });
+  }
+  const obj = await env.VIDEOS.get(a.video_key);
+  if (!obj) return err("Video topilmadi", 404);
+  return new Response(obj.body, { headers: { "Content-Type": obj.httpMetadata?.contentType || "video/mp4", "Content-Length": String(obj.size), "Accept-Ranges": "bytes", "Cache-Control": "private, max-age=3600" } });
+}
+
 // ---------- Router ----------
 export async function handlePlatform(req, env, url) {
   if (!env.DB) return err("Baza ulanmagan", 500);
@@ -976,6 +1057,9 @@ export async function handlePlatform(req, env, url) {
     const me = await currentUser(req, env);
     if (!me) return err("Kirish talab qilinadi", 401);
 
+    if (res === "config") return json({ ok: true, videoUpload: !!env.VIDEOS });
+    if (res === "video" && id) return await videoStream(req, env, me, id);
+    if (res === "videos") return await videoUpload(req, env, me, url, rawId);
     // O'quvchi faqat o'z bo'limidan foydalanadi
     if (me.role === "student") {
       if (res === "me") {

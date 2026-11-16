@@ -408,6 +408,40 @@ a.s-stat:active{transform:scale(.97)}
 .lg.plan{background:#fff;box-shadow:inset 0 0 0 1.5px #BFD0FF}.lg.miss{background:#F3F5FA;border:1px solid var(--line)}
 @media (max-width:860px){.att-grid{grid-template-columns:repeat(4,1fr);gap:8px}.att-box{padding:10px}.att-box b{font-size:19px}.ring{width:104px;height:104px}.s-month-top{max-width:none}}
 @media (min-width:861px){.att-cal .cal .cd{height:56px}}
+
+/* Dars videosi */
+.vbox{position:relative;width:100%;aspect-ratio:16/9;background:#0B1640;border-radius:14px;overflow:hidden;margin-bottom:14px}
+.vbox iframe,.vbox video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.vlink{display:flex;align-items:center;gap:12px;background:var(--cloud);border-radius:14px;padding:14px;margin-bottom:14px}
+.vlink svg{width:34px;height:34px;color:var(--blue)}
+.vlink b{display:block}.vlink span{font-size:12px;color:var(--muted)}
+.vtag{display:inline-flex;align-items:center;gap:4px;background:#E6EEFF;color:var(--blue);font-size:11px;font-weight:700;border-radius:99px;padding:2px 8px;margin-right:8px;vertical-align:2px}
+.vtag svg{width:13px;height:13px}
+.fsec{background:#F6F9FF;border:1px solid #DCE6FF;border-radius:14px;padding:14px}
+.fsec>label{display:flex;align-items:center;gap:6px}.fsec>label svg{width:18px;height:18px;color:var(--blue)}
+.vtabs{align-self:flex-start;display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;margin-bottom:8px}
+.vtabs button{height:32px;padding:0 14px;border-radius:8px;font-weight:600;font-size:13px;color:var(--muted)}
+.vtabs button.on{background:var(--blue);color:#fff}
+.vdrop{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px dashed #B9CCFF;border-radius:14px;padding:20px;background:#fff;cursor:pointer;text-align:center}
+.vdrop svg{width:30px;height:30px;color:var(--blue)}
+.vdrop span{font-size:12.5px;color:var(--muted)}
+.vdrop:hover{border-color:var(--blue)}
+.vprog{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;font-weight:600}
+.vprog .tr{flex:1;height:10px;background:#fff;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.vprog .tr i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+.vnote{display:flex;gap:10px;background:var(--warnbg);border-radius:12px;padding:12px}
+.vnote svg{color:var(--warn);flex:none}.vnote b{display:block;font-size:13.5px}.vnote span{font-size:12.5px;color:#7A5200}
+.qdl{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.qdl button{height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:12px;font-weight:600;color:var(--muted)}
+.qdl button:hover{border-color:var(--blue);color:var(--blue)}
+.chk{flex-direction:row!important;align-items:center;gap:10px;font-size:13.5px;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--blue)}
+.s-video{padding:14px}
+.s-video .vbox{margin-bottom:0}
+.s-closed{display:flex;gap:10px;align-items:flex-start;background:var(--badbg);border-radius:12px;padding:12px;margin-bottom:12px}
+.s-closed svg{color:var(--bad);flex:none;width:22px;height:22px}
+.s-closed b{display:block;font-size:14px}.s-closed span{font-size:12.5px;color:#8A1F26}
+.s-closed.warn{background:var(--warnbg)}.s-closed.warn svg{color:var(--warn)}.s-closed.warn span{color:#7A5200}
 /* Tabs */
 .tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .tabs button{height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted)}
@@ -629,6 +663,8 @@ const I = {
   link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
   send: '<path d="M21 3 10 14"/><path d="m21 3-7 18-4-7-7-4z"/>',
   star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.5 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  play: '<circle cx="12" cy="12" r="9.5"/><path d="M10 8.5v7l6-3.5z" fill="currentColor" stroke="none"/>',
+  upload: '<path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
   user_plus: '<circle cx="9" cy="8" r="4"/><path d="M2 21c.7-4 3.6-6.5 7-6.5 1.6 0 3 .5 4.2 1.3"/><path d="M19 14v6M16 17h6"/>',
 };
 const EYE = '<svg class="i" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1793,12 +1829,62 @@ function bulkAccess(items, done) {
 }
 
 // ===== Vazifalar (ustoz / admin) =====
-const dueInfo = (d, today) => {
-  if (!d) return '<span class="muted" style="font-size:12.5px">Muddatsiz</span>';
-  if (d < today) return `<span class="badge b-gray">Muddati o'tgan · ${fmtDate(d)}</span>`;
-  if (d === today) return '<span class="badge b-warn">Bugun topshiriladi</span>';
-  return `<span class="badge b-blue nodot">${fmtDate(d)} gacha</span>`;
+// Muddat (sana + soat) va qolgan vaqt
+const nowLocal = () => new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 16).replace("T", " ");
+const dlOf = (t) => (t.due_date ? `${t.due_date} ${t.due_time || "23:59"}` : "");
+const leftText = (dl) => {
+  const ms = new Date(dl.replace(" ", "T") + ":00+05:00") - Date.now();
+  if (ms <= 0) return "";
+  const h = Math.floor(ms / 3600000), d = Math.floor(h / 24), mnt = Math.floor((ms % 3600000) / 60000);
+  return d >= 1 ? `${d} kun ${h % 24} soat qoldi` : h >= 1 ? `${h} soat ${mnt} daqiqa qoldi` : `${mnt} daqiqa qoldi`;
 };
+const dueInfo = (t, today) => {
+  if (typeof t === "string" || !t) t = { due_date: t || "" };
+  if (!t.due_date) return '<span class="muted" style="font-size:12.5px">Muddatsiz</span>';
+  const dl = dlOf(t), tm = t.due_time ? ", " + t.due_time : "";
+  if (nowLocal() > dl) return `<span class="badge b-gray">Muddat tugagan · ${fmtDate(t.due_date)}${tm}</span>`;
+  const left = leftText(dl);
+  const soon = new Date(dl.replace(" ", "T") + ":00+05:00") - Date.now() < 86400000;
+  return `<span class="badge ${soon ? "b-warn" : "b-blue nodot"}">${fmtDate(t.due_date)}${tm} gacha · ${left}</span>`;
+};
+// Video: R2 fayl, YouTube, Google Drive yoki oddiy havola
+function ytId(u) { const m = String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/); return m ? m[1] : null; }
+function videoBox(t) {
+  if (t.video_key) return `<div class="vbox"><video controls preload="metadata" playsinline src="/api/p/video/${t.id}"></video></div>`;
+  if (!t.video_url) return "";
+  const y = ytId(t.video_url);
+  if (y) return `<div class="vbox"><iframe src="https://www.youtube-nocookie.com/embed/${y}?rel=0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+  const g = String(t.video_url).match(/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/);
+  if (g) return `<div class="vbox"><iframe src="https://drive.google.com/file/d/${g[1]}/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+  return `<a class="vlink" href="${esc(t.video_url)}" target="_blank" rel="noopener">${ic("play")}<div><b>Dars videosini ko'rish</b><span>${esc(t.video_url.replace(/^https?:\/\//, "").slice(0, 60))}</span></div></a>`;
+}
+// Katta videoni bo'laklab R2 ga yuklash
+async function uploadVideo(file, onProgress) {
+  const init = await api("videos/init", { method: "POST", body: { name: file.name, type: file.type, size: file.size } });
+  const parts = [];
+  const n = Math.ceil(file.size / init.partSize);
+  try {
+    for (let i = 0; i < n; i++) {
+      const blob = file.slice(i * init.partSize, Math.min(file.size, (i + 1) * init.partSize));
+      let tries = 0, res;
+      while (true) {
+        try {
+          const r = await fetch(`/api/p/videos/part?key=${encodeURIComponent(init.key)}&uploadId=${encodeURIComponent(init.uploadId)}&n=${i + 1}`, { method: "PUT", body: blob, credentials: "same-origin" });
+          res = await r.json();
+          if (!r.ok || !res.ok) throw new Error(res.error || "Yuklashda xato");
+          break;
+        } catch (e) { if (++tries >= 3) throw e; await new Promise((z) => setTimeout(z, 1500)); }
+      }
+      parts.push(res.part);
+      onProgress(Math.round(((i + 1) / n) * 100));
+    }
+    await api(`videos/complete?key=${encodeURIComponent(init.key)}&uploadId=${encodeURIComponent(init.uploadId)}`, { method: "POST", body: { parts } });
+    return init.key;
+  } catch (e) {
+    try { await api(`videos/abort?key=${encodeURIComponent(init.key)}&uploadId=${encodeURIComponent(init.uploadId)}`, { method: "POST", body: {} }); } catch {}
+    throw e;
+  }
+}
 async function pTasks(rest) {
   if (rest[0]) return taskDetail(+rest[0]);
   const gs = (await groupsList()).filter((g) => g.active);
@@ -1811,8 +1897,8 @@ async function pTasks(rest) {
     ${d.items.length ? `<div class="task-list">${d.items.map((a) => `
       <a class="task-card" href="#/tasks/${a.id}">
         <span class="stripe" style="background:${esc(a.color)}"></span>
-        <div class="tc-top"><span class="chip"><span class="dot" style="width:8px;height:8px;background:${esc(a.color)}"></span>${esc(a.grp)}</span>${dueInfo(a.due_date, today)}</div>
-        <h4>${esc(a.title)}</h4>
+        <div class="tc-top"><span class="chip"><span class="dot" style="width:8px;height:8px;background:${esc(a.color)}"></span>${esc(a.grp)}</span>${dueInfo(a, today)}</div>
+        <h4>${a.has_video ? `<span class="vtag">${ic("play")}Video dars</span>` : ""}${esc(a.title)}</h4>
         <div class="tc-prog"><div class="tr"><i style="width:${a.total ? (a.submitted / a.total) * 100 : 0}%"></i></div><span><b>${a.submitted}</b> / ${a.total} topshirdi</span></div>
         <div class="tc-foot">${a.unchecked ? `<span class="badge b-warn">${a.unchecked} ta tekshirilmagan</span>` : a.submitted ? '<span class="badge b-ok">Hammasi tekshirilgan</span>' : '<span class="muted" style="font-size:12.5px">Hali javob yo\'q</span>'}<span class="muted" style="margin-left:auto;font-size:12px">${fmtDate(a.created_at)}</span></div>
       </a>`).join("")}</div>` : `<div class="card empty">${ic("task")}<div>${gs.length ? "Hali vazifa berilmagan" : "Sizga hali guruh biriktirilmagan"}</div>${gs.length ? `<button class="btn" style="margin-top:14px" onclick="document.getElementById('addT').click()">${ic("plus")}Birinchi vazifani berish</button>` : ""}</div>`}`;
@@ -1820,29 +1906,67 @@ async function pTasks(rest) {
   if ($("#addT")) $("#addT").onclick = () => taskForm(null, gs, st.group);
 }
 function taskForm(a, gs, gid) {
-  a = a || { group_id: gid || (gs.length === 1 ? gs[0].id : ""), max_score: 10 };
+  const today = state.today || new Date().toISOString().slice(0, 10);
+  const plus = (k) => { const d = new Date(today + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + k); return d.toISOString().slice(0, 10); };
+  a = a || { group_id: gid || (gs.length === 1 ? gs[0].id : ""), max_score: 10, lesson_date: today, due_date: plus(2), due_time: "20:00" };
+  const canUpload = !!(state.cfg && state.cfg.videoUpload);
+  let vkey = a.video_key || "", vname = a.video_name || "", uploading = false;
   const m = modal({
-    title: a.id ? "Vazifani tahrirlash" : "Yangi vazifa",
+    wide: true,
+    title: a.id ? "Dars va vazifani tahrirlash" : "Dars videosi va uy vazifasi",
     body: `<form class="form" id="tkf">
-      <div class="f full"><label>Guruh *</label><select class="sel" name="group_id"><option value="">— Tanlang —</option>${gs.map((g) => `<option value="${g.id}" ${g.id == a.group_id ? "selected" : ""}>${esc(g.name)} · ${esc(g.course)}</option>`).join("")}</select></div>
-      <div class="f full"><label>Vazifa nomi *</label><input class="inp" name="title" value="${esc(a.title)}" placeholder="Masalan: 5-dars, 1–10 mashqlar"></div>
-      <div class="f full"><label>Tavsif</label><textarea class="inp" name="body" rows="5" placeholder="Nima qilish kerakligini yozing...">${esc(a.body)}</textarea></div>
-      <div class="f full"><label>Havola (ixtiyoriy)</label><input class="inp" name="link" value="${esc(a.link)}" placeholder="https://..."><span class="hint">Video, Google Docs, test va h.k.</span></div>
-      <div class="f"><label>Topshirish muddati</label><input class="inp" type="date" name="due_date" value="${esc(a.due_date)}"></div>
+      <div class="f"><label>Guruh *</label><select class="sel" name="group_id"><option value="">— Tanlang —</option>${gs.map((g) => `<option value="${g.id}" ${g.id == a.group_id ? "selected" : ""}>${esc(g.name)} · ${esc(g.course)}</option>`).join("")}</select></div>
+      <div class="f"><label>Dars sanasi</label><input class="inp" type="date" name="lesson_date" value="${esc(a.lesson_date)}"></div>
+      <div class="f full"><label>Mavzu / vazifa nomi *</label><input class="inp" name="title" value="${esc(a.title)}" placeholder="Masalan: 5-dars. Present Perfect"></div>
+
+      <div class="f full fsec"><label>${ic("play")} Dars videosi (zapis)</label>
+        <div class="vtabs"><button type="button" data-vm="link" class="${vkey ? "" : "on"}">Havola</button><button type="button" data-vm="file" class="${vkey ? "on" : ""}">Fayl yuklash</button></div>
+        <div data-vp="link" class="${vkey ? "hidden" : ""}"><input class="inp" name="video_url" value="${esc(a.video_url)}" placeholder="YouTube, Google Drive yoki boshqa havola"><span class="hint">YouTube'ga "Ro'yxatda yo'q" (unlisted) qilib yuklab, havolasini qo'ying — video shu yerning o'zida ochiladi.</span></div>
+        <div data-vp="file" class="${vkey ? "" : "hidden"}">
+          ${canUpload ? `<label class="vdrop" id="vdrop">${ic("upload")}<b id="vdTitle">${vname ? esc(vname) : "Video faylni tanlang"}</b><span id="vdSub">${vkey ? "Yuklangan ✓ — almashtirish uchun bosing" : "MP4, MOV · telefon yoki kompyuterdan"}</span><input type="file" accept="video/*" id="vfile" hidden></label>
+          <div class="vprog hidden" id="vprog"><div class="tr"><i id="vbar"></i></div><span id="vpct">0%</span></div>`
+          : `<div class="vnote">${ic("alert")}<div><b>Fayl yuklash hali yoqilmagan</b><span>Rahbar Cloudflare'da video saqlashni (R2) yoqqandan keyin ishlaydi. Hozircha "Havola" orqali qo'shing.</span></div></div>`}
+        </div>
+      </div>
+
+      <div class="f full"><label>Uy vazifasi</label><textarea class="inp" name="body" rows="5" placeholder="Videoni ko'rib, nima qilish kerakligini yozing...">${esc(a.body)}</textarea></div>
+      <div class="f full"><label>Qo'shimcha material havolasi (ixtiyoriy)</label><input class="inp" name="link" value="${esc(a.link)}" placeholder="https://..."></div>
+      <div class="f"><label>Topshirish muddati (deadline) *</label><div style="display:flex;gap:8px"><input class="inp" type="date" name="due_date" value="${esc(a.due_date)}" style="flex:1"><input class="inp" type="time" name="due_time" value="${esc(a.due_time || "20:00")}" style="width:120px"></div>
+        <div class="qdl">${[["Ertaga", 1], ["2 kun", 2], ["3 kun", 3], ["1 hafta", 7]].map(([t, k]) => `<button type="button" data-dl="${plus(k)}">${t}</button>`).join("")}</div></div>
       <div class="f"><label>Eng yuqori baho</label><select class="sel" name="max_score">${[5, 10, 20, 100].map((n) => `<option value="${n}" ${n == a.max_score ? "selected" : ""}>${n} ball</option>`).join("")}</select></div>
+      <label class="f full chk"><input type="checkbox" name="late_ok" ${a.late_ok ? "checked" : ""}> Muddatdan keyin ham qabul qilinsin (kechikkan deb belgilanadi)</label>
     </form>`,
     foot: `${a.id ? `<button class="btn danger left" id="del">${ic("trash")}O'chirish</button>` : ""}<button class="btn ghost" data-close>Bekor qilish</button><button class="btn" id="save">${a.id ? "Saqlash" : "Vazifani berish"}</button>`,
   });
-  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+  $$("[data-vm]", m.el).forEach((b) => (b.onclick = () => { $$("[data-vm]", m.el).forEach((x) => x.classList.toggle("on", x === b)); $$("[data-vp]", m.el).forEach((p) => p.classList.toggle("hidden", p.dataset.vp !== b.dataset.vm)); }));
+  $$("[data-dl]", m.el).forEach((b) => (b.onclick = () => (m.$("[name=due_date]").value = b.dataset.dl)));
+  if (m.$("#vfile")) m.$("#vfile").onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    if (!f.type.startsWith("video/")) return m.err("Faqat video fayl tanlang");
+    uploading = true; m.$("#save").disabled = true;
+    m.$("#vprog").classList.remove("hidden"); m.$("#vdTitle").textContent = f.name; m.$("#vdSub").textContent = `${(f.size / 1048576).toFixed(0)} MB · yuklanmoqda, oynani yopmang...`;
     try {
-      const r = await api("assignments" + (a.id ? "/" + a.id : ""), { method: a.id ? "PUT" : "POST", body: formData(m.$("#tkf")) });
+      vkey = await uploadVideo(f, (p) => { m.$("#vbar").style.width = p + "%"; m.$("#vpct").textContent = p + "%"; });
+      vname = f.name; m.$("#vdSub").textContent = "Yuklandi ✓"; toast("Video yuklandi");
+    } catch (er) { m.err("Video yuklanmadi: " + er.message); m.$("#vdSub").textContent = "Xato — qayta urinib ko'ring"; }
+    uploading = false; m.$("#save").disabled = false;
+  };
+  m.$("#save").onclick = () => submitBtn(m.$("#save"), async () => {
+    if (uploading) return;
+    const b = formData(m.$("#tkf"));
+    const fileMode = m.$('[data-vm="file"]').classList.contains("on");
+    b.video_key = fileMode ? vkey : ""; b.video_name = fileMode ? vname : "";
+    if (fileMode) b.video_url = "";
+    if (!b.due_date) return m.err("Topshirish muddatini belgilang");
+    try {
+      const r = await api("assignments" + (a.id ? "/" + a.id : ""), { method: a.id ? "PUT" : "POST", body: b });
       m.close(); toast(a.id ? "Saqlandi" : "Vazifa berildi — o'quvchilar ko'radi");
       const h = "#/tasks/" + (a.id || r.id);
       if (location.hash === h) route(); else location.hash = h;
     } catch (e) { m.err(e.message); }
   });
   if (a.id) m.$("#del").onclick = async () => {
-    if (!(await confirmBox(`<b>${esc(a.title)}</b> vazifasi va unga yuborilgan barcha javoblar o'chirilsinmi?`))) return;
+    if (!(await confirmBox(`<b>${esc(a.title)}</b> vazifasi, videosi va unga yuborilgan barcha javoblar o'chirilsinmi?`))) return;
     try { await api("assignments/" + a.id, { method: "DELETE" }); m.close(); toast("O'chirildi"); location.hash = "#/tasks"; } catch (e) { toast(e.message, 1); }
   };
 }
@@ -1856,7 +1980,8 @@ async function taskDetail(id) {
   $("#page").innerHTML = `
     <div class="grid g2">
       <div class="card" style="align-self:start">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${dueInfo(a.due_date, state.today)}<span class="chip">${a.max_score} ball</span><span class="chip">${fmtDate(a.created_at)} berilgan</span></div>
+        ${videoBox(a)}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${dueInfo(a, state.today)}<span class="chip">${a.max_score} ball</span>${a.lesson_date ? `<span class="chip">Dars: ${fmtDate(a.lesson_date)}</span>` : ""}${a.late_ok ? '<span class="chip">Kechikib topshirish mumkin</span>' : ""}</div>
         ${a.body ? `<div class="task-body">${esc(a.body)}</div>` : '<div class="muted">Tavsif yozilmagan</div>'}
         ${a.link ? `<a class="btn sm ghost" style="margin-top:14px" href="${esc(a.link)}" target="_blank" rel="noopener">${ic("link")}Havolani ochish</a>` : ""}
       </div>
@@ -1866,7 +1991,7 @@ async function taskDetail(id) {
           <div class="list-item ${x.id ? "click-row" : ""}" ${x.id ? `data-sub="${x.id}"` : ""}>
             <div class="ava" style="width:36px;height:36px;font-size:12px">${esc(initials(x.name))}</div>
             <div class="grow"><div class="t">${esc(x.name)}</div><div class="s">${x.id ? "Yuborildi: " + fmtDate(x.submitted_at) + " " + esc(String(x.submitted_at).slice(11, 16)) : x.has_login ? "Hali topshirmagan" : "Kabinetga login berilmagan"}</div></div>
-            ${x.id ? x.score != null ? `<span class="badge b-ok">${x.score} / ${a.max_score}</span>` : '<span class="badge b-warn">Tekshirish</span>' : '<span class="badge b-gray">Yo\'q</span>'}
+            ${x.late ? '<span class="badge b-bad nodot">Kechikkan</span>' : ""}${x.id ? x.score != null ? `<span class="badge b-ok">${x.score} / ${a.max_score}</span>` : '<span class="badge b-warn">Tekshirish</span>' : '<span class="badge b-gray">Yo\'q</span>'}
           </div>`).join("") : '<div class="empty" style="padding:20px">Guruhda faol o\'quvchi yo\'q</div>'}
       </div>
     </div>`;
@@ -1940,10 +2065,11 @@ async function sHome() {
     ${d.graded.length ? `<div class="s-sec"><h3>So'nggi baholar</h3>${d.graded.map((g) => `<a class="s-task" href="#/tasks/${g.id}"><div class="s-score">${g.score}<small>/${g.max_score}</small></div><div class="grow"><b>${esc(g.title)}</b><span>${esc(g.feedback || "Izoh yo'q")}</span></div>${ic("chevR")}</a>`).join("")}</div>` : ""}</div></div>`;
 }
 function sTaskRow(t, today) {
-  const late = t.due_date && t.due_date < today;
-  const st = t.score != null ? `<div class="s-score">${t.score}<small>/${t.max_score}</small></div>` : t.sub_id ? `<div class="s-ico ok">${ic("check")}</div>` : `<div class="s-ico ${late ? "late" : ""}">${ic("task")}</div>`;
-  const sub = t.score != null ? "Baholandi" : t.sub_id ? "Topshirildi · tekshirilmoqda" : t.due_date ? (late ? "Muddati o'tgan · " : t.due_date === today ? "Bugun · " : "Muddat: ") + fmtDate(t.due_date) : "Muddatsiz";
-  return `<a class="s-task" href="#/tasks/${t.id}">${st}<div class="grow"><b>${esc(t.title)}</b><span class="${late && !t.sub_id ? "late" : ""}">${sub}</span></div>${ic("chevR")}</a>`;
+  const dl = dlOf(t);
+  const over = dl && nowLocal() > dl;
+  const st = t.score != null ? `<div class="s-score">${t.score}<small>/${t.max_score}</small></div>` : t.sub_id ? `<div class="s-ico ok">${ic("check")}</div>` : `<div class="s-ico ${over ? "late" : ""}">${ic(t.has_video ? "play" : "task")}</div>`;
+  const sub = t.score != null ? "Baholandi" : t.sub_id ? (t.late ? "Kechikib topshirildi" : "Topshirildi · tekshirilmoqda") : !dl ? "Muddatsiz" : over ? (t.late_ok ? "Muddat o'tgan · hali topshirish mumkin" : "Muddat tugagan") : `${fmtDate(t.due_date)}${t.due_time ? ", " + t.due_time : ""} · ${leftText(dl)}`;
+  return `<a class="s-task" href="#/tasks/${t.id}">${st}<div class="grow"><b>${esc(t.title)}</b><span class="${over && !t.sub_id ? "late" : ""}">${t.has_video ? "🎬 " : ""}${sub}</span></div>${ic("chevR")}</a>`;
 }
 async function sTasks(rest) {
   if (rest[0]) return sTask(+rest[0]);
@@ -1961,10 +2087,13 @@ async function sTask(id) {
   const t = d.task, sb = d.submission;
   setHead(t.title, "", `<a class="btn ghost sm" href="#/tasks">${ic("chevL")}Orqaga</a>`);
   const graded = sb && sb.score != null;
+  const closed = !graded && t.closed;
   let photo = sb?.photo || "";
   $("#page").innerHTML = `<div class="s-cols wide-right"><div>
+    ${videoBox(t) ? `<div class="s-card s-video"><h3 style="font-size:15px;margin-bottom:10px">🎬 Dars videosi${t.lesson_date ? ` <span class="muted" style="font-weight:400;font-size:12.5px">· ${fmtDate(t.lesson_date)}</span>` : ""}</h3>${videoBox(t)}</div>` : ""}
     <div class="s-card">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${dueInfo(t.due_date, d.today)}<span class="chip">${t.max_score} ball</span></div>
+      <h3 style="font-size:15px;margin-bottom:10px">📝 Uy vazifasi</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${dueInfo(t, d.today)}<span class="chip">${t.max_score} ball</span></div>
       ${t.body ? `<div class="task-body">${esc(t.body)}</div>` : '<div class="muted">Ustoz tavsif yozmagan</div>'}
       ${t.link ? `<a class="btn ghost" style="margin-top:14px;width:100%" href="${esc(t.link)}" target="_blank" rel="noopener">${ic("link")}Materialni ochish</a>` : ""}
     </div>
@@ -1972,14 +2101,14 @@ async function sTask(id) {
     </div><div>
     <div class="s-card">
       <h3 style="font-size:16px;margin-bottom:12px">${graded ? "Sizning javobingiz" : sb ? "Javobingiz yuborilgan ✓" : "Javobingiz"}</h3>
-      ${graded ? `${sb.text ? `<div class="task-body">${esc(sb.text)}</div>` : ""}${sb.photo ? `<img src="${sb.photo}" class="s-photo">` : ""}`
-        : `${sb ? '<p class="muted" style="font-size:13px;margin-bottom:10px">Ustoz tekshirguncha javobni o\'zgartirishingiz mumkin.</p>' : ""}
+      ${graded || closed ? `${closed ? `<div class="s-closed">${ic("clock")}<div><b>Topshirish muddati tugagan</b><span>${fmtDate(t.due_date)}${t.due_time ? ", " + t.due_time : ""} gacha edi. ${sb ? "Yuborgan javobingiz ustozga yetib bordi." : "Javob endi qabul qilinmaydi."}</span></div></div>` : ""}${sb && sb.text ? `<div class="task-body">${esc(sb.text)}</div>` : ""}${sb && sb.photo ? `<img src="${sb.photo}" class="s-photo">` : ""}`
+        : `${t.deadline && nowLocal() > t.deadline ? '<div class="s-closed warn">' + ic("clock") + '<div><b>Muddat o\'tgan</b><span>Ustoz kechikib topshirishga ruxsat bergan — javobingiz "kechikkan" deb belgilanadi.</span></div></div>' : ""}${sb ? '<p class="muted" style="font-size:13px;margin-bottom:10px">Ustoz tekshirguncha javobni o\'zgartirishingiz mumkin.</p>' : ""}
         <textarea class="inp s-answer" id="ans" rows="6" placeholder="Javobingizni shu yerga yozing...">${esc(sb?.text || "")}</textarea>
         <div id="phWrap"></div>
         <label class="btn ghost s-attach" id="phLbl">${ic("camera")}<span>${photo ? "Rasmni almashtirish" : "Rasm biriktirish (daftar, ekran)"}</span><input type="file" accept="image/*" id="phIn" hidden></label>`}
     </div>
-    ${graded ? "" : `<div class="s-send"><button class="btn" id="sendAns">${ic("send")}${sb ? "Javobni yangilash" : "Javobni yuborish"}</button></div>`}</div></div>`;
-  if (graded) return;
+    ${graded || closed ? "" : `<div class="s-send"><button class="btn" id="sendAns">${ic("send")}${sb ? "Javobni yangilash" : "Javobni yuborish"}</button></div>`}</div></div>`;
+  if (graded || closed) return;
   const drawPh = () => {
     $("#phWrap").innerHTML = photo ? `<div class="s-ph"><img src="${photo}"><button type="button" id="phDel">${ic("x")}</button></div>` : "";
     $("#phLbl span").textContent = photo ? "Rasmni almashtirish" : "Rasm biriktirish (daftar, ekran)";
@@ -2128,6 +2257,7 @@ async function boot() {
     state.today = d.today;
   } catch { if (!state.me) return renderLogin(); }
   state.cache = {};
+  if (state.me.role !== "student") { try { state.cfg = await api("config"); } catch { state.cfg = {}; } }
   shell();
   if (state.me.role === "admin") refreshLeadCount();
   await route();
