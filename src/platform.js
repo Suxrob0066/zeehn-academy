@@ -199,7 +199,8 @@ async function stats(env, me) {
     q("SELECT COUNT(*) n FROM groups WHERE active=1"),
     q("SELECT COUNT(*) n FROM users WHERE role='teacher' AND active=1"),
     q(
-      "SELECT COUNT(*) n FROM students s WHERE s.status='active' AND NOT EXISTS (SELECT 1 FROM payments p WHERE p.student_id=s.id AND p.month=?)",
+      `SELECT COUNT(*) n FROM students s JOIN groups g ON g.id=s.group_id JOIN courses c ON c.id=g.course_id
+       WHERE s.status='active' AND c.price>0 AND COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p.student_id=s.id AND p.month=?),0) < c.price`,
       m
     ),
     q("SELECT COALESCE(SUM(amount),0) n FROM payments WHERE month=?", m),
