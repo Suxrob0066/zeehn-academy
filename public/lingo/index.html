@@ -348,6 +348,8 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .thm button{flex:1;display:flex!important;align-items:center;justify-content:center;gap:6px;padding:9px 6px!important;border-radius:10px!important;font-size:13px!important;font-weight:700;color:var(--muted);flex-direction:row!important}
 .thm button svg{width:16px!important;height:16px!important}
 .thm button.on{background:var(--card);color:var(--blue);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.tipc{background:var(--coin-bg);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45}
+[data-theme=dark] .tipc{color:#FFE2A8}
 </style>
 </head>
 <body>
@@ -630,6 +632,7 @@ function lessonSheet(id) {
     <span class="chip">${i + 1}-dars · ${esc(l.unit.title)}</span>
     <h2 class="t" style="margin:10px 0 4px">${esc(l.title)}</h2>
     <p class="muted" style="margin-bottom:14px">${l.words.map((w) => esc(w[0])).join(" · ")}</p>
+    ${l.tip ? `<div class="tipc" style="margin-bottom:14px">💡 ${esc(l.tip)}</div>` : ""}
     ${done ? `<p class="muted" style="margin-bottom:14px">Eng yaxshi natija: <b style="color:var(--ink)">${done.best}%</b> · ${done.times} marta o'tilgan</p>` : ""}
     <button class="btn" id="go">${done ? "Qayta o'tish · +3 XP" : "Boshlash · +10 XP"}</button>
     <button class="btn ghost" id="cl" style="margin-top:10px">Yopish</button></div>`;
@@ -703,6 +706,7 @@ function showEx(L) {
   if (!e) return finishLesson(L);
   if (e.t === "intro") {
     box.innerHTML = `<div class="q">Yangi so'zlar</div><p class="muted" style="margin-top:-8px">Bosing va tinglang 🔊</p>
+      ${L.l.tip ? `<div class="tipc">💡 <b>Qoida:</b> ${esc(L.l.tip)}</div>` : ""}
       <div class="words">${L.l.words.map((w) => `<button class="wrow" data-s="${esc(w[0])}"><span class="spk">${IC.spk}</span><div style="text-align:left"><b>${esc(w[0])}</b><div class="muted">${esc(w[1])}</div></div></button>`).join("")}</div>`;
     box.querySelectorAll(".wrow").forEach((b) => (b.onclick = () => say(b.dataset.s)));
     footer(L, true, () => { L.i++; showEx(L); }, "Davom etish");
