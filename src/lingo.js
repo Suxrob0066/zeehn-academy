@@ -53,7 +53,7 @@ async function currentUser(req, env) {
   if (!tok) return null;
   const ses = await env.DB.prepare("SELECT user_id,expires FROM lingo_sessions WHERE token=?").bind(tok).first();
   if (!ses || ses.expires < Date.now()) return null;
-  return env.DB.prepare("SELECT id,name,phone,xp,coins,streak,last_day FROM lingo_users WHERE id=?").bind(ses.user_id).first();
+  return env.DB.prepare("SELECT id,name,phone,xp,coins,streak,last_day,avatar FROM lingo_users WHERE id=?").bind(ses.user_id).first();
 }
 
 async function newSession(env, userId) {
@@ -89,7 +89,7 @@ async function state(env, user) {
   // Ketma-ket kun uzilgan bo'lsa 0 ko'rsatamiz
   const streak = user.last_day === t || user.last_day === addDays(t, -1) ? user.streak : 0;
   return {
-    user: { id: user.id, name: user.name, xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
+    user: { id: user.id, name: user.name, avatar: user.avatar === "girl" ? "girl" : "boy", xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
     tier: tierOf(user.xp),
     tiers: TIERS,
     done: Object.fromEntries((done.results || []).map((r) => [r.lesson, { best: r.best, times: r.times }])),
@@ -118,7 +118,8 @@ export async function handleLingo(req, env, url) {
     if (pass.length < 6) return err("Parol kamida 6 ta belgi bo'lsin");
     const exists = await env.DB.prepare("SELECT id FROM lingo_users WHERE phone=?").bind(phone).first();
     if (exists) return err("Bu raqam ro'yxatdan o'tgan. Kirish tugmasini bosing");
-    const r = await env.DB.prepare("INSERT INTO lingo_users (name,phone,pass) VALUES (?,?,?)").bind(name, phone, await hashPassword(pass)).run();
+    const avatar = b.avatar === "girl" ? "girl" : "boy";
+    const r = await env.DB.prepare("INSERT INTO lingo_users (name,phone,pass,avatar) VALUES (?,?,?,?)").bind(name, phone, await hashPassword(pass), avatar).run();
     const c = await newSession(env, r.meta.last_row_id);
     return json({ ok: true }, 200, { "Set-Cookie": c });
   }
@@ -247,16 +248,16 @@ export async function handleLingo(req, env, url) {
   if (path === "rating" && m === "GET") {
     const ws = weekStart();
     const r = await env.DB.prepare(
-      "SELECT u.id,u.name,SUM(x.xp) xp FROM lingo_xp x JOIN lingo_users u ON u.id=x.user_id WHERE x.day>=? GROUP BY u.id ORDER BY xp DESC, u.id LIMIT 50"
+      "SELECT u.id,u.name,u.avatar,SUM(x.xp) xp FROM lingo_xp x JOIN lingo_users u ON u.id=x.user_id WHERE x.day>=? GROUP BY u.id ORDER BY xp DESC, u.id LIMIT 50"
     ).bind(ws).all();
-    const list = (r.results || []).map((x, i) => ({ place: i + 1, name: x.name, xp: x.xp, me: x.id === user.id }));
+    const list = (r.results || []).map((x, i) => ({ place: i + 1, name: x.name, avatar: x.avatar, xp: x.xp, me: x.id === user.id }));
     let me = list.find((x) => x.me) || null;
     if (!me) {
       const mine = await env.DB.prepare("SELECT COALESCE(SUM(xp),0) xp FROM lingo_xp WHERE user_id=? AND day>=?").bind(user.id, ws).first();
       const above = await env.DB.prepare(
         "SELECT COUNT(*) n FROM (SELECT user_id,SUM(xp) s FROM lingo_xp WHERE day>=? GROUP BY user_id HAVING s>?)"
       ).bind(ws, mine?.xp || 0).first();
-      me = { place: (above?.n || 0) + 1, name: user.name, xp: mine?.xp || 0, me: true };
+      me = { place: (above?.n || 0) + 1, name: user.name, avatar: user.avatar, xp: mine?.xp || 0, me: true };
     }
     const daysLeft = 7 - ((nowTz().getUTCDay() + 6) % 7);
     return json({ ok: true, list, me, daysLeft });
@@ -320,9 +321,14 @@ export async function handleLingo(req, env, url) {
 
   if (path === "profile" && m === "POST") {
     const b = await readBody(req);
-    const name = S(b.name, 40);
-    if (name.length < 2) return err("Ismingizni kiriting");
-    await env.DB.prepare("UPDATE lingo_users SET name=? WHERE id=?").bind(name, user.id).run();
+    if (b.avatar !== undefined) {
+      await env.DB.prepare("UPDATE lingo_users SET avatar=? WHERE id=?").bind(b.avatar === "girl" ? "girl" : "boy", user.id).run();
+    }
+    if (b.name !== undefined) {
+      const name = S(b.name, 40);
+      if (name.length < 2) return err("Ismingizni kiriting");
+      await env.DB.prepare("UPDATE lingo_users SET name=? WHERE id=?").bind(name, user.id).run();
+    }
     return json({ ok: true });
   }
 

@@ -199,7 +199,7 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .soon b{display:block;font-size:15px}
 /* auth */
 .auth{min-height:100%;display:flex;flex-direction:column;justify-content:center;padding:28px 20px;max-width:440px;margin:0 auto}
-.auth .lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;color:var(--blue);margin-bottom:8px}
+.auth .lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;white-space:nowrap;color:var(--blue);margin-bottom:8px}
 .auth .lg img{width:46px;height:46px}
 .auth h1{font-size:28px;font-weight:800;line-height:1.2;margin:14px 0 6px;letter-spacing:-.4px}
 .auth h1 span{color:var(--blue)}
@@ -390,6 +390,37 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .stk{position:absolute;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -10px rgba(11,27,77,.35);border:3px solid var(--zl);animation:float 4s ease-in-out infinite;pointer-events:none;line-height:1}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .path .node{z-index:1}
+
+.walker{position:absolute;top:50%;display:flex;flex-direction:column;align-items:center;gap:2px;transform:translateY(-42%);pointer-events:none;z-index:3}
+.walker.r{left:84px}.walker.l{right:84px}
+.walker .here{position:relative;bottom:auto;left:auto;transform:none;animation:none;font-size:11px;padding:5px 10px}
+.walker .here:after{left:50%;margin-left:-6px;bottom:-6px;top:auto;border:6px solid transparent;border-top-color:var(--ink);border-bottom:0}
+[data-theme=dark] .walker .here:after{border-top-color:#E8EEFF}
+.hero-svg,.node .hero-svg{width:58px;height:96px;overflow:visible}
+.walker.l .hero-svg{transform:scaleX(-1)}
+.hero-svg .bob{animation:hbob .5s ease-in-out infinite}
+.hero-svg .lg,.hero-svg .arm{transform-box:fill-box}
+.hero-svg .lg{transform-origin:50% 0}
+.hero-svg .arm{transform-origin:50% 10%}
+.hero-svg .l1,.hero-svg .a2{animation:swingA 1s ease-in-out infinite}
+.hero-svg .l2,.hero-svg .a1{animation:swingB 1s ease-in-out infinite}
+.hero-svg .shd{animation:shd .5s ease-in-out infinite;transform-origin:30px 96px}
+@keyframes swingA{0%,100%{transform:rotate(24deg)}50%{transform:rotate(-24deg)}}
+@keyframes swingB{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(24deg)}}
+@keyframes hbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes shd{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.85)}}
+@media (min-width:960px){.walker.r{left:98px}.walker.l{right:98px}.node .hero-svg{width:70px;height:116px}.walker .here{font-size:13px}}
+@media (min-width:1400px){.walker.r{left:118px}.walker.l{right:118px}.node .hero-svg{width:80px;height:132px}}
+.avpick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.avpick label,.avpick button{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--line);border-radius:16px;background:var(--card);cursor:pointer;font-size:14px}
+.avpick input{display:none}
+.avpick label:has(input:checked),.avpick button.on{border-color:var(--blue2);background:var(--sky);color:var(--blue)}
+.avpick.big button{flex-direction:column;padding:14px}
+.pav{background:none!important;overflow:hidden}
+.pav .face,.ri .av .face{display:block}
+.ri .av{overflow:hidden}
+.pfhero{display:flex;justify-content:center;margin-bottom:6px}
+.pfhero .hero-svg{width:84px;height:140px}
 </style>
 </head>
 <body>
@@ -488,16 +519,51 @@ async function loadMe() {
   if (r.ok) S.me = r; else if (!S.me) renderAuth();
 }
 
+
+/* ---------- Qahramon (o'g'il / qiz) ---------- */
+const SKIN = "#F5C9A1", SKIN_D = "#E7AE82";
+function headSVG(kind) {
+  const hair = kind === "girl"
+    ? `<path d="M14 25c-2-12 6-19 16-19s18 7 16 19c-2-6-6-10-16-10S16 19 14 25z" fill="#5B3A1E"/><circle cx="12" cy="20" r="6" fill="#5B3A1E"/><circle cx="48" cy="20" r="6" fill="#5B3A1E"/><circle cx="11" cy="15" r="3.2" fill="#FF5FA2"/><circle cx="49" cy="15" r="3.2" fill="#FF5FA2"/>`
+    : `<path d="M15 23c-1-11 6-17 15-17 10 0 16 6 15 17-3-5-8-8-15-8-6 0-11 2-15 8z" fill="#3A2614"/><path d="M28 7c3-4 9-4 11 0-4-1-7 0-11 0z" fill="#3A2614"/>`;
+  return `<circle cx="30" cy="27" r="15" fill="${SKIN}"/><circle cx="15" cy="28" r="3" fill="${SKIN_D}"/><circle cx="45" cy="28" r="3" fill="${SKIN_D}"/>${hair}
+    <circle cx="24.5" cy="28" r="2.1" fill="#1B1B2F"/><circle cx="35.5" cy="28" r="2.1" fill="#1B1B2F"/><circle cx="25.2" cy="27.3" r=".7" fill="#fff"/><circle cx="36.2" cy="27.3" r=".7" fill="#fff"/>
+    <circle cx="21" cy="33" r="2.4" fill="#FF9AA8" opacity=".55"/><circle cx="39" cy="33" r="2.4" fill="#FF9AA8" opacity=".55"/>
+    <path d="M26 34.5q4 3.5 8 0" stroke="#7A3B2E" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+}
+function faceIcon(kind, size = 40) {
+  return `<svg viewBox="4 4 52 46" width="${size}" height="${size}" aria-label="${kind === "girl" ? "Qiz bola" : "O'g'il bola"}" class="face"><circle cx="30" cy="27" r="25" fill="${kind === "girl" ? "#FFE1EE" : "#DDE8FF"}"/>${headSVG(kind)}</svg>`;
+}
+function heroSVG(kind) {
+  const shirt = kind === "girl" ? "#E8458B" : "#0046E0", pants = kind === "girl" ? "#7C4DDB" : "#1E3A8A";
+  const skirt = kind === "girl" ? `<path d="M17 62h26l4 10H13z" fill="#7C4DDB"/>` : "";
+  return `<svg viewBox="0 0 60 100" class="hero-svg" aria-label="${kind === "girl" ? "Qiz bola" : "O'g'il bola"} yurmoqda">
+    <ellipse cx="30" cy="96" rx="16" ry="3.5" fill="rgba(11,27,77,.18)" class="shd"/>
+    <g class="bob">
+      <g class="lg l1"><rect x="21" y="62" width="8" height="24" rx="4" fill="${kind === "girl" ? SKIN : pants}"/><rect x="18" y="83" width="13" height="7" rx="3.5" fill="#1B1B2F"/></g>
+      <g class="lg l2"><rect x="31" y="62" width="8" height="24" rx="4" fill="${kind === "girl" ? SKIN : pants}"/><rect x="29" y="83" width="13" height="7" rx="3.5" fill="#1B1B2F"/></g>
+      <rect x="9" y="44" width="10" height="17" rx="4" fill="#FFB020"/>
+      <g class="arm a1"><rect x="13" y="45" width="7" height="19" rx="3.5" fill="${shirt}"/><circle cx="16.5" cy="64" r="3.6" fill="${SKIN}"/></g>
+      <rect x="17" y="41" width="26" height="24" rx="9" fill="${shirt}"/>
+      <path d="M26 48l8 0-8 9h8" stroke="#C6FF3D" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      ${skirt}
+      <g class="arm a2"><rect x="40" y="45" width="7" height="19" rx="3.5" fill="${shirt}"/><circle cx="43.5" cy="64" r="3.6" fill="${SKIN}"/></g>
+      <g transform="translate(0,-3)">${headSVG(kind)}</g>
+    </g></svg>`;
+}
+const AV = () => (S.me && S.me.user.avatar) || "boy";
+
 /* ---------- Kirish ---------- */
 function renderAuth(mode = "reg") {
   $("#root").innerHTML = `
   <div class="auth">
-    <div class="lg"><img src="/img/logo-mark-blue.png" alt="">Zeehn Lingo<span id="ath" style="margin-left:auto;width:170px">${themeHTML()}</span></div>
+    <div class="lg"><img src="/img/logo-mark-blue.png" alt="">Zeehn Lingo<span id="ath" style="margin-left:auto;width:150px;flex:none">${themeHTML()}</span></div>
     <h1>Ingliz tilini <span>o'yin kabi</span> o'rganing</h1>
     <p class="muted">Har kuni 10 daqiqa — o'zbek tilida, qadam-baqadam.</p>
     <div class="tabs"><button data-m="reg" class="${mode === "reg" ? "on" : ""}">Ro'yxatdan o'tish</button><button data-m="login" class="${mode === "login" ? "on" : ""}">Kirish</button></div>
     <form id="af">
-      ${mode === "reg" ? '<label class="fld"><span>Ismingiz</span><input name="name" autocomplete="given-name" placeholder="Masalan: Aziz" required></label>' : ""}
+      ${mode === "reg" ? `<label class="fld"><span>Ismingiz</span><input name="name" autocomplete="given-name" placeholder="Masalan: Aziz" required></label>
+        <div class="fld"><span>Qahramoningiz</span><div class="avpick"><label><input type="radio" name="avatar" value="boy" checked>${faceIcon("boy", 44)}<b>O'g'il bola</b></label><label><input type="radio" name="avatar" value="girl">${faceIcon("girl", 44)}<b>Qiz bola</b></label></div></div>` : ""}
       <label class="fld"><span>Telefon raqam</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 90 123 45 67" required></label>
       <label class="fld"><span>Parol</span><input name="password" type="password" autocomplete="${mode === "reg" ? "new-password" : "current-password"}" placeholder="Kamida 6 ta belgi" required></label>
       <p class="ferr" id="fe"></p>
@@ -574,7 +640,7 @@ function renderApp() {
       <button data-t="more" class="nv mob">${IC.more}<span>Ko'proq</span></button>
       <div class="navfoot">
         ${themeHTML()}
-        <button class="pcard" data-t="me"><span class="pav">${esc(m.user.name[0].toUpperCase())}</span><span><b>${esc(m.user.name)}</b><small>⭐ ${esc(m.tier.name)}</small></span></button>
+        <button class="pcard" data-t="me"><span class="pav">${faceIcon(AV(), 42)}</span><span><b>${esc(m.user.name)}</b><small>⭐ ${esc(m.tier.name)}</small></span></button>
         <button class="lout">${IC.logout}Chiqish</button>
       </div>
     </nav>
@@ -648,7 +714,7 @@ function viewMap() {
       const st = m.done[l.id] ? "done" : gi === curIdx ? "cur" : "lock";
       html += `<button class="node ${st}" data-l="${l.id}" style="transform:translateX(${off[li % off.length] * k}px)" aria-label="${esc(l.title)}">
         ${st === "done" ? IC.star : st === "cur" ? IC.play : IC.lock}
-        ${st === "cur" ? `<span class="here ${off[li % off.length] > 0 ? "l" : "r"}">Siz shu yerdasiz</span>` : ""}
+        ${st === "cur" ? `<span class="walker ${off[li % off.length] > 0 ? "l" : "r"}"><span class="here">Siz shu yerdasiz</span>${heroSVG(AV())}</span>` : ""}
         <span class="nlabel">${esc(l.title)}</span></button>`;
     });
     const got = m.chests.includes(u.id);
@@ -1114,7 +1180,7 @@ async function viewRating() {
       <div style="text-align:right"><div style="font-size:13px;opacity:.85">Bu hafta</div><b>${r.me.xp} XP</b></div></div>
     <p class="muted" style="font-size:13px;margin-bottom:10px">⏳ Hafta tugashiga ${r.daysLeft} kun · XP dars, takrorlash va sandiqlar uchun beriladi</p>
     <div class="rl">${r.list.length ? r.list.map((x, i) => `<div class="ri ${x.me ? "me" : ""}"><span class="p">${medal[i] || x.place}</span>
-      <span class="av" style="background:${AVC[i % AVC.length]}">${esc((x.name || "?")[0].toUpperCase())}</span>
+      <span class="av" style="background:${AVC[i % AVC.length]}">${faceIcon(x.avatar === "girl" ? "girl" : "boy", 38)}</span>
       <span class="nm">${esc(x.name)}${x.me ? " (siz)" : ""}</span><span class="xp">${x.xp} XP</span></div>`).join("")
       : '<div class="card muted" style="text-align:center">Bu hafta hali hech kim XP yig\'madi. Birinchi bo\'ling! 🚀</div>'}</div>`;
 }
@@ -1122,7 +1188,7 @@ async function viewRating() {
 /* ---------- Profil ---------- */
 function viewMe() {
   const m = S.me, all = lessons();
-  $("#main").innerHTML = `<div class="card pf"><div class="av">${esc(m.user.name[0].toUpperCase())}</div>
+  $("#main").innerHTML = `<div class="card pf"><div class="pfhero">${heroSVG(AV())}</div>
       <h2 class="t" style="margin:0">${esc(m.user.name)}</h2><span class="chip" style="margin-top:6px">⭐ ${esc(m.tier.name)}</span></div>
     <div class="grid2">
       <div class="card"><b style="color:var(--blue)">${m.user.xp}</b><small>Jami XP</small></div>
@@ -1136,12 +1202,18 @@ function viewMe() {
       <div class="soon"><span class="e">⚔️</span><div><b>Oktagon</b><span class="muted" style="font-size:13px">1 ga 1 bilim bellashuvi</span></div></div>
       <div class="soon"><span class="e">🎁</span><div><b>Sovg'alar</b><span class="muted" style="font-size:13px">Yig'ilgan XP ga haqiqiy sovg'alar</span></div></div>
     </div>
+    <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Qahramonim</h3>
+    <div class="avpick big" id="avp">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Ko'rinish</h3>
     <div id="pth">${themeHTML()}</div>
     <button class="btn ghost" id="en" style="margin-top:18px">Ismni o'zgartirish</button>
     <button class="btn ghost" id="lo" style="margin-top:10px;color:var(--red)">Chiqish</button>`;
   $("#lo").onclick = logout;
   bindTheme($("#pth"));
+  document.querySelectorAll("#avp [data-av]").forEach((b) => (b.onclick = async () => {
+    const r = await api("profile", { avatar: b.dataset.av }); if (!r.ok) return toast(r.error);
+    toast(b.dataset.av === "girl" ? "Qahramon: qiz bola 👧" : "Qahramon: o'g'il bola 👦"); refresh();
+  }));
   $("#en").onclick = async () => {
     const n = prompt("Yangi ism:", m.user.name); if (!n) return;
     const r = await api("profile", { name: n }); if (!r.ok) return toast(r.error); refresh();
