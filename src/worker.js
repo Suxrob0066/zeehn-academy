@@ -9,6 +9,7 @@
 //   Har bir qabul qiluvchi oldin botga /start bosgan bo'lishi kerak.
 
 import { handlePlatform, saveLead } from "./platform.js";
+import { handleLingo } from "./lingo.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -77,6 +78,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/send") return handleSend(request, env);
     if (url.pathname.startsWith("/api/p/")) return handlePlatform(request, env, url);
+    if (url.pathname.startsWith("/api/l/")) return handleLingo(request, env, url);
     if (["/ustoz", "/ustoz/", "/admin", "/admin/", "/oquvchi", "/oquvchi/"].includes(url.pathname)) return Response.redirect(url.origin + "/platforma/", 302);
     if (url.pathname === "/platforma") return Response.redirect(url.origin + "/platforma/", 301);
     return env.ASSETS.fetch(request);

@@ -23,7 +23,7 @@ export async function hashPassword(password) {
   const h = await pbkdf2(password, salt, PBKDF2_ITER);
   return `pbkdf2$${PBKDF2_ITER}$${b64(salt)}$${b64(h)}`;
 }
-async function verifyPassword(password, stored) {
+export async function verifyPassword(password, stored) {
   const [alg, iter, salt, hash] = String(stored).split("$");
   if (alg !== "pbkdf2") return false;
   const h = b64(await pbkdf2(password, unb64(salt), Number(iter)));
