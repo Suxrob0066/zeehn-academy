@@ -435,6 +435,10 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--blue)}
 .eye:hover{background:var(--sky)}
 .eye svg{width:22px;height:22px}
+.edsh{max-height:92vh;overflow-y:auto}
+.edsep{height:1px;background:var(--line);margin:20px 0}
+.fld input:disabled{opacity:.6}
+@media (min-width:960px){.dim{align-items:center}.dim .sheet{border-radius:26px;max-width:480px}}
 </style>
 </head>
 <body>
@@ -1232,6 +1236,56 @@ async function viewRating() {
       : '<div class="card muted" style="text-align:center">Bu hafta hali hech kim XP yig\'madi. Birinchi bo\'ling! 🚀</div>'}</div>`;
 }
 
+/* ---------- Profilni tahrirlash ---------- */
+const fmtPhone = (p) => { const d = String(p || ""); return d.length === 12 ? `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)} ${d.slice(8, 10)} ${d.slice(10)}` : d; };
+const pwField = (name, label, ac) => `<label class="fld"><span>${label}</span><span class="pw"><input name="${name}" type="password" autocomplete="${ac}" placeholder="••••••"><button type="button" class="eye" aria-label="Parolni ko'rsatish">${IC.eye}</button></span></label>`;
+function editProfile() {
+  const m = S.me;
+  const d = document.createElement("div");
+  d.className = "dim";
+  d.innerHTML = `<div class="sheet edsh">
+    <h2 class="t" style="margin-bottom:14px">Profilni tahrirlash</h2>
+    <form id="nf">
+      <label class="fld"><span>Ismingiz</span><input name="name" value="${esc(m.user.name)}" maxlength="40" required></label>
+      <label class="fld"><span>Telefon raqam</span><input value="${esc(fmtPhone(m.user.phone))}" disabled></label>
+      <p class="ferr" id="nfe"></p>
+      <button class="btn" type="submit">Saqlash</button>
+    </form>
+    <div class="edsep"></div>
+    <h3 style="font-size:17px;font-weight:800;margin-bottom:12px">🔒 Parolni o'zgartirish</h3>
+    <form id="pf">
+      ${pwField("old", "Joriy parol", "current-password")}
+      ${pwField("new", "Yangi parol", "new-password")}
+      ${pwField("new2", "Yangi parolni takrorlang", "new-password")}
+      <p class="ferr" id="pfe"></p>
+      <button class="btn" type="submit">Parolni yangilash</button>
+    </form>
+    <button class="btn ghost" id="ecl" style="margin-top:12px">Yopish</button></div>`;
+  document.body.appendChild(d);
+  d.onclick = (e) => { if (e.target === d) d.remove(); };
+  $("#ecl", d).onclick = () => d.remove();
+  d.querySelectorAll(".eye").forEach((b) => (b.onclick = () => {
+    const i = b.previousElementSibling, show = i.type === "password";
+    i.type = show ? "text" : "password"; b.innerHTML = show ? IC.eyeOff : IC.eye;
+  }));
+  $("#nf", d).onsubmit = async (e) => {
+    e.preventDefault();
+    const name = e.target.name.value.trim();
+    const r = await api("profile", { name });
+    if (!r.ok) { $("#nfe", d).textContent = r.error; return; }
+    d.remove(); toast("Ism saqlandi ✓"); refresh();
+  };
+  $("#pf", d).onsubmit = async (e) => {
+    e.preventDefault();
+    const f = e.target, er = $("#pfe", d);
+    if (f.new.value.length < 6) { er.textContent = "Yangi parol kamida 6 ta belgi bo'lsin"; return; }
+    if (f.new.value !== f.new2.value) { er.textContent = "Yangi parollar bir xil emas"; return; }
+    const r = await api("password", { old: f.old.value, new: f.new.value });
+    if (!r.ok) { er.textContent = r.error; return; }
+    d.remove(); toast("Parol yangilandi ✓ Boshqa qurilmalardan chiqildi", 3000);
+  };
+}
+
 /* ---------- Profil ---------- */
 function viewMe() {
   const m = S.me, all = lessons();
@@ -1254,7 +1308,7 @@ function viewMe() {
     <div class="avpick big" id="avp">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Ko'rinish</h3>
     <div id="pth">${themeHTML()}</div>
-    <button class="btn ghost" id="en" style="margin-top:18px">Ismni o'zgartirish</button>
+    <button class="btn ghost" id="en" style="margin-top:18px">✏️ Profilni tahrirlash</button>
     <button class="btn ghost" id="lo" style="margin-top:10px;color:var(--red)">Chiqish</button>`;
   $("#lo").onclick = logout;
   bindTheme($("#pth"));
@@ -1264,10 +1318,7 @@ function viewMe() {
     const r = await api("profile", { avatar: b.dataset.av }); if (!r.ok) return toast(r.error);
     toast(b.dataset.av === "girl" ? "Qahramon: qiz bola 👧" : "Qahramon: o'g'il bola 👦"); refresh();
   }));
-  $("#en").onclick = async () => {
-    const n = prompt("Yangi ism:", m.user.name); if (!n) return;
-    const r = await api("profile", { name: n }); if (!r.ok) return toast(r.error); refresh();
-  };
+  $("#en").onclick = editProfile;
 }
 
 boot();

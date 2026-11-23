@@ -90,7 +90,7 @@ async function state(env, user) {
   // Ketma-ket kun uzilgan bo'lsa 0 ko'rsatamiz
   const streak = user.last_day === t || user.last_day === addDays(t, -1) ? user.streak : 0;
   return {
-    user: { id: user.id, name: user.name, avatar: user.avatar === "girl" ? "girl" : "boy", photo: photoUrl(user), xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
+    user: { id: user.id, name: user.name, phone: user.phone, avatar: user.avatar === "girl" ? "girl" : "boy", photo: photoUrl(user), xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
     tier: tierOf(user.xp),
     tiers: TIERS,
     done: Object.fromEntries((done.results || []).map((r) => [r.lesson, { best: r.best, times: r.times }])),
@@ -327,6 +327,20 @@ export async function handleLingo(req, env, url) {
     const xp = Math.min(5, Math.ceil(correct / 2));
     const streak = xp ? await award(env, user, xp, 0) : user.streak;
     return json({ ok: true, xp, coins: 0, streak });
+  }
+
+  if (path === "password" && m === "POST") {
+    const b = await readBody(req);
+    const np = String(b.new || "");
+    if (np.length < 6) return err("Yangi parol kamida 6 ta belgi bo'lsin");
+    const row = await env.DB.prepare("SELECT pass FROM lingo_users WHERE id=?").bind(user.id).first();
+    if (!row || !(await verifyPassword(String(b.old || ""), row.pass))) return err("Joriy parol noto'g'ri");
+    const tok = getCookie(req, "zl");
+    await env.DB.batch([
+      env.DB.prepare("UPDATE lingo_users SET pass=? WHERE id=?").bind(await hashPassword(np), user.id),
+      env.DB.prepare("DELETE FROM lingo_sessions WHERE user_id=? AND token<>?").bind(user.id, tok || ""),
+    ]);
+    return json({ ok: true });
   }
 
   if (path === "photo" && m === "POST") {
