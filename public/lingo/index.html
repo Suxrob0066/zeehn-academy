@@ -234,8 +234,6 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
  .nav button:hover{background:#fff}
  .nav button.on{background:var(--sky)}
  .nav button svg{width:26px;height:26px}
- .navfoot{display:block;margin-top:auto;padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff;font-size:13px;color:var(--muted)}
- .navfoot b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
  .path{gap:54px}
  .node{width:86px;height:86px}
  .node svg{width:36px;height:36px}
@@ -265,6 +263,59 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
  .ex .q{font-size:26px}.opt{font-size:19px;padding:18px}
  .wl{grid-template-columns:1fr 1fr 1fr}
 }
+
+.nav .nv{position:relative}
+.nav .dsk{display:none}
+.nav .lf{display:none}
+.nav .nv span{white-space:nowrap}
+.soonb{font-style:normal;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--coin-bg);color:#8A5300;margin-left:auto}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mgrid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:16px;background:var(--bg);font-weight:600;font-size:13px;color:var(--ink);position:relative}
+.mgrid button svg{width:26px;height:26px;color:var(--blue)}
+.mgrid .soonb{position:absolute;top:6px;right:6px;margin:0}
+.cont{margin-top:12px}
+.hgrid{display:grid;gap:12px;margin-top:12px}
+.goal{display:flex;align-items:center;gap:16px}
+.ring{width:110px;height:110px;flex:none}
+.goal b{font-size:17px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:14px}
+.qt span{font-size:26px;margin-bottom:4px}
+.qt b{font-size:15px}
+.pgrid{display:grid;gap:10px}
+.pc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.pc .pe{font-size:32px;margin-bottom:6px}
+.pc b{font-size:17px}
+.pc.off{opacity:.55}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sgrid .card{padding:14px}
+.sgrid b{display:block;font-size:22px;font-weight:800}
+.sgrid small{color:var(--muted);font-weight:600;font-size:12px}
+.chart{display:flex;align-items:flex-end;gap:6px;height:170px;margin-top:14px}
+.cb{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px}
+.cb i{display:block;width:100%;max-width:34px;border-radius:8px 8px 4px 4px;background:var(--blue)}
+.cb small{font-size:10px;color:var(--muted);font-weight:600}
+.cv{font-size:10px;font-weight:700;color:var(--blue);min-height:12px}
+.navfoot{display:none}
+.pcard,.lout{display:none}
+@media (min-width:960px){
+ .nav .dsk{display:flex}
+ .nav .lf{display:inline}
+ .nav .ls{display:none}
+ .nav .mob{display:none}
+ .navfoot{display:flex!important;flex-direction:column;gap:8px;margin-top:auto;padding:0;border:0;background:none}
+ .pcard{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--bg);text-align:left}
+ .pcard b{display:block;font-size:15px}.pcard small{font-size:12px;color:var(--muted);font-weight:600}
+ .pav{width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+ .lout{display:flex;align-items:center;gap:12px;padding:12px 16px;color:var(--red);font-weight:700;border-radius:14px}
+ .lout svg{width:22px;height:22px}
+ .lout:hover{background:var(--red-bg)}
+ .hgrid{grid-template-columns:1fr 1fr}
+ .pgrid{grid-template-columns:1fr 1fr}
+ .sgrid{grid-template-columns:repeat(3,1fr)}
+ .chart{height:220px}
+ .nav{overflow-y:auto}
+}
 </style>
 </head>
 <body>
@@ -278,6 +329,13 @@ const pick = (a, n) => shuffle(a).slice(0, n);
 const norm = (s) => String(s).toLowerCase().replace(/[’`]/g, "'").replace(/[.,!?;:"]/g, "").replace(/\s+/g, " ").trim();
 
 const IC = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>',
+  game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10v5M4.5 12.5h5M15 11h.01M18 14h.01"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  swords: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M9.5 6.5 14 2h3v3l-4.5 4.5M5 14l-2 2 2 2 2-2"/></svg>',
+  gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
   map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>',
   book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>',
   ai: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6M2 12h3M19 12h3"/></svg>',
@@ -325,7 +383,7 @@ function say(text, slow) {
 }
 
 /* ---------- Holat ---------- */
-const S = { course: null, me: null, tab: "map", chat: [] };
+const S = { course: null, me: null, tab: "home", chat: [] };
 const lessons = () => S.course.units.flatMap((u) => u.lessons.map((l) => ({ ...l, unit: u })));
 
 function toast(msg, ms = 2200) {
@@ -375,11 +433,36 @@ function renderAuth(mode = "reg") {
     const r = await api(mode === "reg" ? "register" : "login", f);
     btn.disabled = false;
     if (!r.ok) { $("#fe").textContent = r.error || "Xatolik"; return; }
-    await loadMe(); S.tab = "map"; renderApp();
+    await loadMe(); S.tab = "home"; renderApp();
   };
 }
 
 /* ---------- Ilova qobig'i ---------- */
+const NAV = [
+  ["home", IC.home, "Bosh sahifa"], ["map", IC.map, "Mening xaritam"], ["practice", IC.game, "Mashqlar"], ["words", IC.book, "Lug'at"],
+  ["ai", IC.ai, "AI ustoz"], ["rating", IC.trophy, "Reyting"], ["stats", IC.chart, "Statistika"],
+  ["oktagon", IC.swords, "Oktagon", 1], ["gifts", IC.gift, "Sovg'alar", 1],
+];
+const MOBILE = ["home", "map", "practice", "rating"];
+const SHORT = { home: "Bosh sahifa", map: "Xarita", practice: "Mashqlar", rating: "Reyting" };
+const SOON = { oktagon: "⚔️ Oktagon — 1 ga 1 bilim bellashuvi. Tez orada!", gifts: "🎁 Sovg'alar — yig'ilgan XP ga haqiqiy sovg'alar. Tez orada!" };
+function go(t) {
+  if (SOON[t]) { toast(SOON[t], 2600); return; }
+  if (t === "more") { moreSheet(); return; }
+  S.tab = t; renderApp(); scrollTo(0, 0);
+}
+async function logout() { await api("logout", {}); S.me = null; S.chat = []; renderAuth("login"); }
+function moreSheet() {
+  const d = document.createElement("div");
+  d.className = "dim";
+  const items = [["words", IC.book, "Lug'at"], ["ai", IC.ai, "AI ustoz"], ["stats", IC.chart, "Statistika"], ["oktagon", IC.swords, "Oktagon", 1], ["gifts", IC.gift, "Sovg'alar", 1], ["me", IC.user, "Profil"]];
+  d.innerHTML = `<div class="sheet"><div class="mgrid">${items.map(([k, i, t, soon]) => `<button data-k="${k}">${i}<span class="lf">${t}</span><span class="ls">${SHORT[k] || t}</span>${soon ? '<em class="soonb">Tez orada</em>' : ""}</button>`).join("")}</div>
+    <button class="btn ghost" id="lo2" style="margin-top:14px;color:var(--red)">Chiqish</button></div>`;
+  document.body.appendChild(d);
+  d.onclick = (e) => { if (e.target === d) d.remove(); };
+  d.querySelectorAll("[data-k]").forEach((b) => (b.onclick = () => { d.remove(); go(b.dataset.k); }));
+  $("#lo2", d).onclick = () => { d.remove(); logout(); };
+}
 function renderApp() {
   const m = S.me;
   $("#root").innerHTML = `
@@ -396,13 +479,17 @@ function renderApp() {
     <aside id="side"></aside>
     <nav class="nav">
       <div class="nbrand"><img src="/img/logo-mark-blue.png" alt="">Zeehn Lingo</div>
-      ${[["map", IC.map, "Xarita"], ["words", IC.book, "Lug'at"], ["ai", IC.ai, "AI ustoz"], ["rating", IC.trophy, "Reyting"], ["me", IC.user, "Profil"]]
-        .map(([k, i, t]) => `<button data-t="${k}" class="${S.tab === k ? "on" : ""}">${i}${t}</button>`).join("")}
-      <div class="navfoot nbrand-f"><b>🔥 Har kuni 10 daqiqa</b>Ketma-ket kunlar seriyasini uzmang — so'zlar shunda yodda qoladi.</div>
+      ${NAV.map(([k, i, t, soon]) => `<button data-t="${k}" class="nv ${S.tab === k ? "on" : ""} ${MOBILE.includes(k) ? "" : "dsk"}">${i}<span>${t}</span>${soon ? '<em class="soonb">Tez orada</em>' : ""}</button>`).join("")}
+      <button data-t="more" class="nv mob">${IC.more}<span>Ko'proq</span></button>
+      <div class="navfoot">
+        <button class="pcard" data-t="me"><span class="pav">${esc(m.user.name[0].toUpperCase())}</span><span><b>${esc(m.user.name)}</b><small>⭐ ${esc(m.tier.name)}</small></span></button>
+        <button class="lout">${IC.logout}Chiqish</button>
+      </div>
     </nav>
   </div>`;
-  document.querySelectorAll(".nav button").forEach((b) => (b.onclick = () => { S.tab = b.dataset.t; renderApp(); scrollTo(0, 0); }));
-  ({ map: viewMap, words: viewWords, ai: viewAI, rating: viewRating, me: viewMe })[S.tab]();
+  document.querySelectorAll(".nav [data-t]").forEach((b) => (b.onclick = () => go(b.dataset.t)));
+  $(".lout").onclick = logout;
+  ({ home: viewHome, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: viewMe })[S.tab]();
   renderSide();
 }
 const desk = () => matchMedia("(min-width:960px)").matches;
@@ -537,8 +624,9 @@ function buildExercises(l) {
   return ex.concat(pr);
 }
 
-function startLesson(l) {
-  const L = { l, list: buildExercises(l), i: 0, graded: 0, firstOk: 0, retried: new Set() };
+function startLesson(l) { startRun({ l, list: buildExercises(l), kind: "lesson" }); }
+function startRun(o) {
+  const L = { ...o, i: 0, graded: 0, firstOk: 0 };
   L.total = L.list.filter((e) => e.t !== "intro").length;
   const d = document.createElement("div");
   d.className = "full"; d.id = "lesson";
@@ -654,19 +742,115 @@ async function finishLesson(L) {
   const acc = Math.round((L.firstOk / Math.max(1, L.graded)) * 100);
   $("#ex").innerHTML = `<div class="end"><div class="dots"><span></span><span></span><span></span></div></div>`;
   $("#lf").innerHTML = "";
-  const r = await api("lesson", { lesson: L.l.id, correct: L.firstOk, total: L.graded });
+  const r = L.kind === "lesson" ? await api("lesson", { lesson: L.l.id, correct: L.firstOk, total: L.graded }) : await api("practice", { correct: L.firstOk, total: L.graded });
   if (!r.ok) { $("#ex").innerHTML = `<div class="end"><div class="em">😕</div><h2>${esc(r.error || "Saqlab bo'lmadi")}</h2></div>`; $("#lf").innerHTML = `<button class="btn" id="bk">Xaritaga qaytish</button>`; $("#bk").onclick = () => { closeFull(); refresh(); }; return; }
   $("#ex").innerHTML = `<div class="end">
     <div class="em">${acc === 100 ? "🏆" : acc >= 70 ? "🎉" : "💪"}</div>
-    <h2>${acc === 100 ? "Mukammal!" : "Dars tugadi!"}</h2>
-    <p class="muted">${esc(L.l.title)} · ${r.first ? "yangi dars" : "takrorlash"}</p>
+    <h2>${acc === 100 ? "Mukammal!" : L.kind === "lesson" ? "Dars tugadi!" : "Mashq tugadi!"}</h2>
+    <p class="muted">${L.kind === "lesson" ? `${esc(L.l.title)} · ${r.first ? "yangi dars" : "takrorlash"}` : esc(L.title)}</p>
     <div class="res"><div><b style="color:var(--blue)">+${r.xp}</b><small>XP</small></div><div><b style="color:#C98200">+${r.coins}</b><small>COIN</small></div><div><b style="color:var(--green)">${acc}%</b><small>ANIQLIK</small></div></div>
     ${r.streak ? `<span class="chip" style="background:#FFE9DA;color:#C2410C">🔥 ${r.streak} kun ketma-ket</span>` : ""}
     ${r.newWords ? `<p class="muted">📚 ${r.newWords} ta so'z lug'atingizga qo'shildi — ertaga takrorlaymiz</p>` : ""}
   </div>`;
   $("#lf").innerHTML = `<button class="btn" id="bk">Davom etish</button>`;
-  $("#bk").onclick = () => { closeFull(); S.tab = "map"; S.scrolled = 0; refresh(); };
+  $("#bk").onclick = () => { closeFull(); if (L.kind === "lesson") { S.tab = "map"; S.scrolled = 0; } refresh(); };
 }
+
+/* ---------- Mashqlar ---------- */
+function learned() {
+  const ls = lessons().filter((l) => S.me.done[l.id]);
+  return { words: ls.flatMap((l) => l.words), sentences: ls.flatMap((l) => l.sentences) };
+}
+function buildPractice(kind) {
+  const { words, sentences } = learned();
+  const pool = words.length >= 4 ? words : lessons().slice(0, 3).flatMap((l) => l.words);
+  const others = (w, k) => pick(pool.filter((p) => p[k] !== w[k]), 3).map((p) => p[k]);
+  const singles = pool.filter((p) => !/\s/.test(p[0])).map((p) => p[0]);
+  if (kind === "listen") return pick(words, 8).map((w) => canSpeak
+    ? { t: "listen", q: "Eshiting va tarjimasini tanlang", speak: w[0], word: w[0], opts: shuffle([w[1], ...others(w, 1)]), ans: w[1] }
+    : { t: "mcq", q: "Tarjimasini tanlang", word: w[0], opts: shuffle([w[1], ...others(w, 1)]), ans: w[1] });
+  if (kind === "build") return pick(sentences, 6).map((s) => {
+    const toks = s[0].replace(/[.,!?]/g, "").split(/\s+/);
+    return { t: "build", q: "Gapni inglizchaga tarjima qiling", uz: s[1], ans: toks.join(" "), full: s[0], tiles: shuffle([...toks, ...pick(singles.filter((x) => !toks.map(norm).includes(norm(x))), 2)]) };
+  });
+  return pick(words, 10).map((w, i) => i % 3 === 2
+    ? { t: "type", q: "Inglizchasini yozing", uz: w[1], ans: w[0] }
+    : i % 3 === 1 ? { t: "mcq", q: "Inglizchasini tanlang", word: w[1], opts: shuffle([w[0], ...others(w, 0)]), ans: w[0], speakAns: true }
+    : { t: "mcq", q: "Tarjimasini tanlang", word: w[0], speak: w[0], opts: shuffle([w[1], ...others(w, 1)]), ans: w[1] });
+}
+function viewPractice() {
+  const m = S.me, has = Object.keys(m.done).length > 0;
+  const cards = [
+    ["review", "🃏", "So'z takrorlash", m.words.due ? `${m.words.due} ta so'z takrorlashga tayyor` : "Bugun takrorlash yo'q", m.words.due > 0],
+    ["quiz", "⚡", "Tezkor test", "O'rgangan so'zlaringizdan 10 ta savol · +5 XP gacha", has],
+    ["listen", "🎧", "Eshitish mashqi", "Inglizcha so'zni eshitib, ma'nosini toping", has],
+    ["build", "🧩", "Gap tuzish", "So'zlardan to'g'ri gap yig'ing", has],
+  ];
+  $("#main").innerHTML = `<h2 class="t">Mashqlar</h2>
+    ${has ? "" : '<div class="card muted" style="margin-bottom:12px">Mashqlar ochilishi uchun avval xaritadagi 1-darsni tugating 🗺️</div>'}
+    <div class="pgrid">${cards.map(([k, e, t, d, on]) => `<button class="card pc ${on ? "" : "off"}" data-k="${k}"><span class="pe">${e}</span><b>${t}</b><span class="muted">${d}</span></button>`).join("")}</div>`;
+  document.querySelectorAll(".pc").forEach((b) => (b.onclick = () => {
+    const k = b.dataset.k;
+    if (k === "review") return m.words.due ? startReview() : toast("Bugun takrorlash uchun so'z yo'q 👍");
+    if (!has) return toast("Avval 1-darsni tugating");
+    const titles = { quiz: "Tezkor test", listen: "Eshitish mashqi", build: "Gap tuzish" };
+    startRun({ kind: "practice", title: titles[k], list: buildPractice(k) });
+  }));
+}
+
+/* ---------- Bosh sahifa ---------- */
+function viewHome() {
+  const m = S.me, all = lessons(), next = all.find((l) => !m.done[l.id]);
+  const goal = 20, pct = Math.min(100, Math.round((m.todayXp / goal) * 100));
+  const ring = `<svg viewBox="0 0 120 120" class="ring"><circle cx="60" cy="60" r="50" fill="none" stroke="#E8ECF6" stroke-width="14"/><circle cx="60" cy="60" r="50" fill="none" stroke="${pct >= 100 ? "#1FB45A" : "#0046E0"}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(pct / 100) * 314} 314" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="24" font-weight="800" fill="#0B1B4D">${m.todayXp}</text><text x="60" y="80" text-anchor="middle" font-size="13" fill="#5B6A8F">/ ${goal} XP</text></svg>`;
+  $("#main").innerHTML = `${desk() ? "" : heroHTML()}
+    <div class="card cont">
+      ${next ? `<span class="chip">${all.indexOf(next) + 1}-dars · ${esc(next.unit.title)}</span>
+        <h2 class="t" style="margin:10px 0 2px">${esc(next.title)}</h2>
+        <p class="muted" style="margin-bottom:14px">${next.words.map((w) => esc(w[0])).join(" · ")}</p>
+        <button class="btn" id="cont">▶ ${Object.keys(m.done).length ? "Davom etish" : "Birinchi darsni boshlash"}</button>`
+      : `<h2 class="t">Barcha darslar tugadi! 🎉</h2><p class="muted">Mashqlar va takrorlash bilan bilimingizni mustahkamlang.</p>`}
+    </div>
+    <div class="hgrid">
+      <div class="card goal">${ring}<div><b>Kunlik maqsad</b><p class="muted">${pct >= 100 ? "Bajarildi! Barakalla 🎉" : `Yana ${goal - m.todayXp} XP yig'ing`}</p><span class="chip" style="background:#FFE9DA;color:#C2410C;margin-top:6px">🔥 ${m.user.streak} kun ketma-ket</span></div></div>
+      <div class="qgrid">
+        <button class="card qt" data-g="practice"><span>🃏</span><b>Takrorlash</b><small class="muted">${m.words.due ? `${m.words.due} ta so'z` : "Bugun yo'q"}</small></button>
+        <button class="card qt" data-g="quiz"><span>⚡</span><b>Tezkor test</b><small class="muted">10 savol</small></button>
+        <button class="card qt" data-g="ai"><span>🤖</span><b>AI ustoz</b><small class="muted">Savol bering</small></button>
+        <button class="card qt" data-g="rating"><span>🏆</span><b>Reyting</b><small class="muted">Bu hafta ${m.weekXp} XP</small></button>
+      </div>
+    </div>`;
+  const c = $("#cont"); if (c) c.onclick = () => startLesson(next);
+  document.querySelectorAll(".qt").forEach((b) => (b.onclick = () => {
+    const g = b.dataset.g;
+    if (g === "quiz") { if (!Object.keys(m.done).length) return toast("Avval 1-darsni tugating"); return startRun({ kind: "practice", title: "Tezkor test", list: buildPractice("quiz") }); }
+    if (g === "practice" && m.words.due) return startReview();
+    go(g);
+  }));
+  document.querySelectorAll("#main .goRev").forEach((b) => (b.onclick = startReview));
+}
+
+/* ---------- Statistika ---------- */
+async function viewStats() {
+  $("#main").innerHTML = `<h2 class="t">Statistika</h2><div id="sx"><div class="dots" style="text-align:center;padding:30px"><span></span><span></span><span></span></div></div>`;
+  const r = await api("stats");
+  if (!r.ok) return;
+  const max = Math.max(20, ...r.series.map((d) => d.xp));
+  const wd = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
+  const week = r.series.slice(-7).reduce((a, d) => a + d.xp, 0);
+  $("#sx").innerHTML = `<div class="sgrid">
+      <div class="card"><b style="color:var(--blue)">${S.me.user.xp}</b><small>Jami XP</small></div>
+      <div class="card"><b style="color:#F2600C">${S.me.user.streak} 🔥</b><small>Ketma-ket kun</small></div>
+      <div class="card"><b>${r.lessons} / ${lessons().length}</b><small>Tugatilgan dars</small></div>
+      <div class="card"><b style="color:var(--green)">${r.acc}%</b><small>O'rtacha aniqlik</small></div>
+      <div class="card"><b>${r.seen}</b><small>Ko'rilgan so'z</small></div>
+      <div class="card"><b style="color:#147A3D">${r.learned}</b><small>Yodlangan so'z</small></div>
+    </div>
+    <div class="card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Oxirgi 14 kun</b><span class="muted" style="font-size:13px">Bu hafta: <b style="color:var(--blue)">${week} XP</b></span></div>
+      <div class="chart">${r.series.map((d) => { const dt = new Date(d.day + "T00:00:00Z"); return `<div class="cb"><span class="cv">${d.xp || ""}</span><i style="height:${Math.max(3, (d.xp / max) * 100)}%;${d.xp ? "" : "background:#E4E9F5"}"></i><small>${wd[dt.getUTCDay()]}</small></div>`; }).join("")}</div>
+      <p class="muted" style="font-size:13px;margin-top:10px">Faol kunlar: ${r.activeDays} · Darslar ${r.runs} marta o'tilgan</p></div>`;
+}
+
 
 /* ---------- Takrorlash (lug'at) ---------- */
 async function startReview() {
@@ -800,7 +984,7 @@ function viewMe() {
     </div>
     <button class="btn ghost" id="en" style="margin-top:18px">Ismni o'zgartirish</button>
     <button class="btn ghost" id="lo" style="margin-top:10px;color:var(--red)">Chiqish</button>`;
-  $("#lo").onclick = async () => { await api("logout", {}); S.me = null; S.chat = []; renderAuth("login"); };
+  $("#lo").onclick = logout;
   $("#en").onclick = async () => {
     const n = prompt("Yangi ism:", m.user.name); if (!n) return;
     const r = await api("profile", { name: n }); if (!r.ok) return toast(r.error); refresh();

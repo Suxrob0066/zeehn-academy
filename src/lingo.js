@@ -77,13 +77,14 @@ async function award(env, user, xp, coins) {
 
 async function state(env, user) {
   const t = today();
-  const [done, chests, words, week] = await Promise.all([
+  const [done, chests, words, week, todayRow] = await Promise.all([
     env.DB.prepare("SELECT lesson,best,times FROM lingo_done WHERE user_id=?").bind(user.id).all(),
     env.DB.prepare("SELECT unit FROM lingo_chests WHERE user_id=?").bind(user.id).all(),
     env.DB.prepare(
       "SELECT SUM(CASE WHEN box>=? THEN 1 ELSE 0 END) learned, SUM(CASE WHEN box<? THEN 1 ELSE 0 END) learning, SUM(CASE WHEN box<? AND due<=? THEN 1 ELSE 0 END) due FROM lingo_words WHERE user_id=?"
     ).bind(LEARNED_BOX, LEARNED_BOX, LEARNED_BOX, t, user.id).first(),
     env.DB.prepare("SELECT COALESCE(SUM(xp),0) xp FROM lingo_xp WHERE user_id=? AND day>=?").bind(user.id, weekStart()).first(),
+    env.DB.prepare("SELECT xp FROM lingo_xp WHERE user_id=? AND day=?").bind(user.id, t).first(),
   ]);
   // Ketma-ket kun uzilgan bo'lsa 0 ko'rsatamiz
   const streak = user.last_day === t || user.last_day === addDays(t, -1) ? user.streak : 0;
@@ -95,6 +96,7 @@ async function state(env, user) {
     chests: (chests.results || []).map((r) => r.unit),
     words: { learned: words?.learned || 0, learning: words?.learning || 0, due: words?.due || 0, total: Object.keys(WORDS).length },
     weekXp: week?.xp || 0,
+    todayXp: todayRow?.xp || 0,
   };
 }
 
@@ -291,6 +293,29 @@ export async function handleLingo(req, env, url) {
     const text = (data.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n").trim();
     await env.DB.prepare("INSERT INTO lingo_ai (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, t).run();
     return json({ ok: true, text, left: AI_DAILY - (used?.n || 0) - 1 });
+  }
+
+  // Statistika
+  if (path === "stats" && m === "GET") {
+    const t = today(), from = addDays(t, -13);
+    const [days, agg, words, total] = await Promise.all([
+      env.DB.prepare("SELECT day,xp FROM lingo_xp WHERE user_id=? AND day>=? ORDER BY day").bind(user.id, from).all(),
+      env.DB.prepare("SELECT COUNT(*) n, COALESCE(AVG(best),0) acc, COALESCE(SUM(times),0) runs FROM lingo_done WHERE user_id=?").bind(user.id).first(),
+      env.DB.prepare("SELECT SUM(CASE WHEN box>=? THEN 1 ELSE 0 END) learned, COUNT(*) seen FROM lingo_words WHERE user_id=?").bind(LEARNED_BOX, user.id).first(),
+      env.DB.prepare("SELECT COUNT(*) d FROM lingo_xp WHERE user_id=? AND xp>0").bind(user.id).first(),
+    ]);
+    const map = Object.fromEntries((days.results || []).map((r) => [r.day, r.xp]));
+    const series = Array.from({ length: 14 }, (_, i) => { const d = addDays(from, i); return { day: d, xp: map[d] || 0 }; });
+    return json({ ok: true, series, lessons: agg?.n || 0, runs: agg?.runs || 0, acc: Math.round(agg?.acc || 0), learned: words?.learned || 0, seen: words?.seen || 0, activeDays: total?.d || 0, todayXp: map[t] || 0 });
+  }
+
+  // Mashq (tezkor test va h.k.) natijasi
+  if (path === "practice" && m === "POST") {
+    const b = await readBody(req);
+    const correct = Math.max(0, Math.min(30, parseInt(b.correct, 10) || 0));
+    const xp = Math.min(5, Math.ceil(correct / 2));
+    const streak = xp ? await award(env, user, xp, 0) : user.streak;
+    return json({ ok: true, xp, coins: 0, streak });
   }
 
   if (path === "profile" && m === "POST") {
