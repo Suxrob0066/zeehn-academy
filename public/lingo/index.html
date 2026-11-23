@@ -367,6 +367,29 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .sl.x{color:var(--muted)}
 @media (min-width:960px){.syl{grid-template-columns:1fr 1fr}}
 @media (min-width:1400px){.syl{grid-template-columns:1fr 1fr 1fr}}
+
+.unit .path{margin-top:12px;border-radius:30px;overflow:hidden;background-color:var(--zb);background-image:radial-gradient(var(--zd) 1.6px,transparent 1.7px);background-size:24px 24px;border:1px solid var(--zl)}
+.unit .ub{border-left-color:var(--za)}
+.unit .ub small{color:var(--za)}
+.z1{--zb:#E9F0FF;--zd:rgba(0,70,224,.08);--zl:#D6E2FF;--za:#0046E0;--zr:#C9D8FF}
+.z2{--zb:#E7F8EC;--zd:rgba(31,180,90,.10);--zl:#CDEFD8;--za:#1A9A4E;--zr:#BFE8CC}
+.z3{--zb:#FFF3E0;--zd:rgba(240,140,0,.10);--zl:#FBE0B8;--za:#D97706;--zr:#F7D7A6}
+.z4{--zb:#FDEBF3;--zd:rgba(220,60,130,.09);--zl:#F7D2E3;--za:#D6337E;--zr:#F3C4D9}
+.z5{--zb:#E4F7F7;--zd:rgba(0,150,150,.10);--zl:#C7ECEC;--za:#0E9494;--zr:#B6E3E3}
+.z6{--zb:#F1EBFF;--zd:rgba(120,70,230,.09);--zl:#DDD0FB;--za:#7C4DDB;--zr:#D3C3F7}
+[data-theme=dark] .z1{--zb:#14203F;--zd:rgba(120,160,255,.10);--zl:#22305A;--zr:#22335E}
+[data-theme=dark] .z2{--zb:#11291F;--zd:rgba(90,227,143,.10);--zl:#1C3D2D;--za:#4FD17F;--zr:#1E4231}
+[data-theme=dark] .z3{--zb:#2B2112;--zd:rgba(255,190,90,.10);--zl:#40301A;--za:#F2A93B;--zr:#47361D}
+[data-theme=dark] .z4{--zb:#2B1622;--zd:rgba(255,120,180,.10);--zl:#432337;--za:#F06AAB;--zr:#4A263C}
+[data-theme=dark] .z5{--zb:#102828;--zd:rgba(80,220,220,.10);--zl:#1B3D3D;--za:#3FD0D0;--zr:#1D4444}
+[data-theme=dark] .z6{--zb:#1E1736;--zd:rgba(170,130,255,.10);--zl:#30264F;--za:#A585FF;--zr:#352A57}
+[data-theme=dark] .z1{--za:#6B9BFF}
+.road{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.road .rd1{fill:none;stroke:var(--zr);stroke-width:30;stroke-linecap:round}
+.road .rd2{fill:none;stroke:var(--card);stroke-width:4;stroke-linecap:round;stroke-dasharray:2 14;opacity:.9}
+.stk{position:absolute;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -10px rgba(11,27,77,.35);border:3px solid var(--zl);animation:float 4s ease-in-out infinite;pointer-events:none;line-height:1}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.path .node{z-index:1}
 </style>
 </head>
 <body>
@@ -619,7 +642,7 @@ function viewMap() {
   S.course.units.forEach((u, ui) => {
     const ids = u.lessons.map((l) => l.id);
     const dn = ids.filter((id) => m.done[id]).length;
-    html += `<div class="unit"><div class="ub"><div><small>${ui + 1}-BO'LIM</small><b>${esc(u.title)}</b></div><span class="pr">${dn} / ${ids.length}</span></div><div class="path">`;
+    html += `<div class="unit z${(ui % 6) + 1}"><div class="ub"><div><small>${ui + 1}-BO'LIM</small><b>${esc(u.title)}</b></div><span class="pr">${dn} / ${ids.length}</span></div><div class="path">`;
     u.lessons.forEach((l, li) => {
       const gi = all.findIndex((x) => x.id === l.id);
       const st = m.done[l.id] ? "done" : gi === curIdx ? "cur" : "lock";
@@ -634,11 +657,61 @@ function viewMap() {
       <span class="nlabel">${got ? "Ochilgan" : "Sandiq"}</span></button></div></div>`;
   });
   $("#main").innerHTML = html;
+  decorateMap();
   document.querySelectorAll("#main .goRev").forEach((b) => (b.onclick = startReview));
   document.querySelectorAll(".node[data-l]").forEach((b) => (b.onclick = () => lessonSheet(b.dataset.l)));
   document.querySelectorAll(".node[data-c]").forEach((b) => (b.onclick = () => openChest(b.dataset.c)));
   const cur = $(".node.cur"); if (cur && !S.scrolled) { S.scrolled = 1; setTimeout(() => cur.scrollIntoView({ block: "center", behavior: "smooth" }), 150); }
 }
+const STK = [
+  ["👋", "💬", "🔢", "📅", "🌈", "😊", "⭐"],
+  ["✏️", "🎒", "🧸", "⚽", "👀", "✋", "📚"],
+  ["👩‍🏫", "🌳", "🌸", "👨‍👩‍👧", "👵", "🛝", "🩺"],
+  ["👕", "🧦", "🏠", "🍳", "🥪", "🍎", "🧃"],
+  ["🧑‍🤝‍🧑", "🔺", "🦁", "🐒", "🦒", "🥕", "🐟"],
+  ["🛏️", "💡", "🔟", "🏃", "🏊", "🏖️", "🐚"],
+];
+function decorateMap() {
+  document.querySelectorAll("#main .unit").forEach((unit, ui) => {
+    const path = unit.querySelector(".path");
+    if (!path) return;
+    path.querySelectorAll(".road,.stk").forEach((x) => x.remove());
+    const pr = path.getBoundingClientRect();
+    const W = path.clientWidth, H = path.clientHeight;
+    const pts = [...path.querySelectorAll(".node")].map((n) => {
+      const r = n.getBoundingClientRect();
+      return { x: r.left - pr.left + r.width / 2, y: r.top - pr.top + r.height / 2, r: r.width / 2, cur: n.classList.contains("cur") };
+    });
+    if (!pts.length) return;
+    let d = `M ${W / 2} 0 C ${W / 2} ${pts[0].y / 2}, ${pts[0].x} ${pts[0].y / 2}, ${pts[0].x} ${pts[0].y}`;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i], my = (a.y + b.y) / 2;
+      d += ` C ${a.x} ${my}, ${b.x} ${my}, ${b.x} ${b.y}`;
+    }
+    const last = pts[pts.length - 1];
+    d += ` C ${last.x} ${(last.y + H) / 2}, ${W / 2} ${(last.y + H) / 2}, ${W / 2} ${H}`;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "road"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = `<path d="${d}" class="rd1"/><path d="${d}" class="rd2"/>`;
+    path.prepend(svg);
+    const icons = STK[ui % STK.length];
+    const sz = W > 700 ? 84 : W > 500 ? 70 : 54;
+    pts.forEach((p, i) => {
+      const dx = p.x - W / 2;
+      const side = Math.abs(dx) < 10 ? (i % 2 ? -1 : 1) : dx > 0 ? -1 : 1;
+      const reach = Math.min(W / 2 - sz / 2 - 12, Math.max(p.r + sz, W * 0.3));
+      const x = W / 2 + side * reach;
+      if (p.cur || Math.abs(x - p.x) < p.r + sz / 2 + 8) return;
+      const st = document.createElement("span");
+      st.className = "stk"; st.setAttribute("aria-hidden", "true");
+      st.textContent = icons[i % icons.length];
+      st.style.cssText = `left:${x - sz / 2}px;top:${p.y - sz / 2 + (i % 2 ? 14 : -14)}px;width:${sz}px;height:${sz}px;font-size:${sz * 0.5}px;animation-delay:${(i % 4) * 0.6}s`;
+      path.appendChild(st);
+    });
+  });
+}
+let decoT;
+addEventListener("resize", () => { clearTimeout(decoT); decoT = setTimeout(() => { if (S.tab === "map" && S.me) decorateMap(); }, 150); });
 function lessonSheet(id) {
   const all = lessons(), l = all.find((x) => x.id === id), i = all.indexOf(l);
   const done = S.me.done[id], cur = all.findIndex((x) => !S.me.done[x.id]) === i;
