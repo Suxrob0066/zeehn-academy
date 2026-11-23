@@ -219,14 +219,15 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .nbrand{display:none}
 .navfoot{display:none}
 @media (min-width:960px){
- .app{max-width:1320px;display:grid;grid-template-columns:250px minmax(0,1fr) 360px;grid-template-rows:auto 1fr;column-gap:32px;padding:0 28px}
+ .app{max-width:none;display:grid;grid-template-columns:270px minmax(0,1fr) 380px;grid-template-rows:auto 1fr;column-gap:40px;padding:0 36px 0 0}
  .top{grid-column:2/4;grid-row:1;background:transparent;backdrop-filter:none;border-bottom:0;padding:22px 0 14px}
  .top .brand{visibility:hidden}
  .st{font-size:15px;padding:8px 14px}
  main{grid-column:2;grid-row:2;padding:0 0 48px}
  #side{display:flex;flex-direction:column;gap:14px;grid-column:3;grid-row:2;position:sticky;top:20px;align-self:start;padding-bottom:40px}
  #side .daily{margin-top:0}
- .nav{left:max(28px,calc(50% - 632px));top:0;bottom:0;transform:none;width:250px;max-width:none;flex-direction:column;justify-content:flex-start;gap:6px;border-top:0;border-right:1px solid var(--line);padding:24px 16px 24px 0;background:var(--bg)}
+ .nav{left:0;top:0;bottom:0;transform:none;width:270px;max-width:none;flex-direction:column;justify-content:flex-start;gap:6px;border-top:0;border-right:1px solid var(--line);padding:26px 18px;background:#fff}
+ .nav button:hover{background:var(--bg)}
  .nbrand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;color:var(--blue);padding:4px 12px 26px}
  .nbrand img{width:40px;height:40px}
  .nav button{flex:none;flex-direction:row;gap:14px;font-size:16px;font-weight:700;padding:13px 16px;justify-content:flex-start;border-radius:16px}
@@ -248,7 +249,21 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
  h2.t{font-size:28px}
  .sidecard h4{font-size:15px;font-weight:800;margin-bottom:10px}
  .ex .q{font-size:24px}
- .full .in{max-width:680px;padding-top:30px}
+ .full .in{max-width:760px;padding-top:30px}
+}
+@media (min-width:1400px){
+ .app{grid-template-columns:300px minmax(0,1fr) 420px;column-gap:56px}
+ .nav{width:300px;padding:30px 22px}
+ .node{width:104px;height:104px}
+ .node svg{width:42px;height:42px}
+ .path{gap:64px;padding-top:80px}
+ .here.r{left:118px}.here.l{right:118px}
+ .here{font-size:14px;padding:8px 14px}
+ .nlabel{top:116px;font-size:14px}
+ .ub{padding:20px 24px}.ub b{font-size:20px}
+ .hero{padding:24px}.hero h1{font-size:26px}
+ .ex .q{font-size:26px}.opt{font-size:19px;padding:18px}
+ .wl{grid-template-columns:1fr 1fr 1fr}
 }
 </style>
 </head>
@@ -442,7 +457,7 @@ function viewMap() {
   const curIdx = all.findIndex((l) => !m.done[l.id]);
   const doneN = Object.keys(m.done).length;
   const off = [0, -64, -88, -64, 0, 64];
-  const k = desk() ? 1.45 : 1;
+  const k = innerWidth >= 1400 ? 2.6 : desk() ? 1.8 : 1;
   let html = desk() ? "" : heroHTML();
   S.course.units.forEach((u, ui) => {
     const ids = u.lessons.map((l) => l.id);
