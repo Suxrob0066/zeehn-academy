@@ -3,7 +3,7 @@
 // AI yordamchi uchun (ixtiyoriy): Cloudflare → Settings → Variables and Secrets → ANTHROPIC_API_KEY (Secret)
 
 import { hashPassword, verifyPassword } from "./platform.js";
-import { COURSE, TIERS, LESSON_IDS, WORDS } from "./lingo-course.js";
+import { COURSE, LEVELS, LESSON_IDS, WORDS } from "./lingo-course.js";
 
 const SESSION_DAYS = 60;
 const BOX_DAYS = [0, 1, 3, 7, 14, 30]; // takrorlash oraliqlari (kun)
@@ -39,10 +39,17 @@ const getCookie = (req, name) => {
 };
 const cookie = (tok, maxAge) => `zl=${tok}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 const photoUrl = (u) => (u.photo_v ? `/api/l/photo/${u.id}?v=${u.photo_v}` : null);
-const tierOf = (xp) => {
-  let i = 0;
-  TIERS.forEach((t, k) => { if (xp >= t.xp) i = k; });
-  return { index: i, name: TIERS[i].name, next: TIERS[i + 1] || null };
+// O'quvchi darajasi: birinchi tugatilmagan dars qaysi darajada bo'lsa — o'sha
+const levelLessons = (lv) => COURSE.units.filter((u) => lv.units.includes(u.id)).flatMap((u) => u.lessons.map((l) => l.id));
+const tierOf = (doneSet) => {
+  let index = LEVELS.length - 1;
+  for (let i = 0; i < LEVELS.length; i++) {
+    if (levelLessons(LEVELS[i]).some((id) => !doneSet.has(id))) { index = i; break; }
+  }
+  const ids = levelLessons(LEVELS[index]);
+  const doneIn = ids.filter((id) => doneSet.has(id)).length;
+  const next = LEVELS[index + 1] || null;
+  return { index, name: LEVELS[index].name, next: next ? { name: next.name } : null, done: doneIn, total: ids.length, left: ids.length - doneIn };
 };
 
 async function readBody(req) {
@@ -93,8 +100,8 @@ async function state(env, user) {
   const streak = user.last_day === t || user.last_day === addDays(t, -1) ? user.streak : 0;
   return {
     user: { id: user.id, name: user.name, phone: user.phone, avatar: user.avatar === "girl" ? "girl" : "boy", photo: photoUrl(user), xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
-    tier: tierOf(user.xp),
-    tiers: TIERS,
+    tier: tierOf(new Set((done.results || []).map((r) => r.lesson))),
+    tiers: LEVELS.map((l) => ({ name: l.name })),
     done: Object.fromEntries((done.results || []).map((r) => [r.lesson, { best: r.best, times: r.times }])),
     chests: (chests.results || []).map((r) => r.unit),
     words: { learned: words?.learned || 0, learning: words?.learning || 0, due: words?.due || 0, total: Object.keys(WORDS).length },
@@ -108,7 +115,7 @@ export async function handleLingo(req, env, url) {
   const m = req.method;
 
   if (path === "course" && m === "GET") {
-    return json({ ok: true, course: COURSE, tiers: TIERS }, 200, { "Cache-Control": "public, max-age=300" });
+    return json({ ok: true, course: COURSE, tiers: LEVELS }, 200, { "Cache-Control": "public, max-age=300" });
   }
 
   if (path.startsWith("photo/") && m === "GET") {

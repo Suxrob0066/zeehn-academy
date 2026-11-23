@@ -123,14 +123,13 @@ export const COURSE = {
   ],
 };
 
-// Darajalar (XP bo'yicha)
-export const TIERS = [
-  { name: "Boshlovchi", xp: 0 },
-  { name: "Shogird", xp: 100 },
-  { name: "Mohir", xp: 300 },
-  { name: "Usta", xp: 700 },
-  { name: "Chempion", xp: 1500 },
+// Darajalar — Learning Path bo'limlari bo'yicha
+export const LEVELS = [
+  { id: "beginner", name: "Beginner", units: ["u1", "u2"] },
+  { id: "elementary", name: "Elementary", units: ["u3", "u4"] },
+  { id: "intermediate", name: "Intermediate", units: ["u5", "u6"] },
 ];
+COURSE.levels = LEVELS;
 
 export const LESSON_IDS = COURSE.units.flatMap((u) => u.lessons.map((l) => l.id));
 export const WORDS = Object.fromEntries(

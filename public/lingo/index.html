@@ -467,6 +467,19 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 }
 @media (min-width:1400px){.aamid h2{font-size:54px}.ascene{width:600px;height:330px}.authwrap .auth{max-width:540px}}
 .res2{grid-template-columns:repeat(2,1fr)}
+
+.lvb{display:flex;align-items:center;gap:14px;margin-top:28px;padding:16px 18px;border-radius:22px;color:#fff;background:linear-gradient(135deg,#0046E0,#2F6BFF)}
+.lvb small{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;opacity:.85}
+.lvb b{font-size:22px;font-weight:800}
+.lvn{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex:none}
+.lvs{font-size:13px;font-weight:800;padding:6px 12px;border-radius:20px;background:#fff;color:#0046E0;white-space:nowrap}
+.lvb.done{background:linear-gradient(135deg,#169A4C,#1FB45A)}.lvb.done .lvs{color:#147A3D}
+.lvb.lock{background:#C9D2E6;color:#4A5675}.lvb.lock .lvn{background:rgba(255,255,255,.5)}.lvb.lock .lvs{color:#5B6A8F}
+[data-theme=dark] .lvb.lock{background:#26314F;color:#9AA8CC}
+.lvgate{margin:26px auto 0;width:max-content;max-width:100%;text-align:center;font-size:14px;font-weight:700;padding:10px 16px;border-radius:30px;border:2px dashed var(--green);color:var(--green);background:var(--card)}
+.lvgate.lock{border-color:#B9C3DC;color:var(--muted)}
+.lvtag{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--blue);text-transform:uppercase}
+@media (min-width:960px){.lvb{padding:20px 24px}.lvb b{font-size:26px}}
 </style>
 </head>
 <body>
@@ -755,7 +768,7 @@ function heroHTML() {
     <div class="hi">Xush kelibsiz,</div>
     <h1>${esc(m.user.name)}! 👋</h1>
     ${tierTrack()}
-    <div class="nx"><span>Daraja: <b>${esc(m.tier.name)}</b></span><span>${m.tier.next ? `${esc(m.tier.next.name)} gacha <b>${m.tier.next.xp - m.user.xp} coin</b>` : "Eng yuqori daraja! 🏆"}</span></div>
+    <div class="nx"><span>Daraja: <b>${esc(m.tier.name)}</b></span><span>${m.tier.next ? `${esc(m.tier.next.name)} gacha <b>${m.tier.left} dars</b>` : m.tier.left ? `Daraja yakunigacha <b>${m.tier.left} dars</b>` : "Barcha darajalar tugatildi! 🏆"}</span></div>
   </section>
   <div class="card daily">
     <div class="ic">${m.words.due ? "🃏" : "🎯"}</div>
@@ -788,7 +801,7 @@ function tierTrack() {
   const n = tiers.length - 1;
   const pos = (i) => (i / n) * 100;
   let fill = pos(tier.index);
-  if (tier.next) fill += ((user.xp - tiers[tier.index].xp) / (tier.next.xp - tiers[tier.index].xp)) * (100 / n);
+  if (tier.next) fill += (tier.done / Math.max(1, tier.total)) * (100 / n);
   return `<div class="track"><div class="ln"></div><div class="fl" style="width:${Math.min(100, fill)}%"></div>
     ${tiers.map((t, i) => `<div class="dt ${i < tier.index ? "ok" : ""} ${i === tier.index ? "me" : ""}" style="left:${pos(i)}%"></div>
     <div class="lb ${i === tier.index ? "me" : ""}" style="left:${Math.min(94, Math.max(6, pos(i)))}%">${esc(t.name)}</div>`).join("")}</div>`;
@@ -800,9 +813,19 @@ function viewMap() {
   const off = [0, -64, -88, -64, 0, 64];
   const k = innerWidth >= 1400 ? 2.6 : desk() ? 1.8 : 1;
   let html = desk() ? "" : heroHTML();
+  const LV = S.course.levels || [];
   S.course.units.forEach((u, ui) => {
     const ids = u.lessons.map((l) => l.id);
     const dn = ids.filter((id) => m.done[id]).length;
+    const li0 = LV.findIndex((lv) => lv.units[0] === u.id);
+    if (li0 >= 0) {
+      const st = li0 < m.tier.index ? "done" : li0 === m.tier.index ? "cur" : "lock";
+      const lvIds = S.course.units.filter((x) => LV[li0].units.includes(x.id)).flatMap((x) => x.lessons.map((l) => l.id));
+      const lvDone = lvIds.filter((id) => m.done[id]).length;
+      if (li0 > 0) html += `<div class="lvgate ${st}">${st === "lock" ? `🔒 ${esc(LV[li0 - 1].name)} darajasini tugating` : `🏆 ${esc(LV[li0 - 1].name)} tugatildi — ${esc(LV[li0].name)} ochildi`}</div>`;
+      html += `<div class="lvb ${st}"><span class="lvn">${li0 + 1}</span><div style="flex:1"><small>${li0 + 1}-DARAJA</small><b>${esc(LV[li0].name)}</b></div>
+        <span class="lvs">${st === "done" ? "✓ Tugatildi" : st === "cur" ? `Hozirgi · ${lvDone}/${lvIds.length}` : "🔒 Ochilmagan"}</span></div>`;
+    }
     html += `<div class="unit z${(ui % 6) + 1}"><div class="ub"><div><small>${ui + 1}-BO'LIM</small><b>${esc(u.title)}</b></div><span class="pr">${dn} / ${ids.length}</span></div><div class="path">`;
     u.lessons.forEach((l, li) => {
       const gi = all.findIndex((x) => x.id === l.id);
@@ -1129,7 +1152,7 @@ function viewHome() {
   const curId = next ? next.id : null;
   $("#main").insertAdjacentHTML("beforeend", `<div class="sylh"><h2 class="t" style="margin:0">Kurs mavzulari</h2><button class="chip" id="toMap">Xaritada ko'rish →</button></div>
     <div class="syl">${S.course.units.map((u, ui) => { const dn = u.lessons.filter((l) => m.done[l.id]).length; return `<div class="card su">
-      <div class="suh"><span class="sun">${ui + 1}</span><div style="flex:1"><b>${esc(u.title)}</b><small class="muted">${dn} / ${u.lessons.length} dars</small></div></div>
+      <div class="suh"><span class="sun">${ui + 1}</span><div style="flex:1"><small class="lvtag">${esc(((S.course.levels || []).find((lv) => lv.units.includes(u.id)) || {}).name || "")}</small><b>${esc(u.title)}</b><small class="muted">${dn} / ${u.lessons.length} dars</small></div></div>
       <div class="sbar"><i style="width:${(dn / u.lessons.length) * 100}%"></i></div>
       ${u.lessons.map((l) => { const st = m.done[l.id] ? "d" : l.id === curId ? "c" : "x"; return `<button class="sl ${st}" data-l="${l.id}"><span class="si">${st === "d" ? "✓" : st === "c" ? "▶" : "🔒"}</span>${esc(l.title)}</button>`; }).join("")}
     </div>`; }).join("")}</div>`);
