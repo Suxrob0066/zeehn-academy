@@ -214,6 +214,42 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .perks div{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:500}
 .perks i{font-style:normal;width:32px;height:32px;border-radius:10px;background:var(--sky);display:flex;align-items:center;justify-content:center}
 .ferr{color:var(--red);font-size:14px;font-weight:600;min-height:20px;margin-bottom:8px}
+
+#side{display:none}
+.nbrand{display:none}
+.navfoot{display:none}
+@media (min-width:960px){
+ .app{max-width:1320px;display:grid;grid-template-columns:250px minmax(0,1fr) 360px;grid-template-rows:auto 1fr;column-gap:32px;padding:0 28px}
+ .top{grid-column:2/4;grid-row:1;background:transparent;backdrop-filter:none;border-bottom:0;padding:22px 0 14px}
+ .top .brand{visibility:hidden}
+ .st{font-size:15px;padding:8px 14px}
+ main{grid-column:2;grid-row:2;padding:0 0 48px}
+ #side{display:flex;flex-direction:column;gap:14px;grid-column:3;grid-row:2;position:sticky;top:20px;align-self:start;padding-bottom:40px}
+ #side .daily{margin-top:0}
+ .nav{left:max(28px,calc(50% - 632px));top:0;bottom:0;transform:none;width:250px;max-width:none;flex-direction:column;justify-content:flex-start;gap:6px;border-top:0;border-right:1px solid var(--line);padding:24px 16px 24px 0;background:var(--bg)}
+ .nbrand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;color:var(--blue);padding:4px 12px 26px}
+ .nbrand img{width:40px;height:40px}
+ .nav button{flex:none;flex-direction:row;gap:14px;font-size:16px;font-weight:700;padding:13px 16px;justify-content:flex-start;border-radius:16px}
+ .nav button:hover{background:#fff}
+ .nav button.on{background:var(--sky)}
+ .nav button svg{width:26px;height:26px}
+ .navfoot{display:block;margin-top:auto;padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff;font-size:13px;color:var(--muted)}
+ .navfoot b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+ .path{gap:54px}
+ .node{width:86px;height:86px}
+ .node svg{width:36px;height:36px}
+ .here.r{left:98px}.here.l{right:98px}
+ .nlabel{top:96px;font-size:13px}
+ .ub{padding:16px 20px}.ub b{font-size:18px}
+ .wl{grid-template-columns:1fr 1fr}
+ .grid2{grid-template-columns:repeat(4,1fr)}
+ .chat{padding-bottom:20px}
+ .cin{position:sticky;bottom:20px;left:auto;transform:none;width:100%;max-width:none;padding:0;background:transparent;margin-top:16px}
+ h2.t{font-size:28px}
+ .sidecard h4{font-size:15px;font-weight:800;margin-bottom:10px}
+ .ex .q{font-size:24px}
+ .full .in{max-width:680px;padding-top:30px}
+}
 </style>
 </head>
 <body>
@@ -342,13 +378,51 @@ function renderApp() {
       </div>
     </header>
     <main id="main"></main>
+    <aside id="side"></aside>
     <nav class="nav">
+      <div class="nbrand"><img src="/img/logo-mark-blue.png" alt="">Zeehn Lingo</div>
       ${[["map", IC.map, "Xarita"], ["words", IC.book, "Lug'at"], ["ai", IC.ai, "AI ustoz"], ["rating", IC.trophy, "Reyting"], ["me", IC.user, "Profil"]]
         .map(([k, i, t]) => `<button data-t="${k}" class="${S.tab === k ? "on" : ""}">${i}${t}</button>`).join("")}
+      <div class="navfoot nbrand-f"><b>🔥 Har kuni 10 daqiqa</b>Ketma-ket kunlar seriyasini uzmang — so'zlar shunda yodda qoladi.</div>
     </nav>
   </div>`;
   document.querySelectorAll(".nav button").forEach((b) => (b.onclick = () => { S.tab = b.dataset.t; renderApp(); scrollTo(0, 0); }));
   ({ map: viewMap, words: viewWords, ai: viewAI, rating: viewRating, me: viewMe })[S.tab]();
+  renderSide();
+}
+const desk = () => matchMedia("(min-width:960px)").matches;
+let wasDesk = desk();
+addEventListener("resize", () => { if (desk() !== wasDesk) { wasDesk = desk(); if (S.me && !document.querySelector(".full")) renderApp(); } });
+function heroHTML() {
+  const m = S.me, all = lessons(), curIdx = all.findIndex((l) => !m.done[l.id]), doneN = Object.keys(m.done).length;
+  return `<section class="hero">
+    <div class="hi">Xush kelibsiz,</div>
+    <h1>${esc(m.user.name)}! 👋</h1>
+    ${tierTrack()}
+    <div class="nx"><span>Daraja: <b>${esc(m.tier.name)}</b></span><span>${m.tier.next ? `${esc(m.tier.next.name)} gacha <b>${m.tier.next.xp - m.user.xp} XP</b>` : "Eng yuqori daraja! 🏆"}</span></div>
+  </section>
+  <div class="card daily">
+    <div class="ic">${m.words.due ? "🃏" : "🎯"}</div>
+    <div style="flex:1"><b>${m.words.due ? `Takrorlash: ${m.words.due} ta so'z` : `${doneN} / ${all.length} dars tugatildi`}</b>
+    <div class="muted" style="font-size:13px">${m.words.due ? "So'zlarni unutishdan oldin takrorlang" : curIdx >= 0 ? "Keyingi dars sizni kutmoqda" : "Barcha darslar tugatildi! 🎉"}</div></div>
+    ${m.words.due ? `<button class="chip goRev">Boshlash</button>` : ""}
+  </div>`;
+}
+function renderSide() {
+  const side = $("#side");
+  if (!desk()) { side.innerHTML = ""; return; }
+  const m = S.me;
+  side.innerHTML = heroHTML() + `
+  <div class="card sidecard"><h4>Bu hafta</h4>
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">Yig'ilgan XP</span><b style="font-size:22px;color:var(--blue)">${m.weekXp}</b></div>
+    <button class="btn ghost" id="toRating" style="margin-top:12px;padding:11px">🏆 Reytingni ko'rish</button></div>
+  <div class="card sidecard"><h4>Lug'atim</h4>
+    <div class="tiles3" style="margin:0">
+      <div style="background:var(--green-bg)"><b style="color:#147A3D;font-size:20px">${m.words.learned}</b><small>o'rganildi</small></div>
+      <div style="background:var(--coin-bg)"><b style="color:#8A5300;font-size:20px">${m.words.learning}</b><small>takrorda</small></div>
+      <div style="background:var(--sky)"><b style="color:var(--blue);font-size:20px">${m.words.due}</b><small>bugun</small></div></div></div>`;
+  side.querySelectorAll(".goRev").forEach((b) => (b.onclick = startReview));
+  $("#toRating").onclick = () => { S.tab = "rating"; renderApp(); };
 }
 async function refresh() { await loadMe(); renderApp(); }
 
@@ -368,19 +442,8 @@ function viewMap() {
   const curIdx = all.findIndex((l) => !m.done[l.id]);
   const doneN = Object.keys(m.done).length;
   const off = [0, -64, -88, -64, 0, 64];
-  let html = `
-  <section class="hero">
-    <div class="hi">Xush kelibsiz,</div>
-    <h1>${esc(m.user.name)}! 👋</h1>
-    ${tierTrack()}
-    <div class="nx"><span>Daraja: <b>${esc(m.tier.name)}</b></span><span>${m.tier.next ? `${esc(m.tier.next.name)} gacha <b>${m.tier.next.xp - m.user.xp} XP</b>` : "Eng yuqori daraja! 🏆"}</span></div>
-  </section>
-  <div class="card daily">
-    <div class="ic">${m.words.due ? "🃏" : "🎯"}</div>
-    <div style="flex:1"><b>${m.words.due ? `Takrorlash: ${m.words.due} ta so'z` : `${doneN} / ${all.length} dars tugatildi`}</b>
-    <div class="muted" style="font-size:13px">${m.words.due ? "So'zlarni unutishdan oldin takrorlang" : curIdx >= 0 ? "Keyingi dars sizni kutmoqda" : "Barcha darslar tugatildi! 🎉"}</div></div>
-    ${m.words.due ? `<button class="chip" id="goRev">Boshlash</button>` : ""}
-  </div>`;
+  const k = desk() ? 1.45 : 1;
+  let html = desk() ? "" : heroHTML();
   S.course.units.forEach((u, ui) => {
     const ids = u.lessons.map((l) => l.id);
     const dn = ids.filter((id) => m.done[id]).length;
@@ -388,18 +451,18 @@ function viewMap() {
     u.lessons.forEach((l, li) => {
       const gi = all.findIndex((x) => x.id === l.id);
       const st = m.done[l.id] ? "done" : gi === curIdx ? "cur" : "lock";
-      html += `<button class="node ${st}" data-l="${l.id}" style="transform:translateX(${off[li % off.length]}px)" aria-label="${esc(l.title)}">
+      html += `<button class="node ${st}" data-l="${l.id}" style="transform:translateX(${off[li % off.length] * k}px)" aria-label="${esc(l.title)}">
         ${st === "done" ? IC.star : st === "cur" ? IC.play : IC.lock}
         ${st === "cur" ? `<span class="here ${off[li % off.length] > 0 ? "l" : "r"}">Siz shu yerdasiz</span>` : ""}
         <span class="nlabel">${esc(l.title)}</span></button>`;
     });
     const got = m.chests.includes(u.id);
     const open = dn === ids.length;
-    html += `<button class="node chest ${got ? "got" : open ? "open" : ""}" data-c="${u.id}" style="transform:translateX(${off[5]}px)" aria-label="Sandiq">${IC.chest}
+    html += `<button class="node chest ${got ? "got" : open ? "open" : ""}" data-c="${u.id}" style="transform:translateX(${off[5] * k}px)" aria-label="Sandiq">${IC.chest}
       <span class="nlabel">${got ? "Ochilgan" : "Sandiq"}</span></button></div></div>`;
   });
   $("#main").innerHTML = html;
-  const g = $("#goRev"); if (g) g.onclick = startReview;
+  document.querySelectorAll("#main .goRev").forEach((b) => (b.onclick = startReview));
   document.querySelectorAll(".node[data-l]").forEach((b) => (b.onclick = () => lessonSheet(b.dataset.l)));
   document.querySelectorAll(".node[data-c]").forEach((b) => (b.onclick = () => openChest(b.dataset.c)));
   const cur = $(".node.cur"); if (cur && !S.scrolled) { S.scrolled = 1; setTimeout(() => cur.scrollIntoView({ block: "center", behavior: "smooth" }), 150); }
