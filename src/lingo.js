@@ -53,6 +53,38 @@ const tierOf = (doneSet) => {
 };
 
 
+// ---------- Oktagon ----------
+const DUEL_Q = 10, DUEL_MS = 15000, DUEL_COIN_DAILY = 10;
+const DUEL_COINS = { win: 30, draw: 15, lose: 10 };
+const TITLES = ["Chempion", "Usta", "Bilimdon", "Jangchi", "Jangchi"];
+const rshuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const qPoints = (a) => (a && a.c ? 100 + Math.max(0, Math.round((10000 - Math.min(10000, a.ms)) / 100)) : 0);
+const duelScore = (ans) => ans.reduce((s, a) => s + qPoints(a), 0);
+function duelQuestions(doneIds) {
+  const all = Object.entries(WORDS).filter(([, w]) => w.uz && w.en.length < 24);
+  let pool = all.filter(([, w]) => doneIds.has(w.lesson));
+  if (pool.length < DUEL_Q + 4) pool = all.filter(([, w]) => LESSON_IDS.slice(0, Math.max(6, doneIds.size + 3)).includes(w.lesson));
+  if (pool.length < DUEL_Q + 4) pool = all;
+  return rshuffle(pool).slice(0, DUEL_Q).map(([k, w], i) => {
+    const en2uz = i % 2 === 0;
+    const wrong = rshuffle(all.filter(([k2]) => k2 !== k)).slice(0, 3).map(([, x]) => (en2uz ? x.uz : x.en));
+    const answer = en2uz ? w.uz : w.en;
+    return { q: en2uz ? w.en : w.uz, dir: en2uz ? "en-uz" : "uz-en", opts: rshuffle([answer, ...wrong]), answer };
+  });
+}
+function botAnswers(level) {
+  const acc = 0.55 + 0.1 * level;
+  return Array.from({ length: DUEL_Q }, () => ({ c: Math.random() < acc ? 1 : 0, ms: 2500 + Math.floor(Math.random() * 6000) }));
+}
+
+// ---------- Sovg'alar ----------
+const GIFTS = [
+  { id: "sticker", e: "📒", name: "Zeehn daftar va stiker", cost: 500 },
+  { id: "tshirt", e: "👕", name: "Zeehn futbolkasi", cost: 2500 },
+  { id: "course", e: "🎓", name: "1 oy bepul kurs", cost: 4000 },
+  { id: "headphones", e: "🎧", name: "Simsiz naushnik", cost: 10000 },
+];
+
 // ---------- Dictionary & Translator ----------
 // Tarjima manbalari (birinchi sozlangani ishlatiladi):
 //   DEEPL_API_KEY  |  GOOGLE_TRANSLATE_KEY  |  AZURE_TRANSLATOR_KEY (+ AZURE_TRANSLATOR_REGION)
@@ -496,6 +528,89 @@ export async function handleLingo(req, env, url) {
     const map = Object.fromEntries((days.results || []).map((r) => [r.day, r.xp]));
     const series = Array.from({ length: 14 }, (_, i) => { const d = addDays(from, i); return { day: d, xp: map[d] || 0 }; });
     return json({ ok: true, series, lessons: agg?.n || 0, runs: agg?.runs || 0, acc: Math.round(agg?.acc || 0), learned: words?.learned || 0, seen: words?.seen || 0, activeDays: total?.d || 0, todayXp: map[t] || 0 });
+  }
+
+  // ---------- Oktagon ----------
+  if (path === "oktagon" && m === "GET") {
+    const ws = weekStart(), t = today();
+    const [mine, top, recent, todayN] = await Promise.all([
+      env.DB.prepare("SELECT COUNT(*) games, COALESCE(SUM(result='win'),0) wins, COALESCE(SUM(coins),0) coins, COALESCE(SUM(score),0) pts FROM lingo_duels WHERE user_id=? AND week=? AND result IS NOT NULL").bind(user.id, ws).first(),
+      env.DB.prepare("SELECT u.id,u.name,u.avatar,u.photo_v,COUNT(*) games,SUM(d.result='win') wins,SUM(d.score) pts FROM lingo_duels d JOIN lingo_users u ON u.id=d.user_id WHERE d.week=? AND d.result IS NOT NULL GROUP BY u.id ORDER BY wins DESC, pts DESC, u.id LIMIT 20").bind(ws).all(),
+      env.DB.prepare("SELECT d.score,d.opp_score,d.result,d.coins,d.created_at,u.name opp_name FROM lingo_duels d LEFT JOIN lingo_users u ON u.id=d.opp_user WHERE d.user_id=? AND d.result IS NOT NULL ORDER BY d.id DESC LIMIT 5").bind(user.id).all(),
+      env.DB.prepare("SELECT COUNT(*) n FROM lingo_duels WHERE user_id=? AND day=? AND result IS NOT NULL").bind(user.id, t).first(),
+    ]);
+    const list = (top.results || []).map((x, i) => ({ place: i + 1, name: x.name, avatar: x.avatar, photo: photoUrl(x), games: x.games, wins: x.wins, title: x.wins ? TITLES[i] || null : null, me: x.id === user.id }));
+    let place = list.find((x) => x.me)?.place || null;
+    if (!place && mine.games) {
+      const above = await env.DB.prepare("SELECT COUNT(*) n FROM (SELECT user_id,SUM(result='win') w,SUM(score) p FROM lingo_duels WHERE week=? AND result IS NOT NULL GROUP BY user_id HAVING w>? OR (w=? AND p>?))").bind(ws, mine.wins, mine.wins, mine.pts).first();
+      place = (above?.n || 0) + 1;
+    }
+    const daysLeft = 7 - ((nowTz().getUTCDay() + 6) % 7);
+    return json({ ok: true, week: { games: mine.games, wins: mine.wins, coins: mine.coins, place }, list, daysLeft,
+      recent: (recent.results || []).map((r) => ({ ...r, opp_name: r.opp_name || "Zeehn bot" })),
+      today: { played: todayN?.n || 0, coinGames: DUEL_COIN_DAILY }, prize: DUEL_COINS, questions: DUEL_Q, seconds: DUEL_MS / 1000 });
+  }
+
+  if (path === "oktagon/start" && m === "POST") {
+    const done = await env.DB.prepare("SELECT lesson FROM lingo_done WHERE user_id=?").bind(user.id).all();
+    const doneIds = new Set((done.results || []).map((r) => r.lesson));
+    const level = tierOf(doneIds).index;
+    // Raqib: boshqa o'quvchining yaqindagi haqiqiy o'yini (bir xil savollar, uning javoblari va vaqti)
+    const opp = await env.DB.prepare(
+      "SELECT d.id,d.user_id,d.qs,d.answers,u.name,u.avatar,u.photo_v FROM lingo_duels d JOIN lingo_users u ON u.id=d.user_id WHERE d.user_id<>? AND d.result IS NOT NULL AND d.answers IS NOT NULL AND d.created_at>=datetime('now','+5 hours','-21 days') ORDER BY RANDOM() LIMIT 1"
+    ).bind(user.id).first();
+    let qs, oppAns, oppUser = null, oppDuel = null, rival;
+    if (opp) {
+      qs = JSON.parse(opp.qs); oppAns = JSON.parse(opp.answers); oppUser = opp.user_id; oppDuel = opp.id;
+      rival = { name: opp.name, avatar: opp.avatar, photo: photoUrl({ id: opp.user_id, photo_v: opp.photo_v }), bot: false };
+    } else {
+      qs = duelQuestions(doneIds); oppAns = botAnswers(level);
+      rival = { name: "Zeehn bot", bot: true };
+    }
+    const r = await env.DB.prepare("INSERT INTO lingo_duels (user_id,day,week,opp_user,opp_duel,qs,opp_ans) VALUES (?,?,?,?,?,?,?)")
+      .bind(user.id, today(), weekStart(), oppUser, oppDuel, JSON.stringify(qs), JSON.stringify(oppAns)).run();
+    return json({ ok: true, id: r.meta.last_row_id, rival, questions: qs.map((q) => ({ q: q.q, dir: q.dir, opts: q.opts, answer: q.answer })), opp: oppAns, seconds: DUEL_MS / 1000 });
+  }
+
+  if (path === "oktagon/finish" && m === "POST") {
+    const b = await readBody(req);
+    const d = await env.DB.prepare("SELECT * FROM lingo_duels WHERE id=? AND user_id=?").bind(parseInt(b.id, 10) || 0, user.id).first();
+    if (!d) return err("O'yin topilmadi", 404);
+    if (d.result) return err("O'yin allaqachon tugagan");
+    const qs = JSON.parse(d.qs), oppAns = JSON.parse(d.opp_ans);
+    const given = Array.isArray(b.answers) ? b.answers : [];
+    const ans = qs.map((q, i) => {
+      const g = given[i] || {};
+      const ms = Math.max(300, Math.min(DUEL_MS, parseInt(g.ms, 10) || DUEL_MS));
+      return { c: g.a != null && String(g.a) === q.answer ? 1 : 0, ms };
+    });
+    const score = duelScore(ans), oppScore = duelScore(oppAns);
+    const result = score > oppScore ? "win" : score < oppScore ? "lose" : "draw";
+    const played = await env.DB.prepare("SELECT COUNT(*) n FROM lingo_duels WHERE user_id=? AND day=? AND result IS NOT NULL").bind(user.id, today()).first();
+    const coins = (played?.n || 0) < DUEL_COIN_DAILY ? DUEL_COINS[result] : 0;
+    await env.DB.prepare("UPDATE lingo_duels SET answers=?,score=?,opp_score=?,result=?,coins=? WHERE id=?")
+      .bind(JSON.stringify(ans), score, oppScore, result, coins, d.id).run();
+    const streak = coins ? await award(env, user, coins, 0) : user.streak;
+    return json({ ok: true, result, score, oppScore, correct: ans.filter((a) => a.c).length, oppCorrect: oppAns.filter((a) => a.c).length, coins, streak });
+  }
+
+  // ---------- Sovg'alar ----------
+  if (path === "gifts" && m === "GET") {
+    const c = await env.DB.prepare("SELECT id,gift,cost,status,created_at FROM lingo_claims WHERE user_id=? ORDER BY id DESC LIMIT 20").bind(user.id).all();
+    const byId = Object.fromEntries(GIFTS.map((g) => [g.id, g]));
+    return json({ ok: true, coins: user.xp, gifts: GIFTS, claims: (c.results || []).map((x) => ({ ...x, name: byId[x.gift]?.name || x.gift, e: byId[x.gift]?.e || "🎁" })) });
+  }
+
+  if (path === "gifts/claim" && m === "POST") {
+    const b = await readBody(req);
+    const g = GIFTS.find((x) => x.id === b.id);
+    if (!g) return err("Sovg'a topilmadi", 404);
+    const pend = await env.DB.prepare("SELECT COUNT(*) n FROM lingo_claims WHERE user_id=? AND gift=? AND status='new'").bind(user.id, g.id).first();
+    if (pend?.n) return err("Bu sovg'a uchun so'rovingiz allaqachon bor — akademiyadan olib keting");
+    const u = await env.DB.prepare("UPDATE lingo_users SET xp=xp-? WHERE id=? AND xp>=?").bind(g.cost, user.id, g.cost).run();
+    if (!u.meta.changes) return err(`Coin yetmaydi: kerak ${g.cost}, sizda ${user.xp}`);
+    await env.DB.prepare("INSERT INTO lingo_claims (user_id,gift,cost) VALUES (?,?,?)").bind(user.id, g.id, g.cost).run();
+    return json({ ok: true, coins: user.xp - g.cost });
   }
 
   // Mashq (tezkor test va h.k.) natijasi
