@@ -650,8 +650,7 @@ function renderAuth(mode = "reg") {
     <p class="muted">Har kuni 10 daqiqa — o'zbek tilida, qadam-baqadam.</p>
     <div class="tabs"><button data-m="reg" class="${mode === "reg" ? "on" : ""}">Ro'yxatdan o'tish</button><button data-m="login" class="${mode === "login" ? "on" : ""}">Kirish</button></div>
     <form id="af">
-      ${mode === "reg" ? `<label class="fld"><span>Ismingiz</span><input name="name" autocomplete="given-name" placeholder="Masalan: Aziz" required></label>
-        <div class="fld"><span>Qahramoningiz</span><div class="avpick"><label><input type="radio" name="avatar" value="boy" checked>${faceIcon("boy", 44)}<b>O'g'il bola</b></label><label><input type="radio" name="avatar" value="girl">${faceIcon("girl", 44)}<b>Qiz bola</b></label></div></div>` : ""}
+      ${mode === "reg" ? `<label class="fld"><span>Ismingiz</span><input name="name" autocomplete="given-name" placeholder="Masalan: Aziz" required></label>` : ""}
       <label class="fld"><span>Telefon raqam</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 90 123 45 67" required></label>
       <label class="fld"><span>Parol</span><span class="pw"><input name="password" type="password" autocomplete="${mode === "reg" ? "new-password" : "current-password"}" placeholder="Kamida 6 ta belgi" required><button type="button" class="eye" id="eye" aria-label="Parolni ko'rsatish">${IC.eye}</button></span></label>
       <p class="ferr" id="fe"></p>
