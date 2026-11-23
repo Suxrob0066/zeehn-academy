@@ -241,7 +241,7 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
  .nlabel{top:96px;font-size:13px}
  .ub{padding:16px 20px}.ub b{font-size:18px}
  .wl{grid-template-columns:1fr 1fr}
- .grid2{grid-template-columns:repeat(4,1fr)}
+ .grid2{grid-template-columns:repeat(3,1fr)}
  .chat{padding-bottom:20px}
  .cin{position:sticky;bottom:20px;left:auto;transform:none;width:100%;max-width:none;padding:0;background:transparent;margin-top:16px}
  h2.t{font-size:28px}
@@ -466,6 +466,7 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
  .auth h1{font-size:34px}
 }
 @media (min-width:1400px){.aamid h2{font-size:54px}.ascene{width:600px;height:330px}.authwrap .auth{max-width:540px}}
+.res2{grid-template-columns:repeat(2,1fr)}
 </style>
 </head>
 <body>
@@ -639,7 +640,7 @@ function renderAuth(mode = "reg") {
           <circle cx="220" cy="140" r="30" fill="#fff"/><path d="M212 128l20 12-20 12z" fill="#0046E0"/>
           <circle cx="420" cy="60" r="26" fill="rgba(255,255,255,.3)"/><rect x="410" y="58" width="20" height="15" rx="3" fill="#fff"/><path d="M414 58v-5a6 6 0 0 1 12 0v5" stroke="#fff" stroke-width="3.5" fill="none"/></svg>
         <span class="aboy">${heroSVG("boy")}</span><span class="agirl">${heroSVG("girl")}</span>
-        <span class="abub b1">🔥 7 kun</span><span class="abub b2">+15 XP</span><span class="abub b3">🏆 1-o'rin</span>
+        <span class="abub b1">🔥 7 kun</span><span class="abub b2">+15 coin</span><span class="abub b3">🏆 1-o'rin</span>
       </div>
     </div>
     <div class="aperks"><div><i>🗺️</i>Xarita</div><div><i>🃏</i>Lug'at</div><div><i>🤖</i>AI ustoz</div><div><i>🏆</i>Reyting</div></div>
@@ -659,7 +660,7 @@ function renderAuth(mode = "reg") {
     <div class="perks">
       <div><i>🗺️</i>Darslar xaritasi — qayerdaligingiz doim ko'rinadi</div>
       <div><i>🃏</i>So'zlarni unutmasdan yodlash</div>
-      <div><i>🏆</i>XP, coin, daraja va haftalik reyting</div>
+      <div><i>🏆</i>Coin, daraja va haftalik reyting</div>
     </div>
   </div>
   </div>`;
@@ -691,7 +692,7 @@ const NAV = [
 ];
 const MOBILE = ["home", "map", "practice", "rating"];
 const SHORT = { home: "Bosh sahifa", map: "Xarita", practice: "Mashqlar", rating: "Reyting" };
-const SOON = { oktagon: "⚔️ Oktagon — 1 ga 1 bilim bellashuvi. Tez orada!", gifts: "🎁 Sovg'alar — yig'ilgan XP ga haqiqiy sovg'alar. Tez orada!" };
+const SOON = { oktagon: "⚔️ Oktagon — 1 ga 1 bilim bellashuvi. Tez orada!", gifts: "🎁 Sovg'alar — yig'ilgan coinlarga haqiqiy sovg'alar. Tez orada!" };
 function go(t) {
   if (SOON[t]) { toast(SOON[t], 2600); return; }
   if (t === "more") { moreSheet(); return; }
@@ -723,8 +724,7 @@ function renderApp() {
       <div class="brand"><img src="/img/logo-mark-blue.png" alt="">Lingo</div>
       <div class="stats">
         <span class="st fire ${m.user.today ? "on" : "off"}" title="Ketma-ket kunlar">${IC.fire}${m.user.streak}</span>
-        <span class="st" title="Coin">${IC.coin}${m.user.coins}</span>
-        <span class="st" title="XP">${IC.bolt}${m.user.xp}</span>
+        <span class="st" title="Coin">${IC.coin}${m.user.xp}</span>
       </div>
     </header>
     <main id="main"></main>
@@ -755,7 +755,7 @@ function heroHTML() {
     <div class="hi">Xush kelibsiz,</div>
     <h1>${esc(m.user.name)}! 👋</h1>
     ${tierTrack()}
-    <div class="nx"><span>Daraja: <b>${esc(m.tier.name)}</b></span><span>${m.tier.next ? `${esc(m.tier.next.name)} gacha <b>${m.tier.next.xp - m.user.xp} XP</b>` : "Eng yuqori daraja! 🏆"}</span></div>
+    <div class="nx"><span>Daraja: <b>${esc(m.tier.name)}</b></span><span>${m.tier.next ? `${esc(m.tier.next.name)} gacha <b>${m.tier.next.xp - m.user.xp} coin</b>` : "Eng yuqori daraja! 🏆"}</span></div>
   </section>
   <div class="card daily">
     <div class="ic">${m.words.due ? "🃏" : "🎯"}</div>
@@ -770,7 +770,7 @@ function renderSide() {
   const m = S.me;
   side.innerHTML = heroHTML() + `
   <div class="card sidecard"><h4>Bu hafta</h4>
-    <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">Yig'ilgan XP</span><b style="font-size:22px;color:var(--blue)">${m.weekXp}</b></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">Yig'ilgan coin</span><b style="font-size:22px;color:var(--blue)">${m.weekXp}</b></div>
     <button class="btn ghost" id="toRating" style="margin-top:12px;padding:11px">🏆 Reytingni ko'rish</button></div>
   <div class="card sidecard"><h4>Lug'atim</h4>
     <div class="tiles3" style="margin:0">
@@ -885,7 +885,7 @@ function lessonSheet(id) {
     <p class="muted" style="margin-bottom:14px">${l.words.map((w) => esc(w[0])).join(" · ")}</p>
     ${l.tip ? `<div class="tipc" style="margin-bottom:14px">💡 ${esc(l.tip)}</div>` : ""}
     ${done ? `<p class="muted" style="margin-bottom:14px">Eng yaxshi natija: <b style="color:var(--ink)">${done.best}%</b> · ${done.times} marta o'tilgan</p>` : ""}
-    <button class="btn" id="go">${done ? "Qayta o'tish · +3 XP" : "Boshlash · +10 XP"}</button>
+    <button class="btn" id="go">${done ? "Qayta o'tish · +4 coin" : "Boshlash · +15 coin"}</button>
     <button class="btn ghost" id="cl" style="margin-top:10px">Yopish</button></div>`;
   document.body.appendChild(d);
   d.onclick = (e) => { if (e.target === d) d.remove(); };
@@ -899,7 +899,7 @@ async function openChest(unit) {
   if (dn < u.lessons.length) { toast(`🔒 Sandiq ochilishi uchun bo'limdagi ${u.lessons.length - dn} ta dars qoldi`); return; }
   const r = await api("chest", { unit });
   if (!r.ok) { toast(r.error); return; }
-  toast(`🎁 Sandiq ochildi: +${r.coins} coin, +${r.xp} XP`, 3000);
+  toast(`🎁 Sandiq ochildi: +${r.coins} coin`, 3000);
   refresh();
 }
 
@@ -1054,7 +1054,7 @@ async function finishLesson(L) {
     <div class="em">${acc === 100 ? "🏆" : acc >= 70 ? "🎉" : "💪"}</div>
     <h2>${acc === 100 ? "Mukammal!" : L.kind === "lesson" ? "Dars tugadi!" : "Mashq tugadi!"}</h2>
     <p class="muted">${L.kind === "lesson" ? `${esc(L.l.title)} · ${r.first ? "yangi dars" : "takrorlash"}` : esc(L.title)}</p>
-    <div class="res"><div><b style="color:var(--blue)">+${r.xp}</b><small>XP</small></div><div><b style="color:#C98200">+${r.coins}</b><small>COIN</small></div><div><b style="color:var(--green)">${acc}%</b><small>ANIQLIK</small></div></div>
+    <div class="res res2"><div><b style="color:#C98200">+${r.coins}</b><small>COIN</small></div><div><b style="color:var(--green)">${acc}%</b><small>ANIQLIK</small></div></div>
     ${r.streak ? `<span class="chip" style="background:#FFE9DA;color:#C2410C">🔥 ${r.streak} kun ketma-ket</span>` : ""}
     ${r.newWords ? `<p class="muted">📚 ${r.newWords} ta so'z lug'atingizga qo'shildi — ertaga takrorlaymiz</p>` : ""}
   </div>`;
@@ -1088,7 +1088,7 @@ function viewPractice() {
   const m = S.me, has = Object.keys(m.done).length > 0;
   const cards = [
     ["review", "🃏", "So'z takrorlash", m.words.due ? `${m.words.due} ta so'z takrorlashga tayyor` : "Bugun takrorlash yo'q", m.words.due > 0],
-    ["quiz", "⚡", "Tezkor test", "O'rgangan so'zlaringizdan 10 ta savol · +5 XP gacha", has],
+    ["quiz", "⚡", "Tezkor test", "O'rgangan so'zlaringizdan 10 ta savol · +5 coin gacha", has],
     ["listen", "🎧", "Eshitish mashqi", "Inglizcha so'zni eshitib, ma'nosini toping", has],
     ["build", "🧩", "Gap tuzish", "So'zlardan to'g'ri gap yig'ing", has],
   ];
@@ -1108,7 +1108,7 @@ function viewPractice() {
 function viewHome() {
   const m = S.me, all = lessons(), next = all.find((l) => !m.done[l.id]);
   const goal = 20, pct = Math.min(100, Math.round((m.todayXp / goal) * 100));
-  const ring = `<svg viewBox="0 0 120 120" class="ring"><circle cx="60" cy="60" r="50" fill="none" style="stroke:var(--off)" stroke-width="14"/><circle cx="60" cy="60" r="50" fill="none" stroke="${pct >= 100 ? "#1FB45A" : "#0046E0"}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(pct / 100) * 314} 314" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="24" font-weight="800" style="fill:var(--ink)">${m.todayXp}</text><text x="60" y="80" text-anchor="middle" font-size="13" style="fill:var(--muted)">/ ${goal} XP</text></svg>`;
+  const ring = `<svg viewBox="0 0 120 120" class="ring"><circle cx="60" cy="60" r="50" fill="none" style="stroke:var(--off)" stroke-width="14"/><circle cx="60" cy="60" r="50" fill="none" stroke="${pct >= 100 ? "#1FB45A" : "#0046E0"}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(pct / 100) * 314} 314" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="24" font-weight="800" style="fill:var(--ink)">${m.todayXp}</text><text x="60" y="80" text-anchor="middle" font-size="13" style="fill:var(--muted)">/ ${goal} coin</text></svg>`;
   $("#main").innerHTML = `${desk() ? "" : heroHTML()}
     <div class="card cont">
       ${next ? `<span class="chip">${all.indexOf(next) + 1}-dars · ${esc(next.unit.title)}</span>
@@ -1118,12 +1118,12 @@ function viewHome() {
       : `<h2 class="t">Barcha darslar tugadi! 🎉</h2><p class="muted">Mashqlar va takrorlash bilan bilimingizni mustahkamlang.</p>`}
     </div>
     <div class="hgrid">
-      <div class="card goal">${ring}<div><b>Kunlik maqsad</b><p class="muted">${pct >= 100 ? "Bajarildi! Barakalla 🎉" : `Yana ${goal - m.todayXp} XP yig'ing`}</p><span class="chip" style="background:#FFE9DA;color:#C2410C;margin-top:6px">🔥 ${m.user.streak} kun ketma-ket</span></div></div>
+      <div class="card goal">${ring}<div><b>Kunlik maqsad</b><p class="muted">${pct >= 100 ? "Bajarildi! Barakalla 🎉" : `Yana ${goal - m.todayXp} coin yig'ing`}</p><span class="chip" style="background:#FFE9DA;color:#C2410C;margin-top:6px">🔥 ${m.user.streak} kun ketma-ket</span></div></div>
       <div class="qgrid">
         <button class="card qt" data-g="practice"><span>🃏</span><b>Takrorlash</b><small class="muted">${m.words.due ? `${m.words.due} ta so'z` : "Bugun yo'q"}</small></button>
         <button class="card qt" data-g="quiz"><span>⚡</span><b>Tezkor test</b><small class="muted">10 savol</small></button>
         <button class="card qt" data-g="ai"><span>🤖</span><b>AI ustoz</b><small class="muted">Savol bering</small></button>
-        <button class="card qt" data-g="rating"><span>🏆</span><b>Reyting</b><small class="muted">Bu hafta ${m.weekXp} XP</small></button>
+        <button class="card qt" data-g="rating"><span>🏆</span><b>Reyting</b><small class="muted">Bu hafta ${m.weekXp} coin</small></button>
       </div>
     </div>`;
   const curId = next ? next.id : null;
@@ -1154,14 +1154,14 @@ async function viewStats() {
   const wd = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
   const week = r.series.slice(-7).reduce((a, d) => a + d.xp, 0);
   $("#sx").innerHTML = `<div class="sgrid">
-      <div class="card"><b style="color:var(--blue)">${S.me.user.xp}</b><small>Jami XP</small></div>
+      <div class="card"><b style="color:#C98200">${S.me.user.xp}</b><small>Jami coin</small></div>
       <div class="card"><b style="color:#F2600C">${S.me.user.streak} 🔥</b><small>Ketma-ket kun</small></div>
       <div class="card"><b>${r.lessons} / ${lessons().length}</b><small>Tugatilgan dars</small></div>
       <div class="card"><b style="color:var(--green)">${r.acc}%</b><small>O'rtacha aniqlik</small></div>
       <div class="card"><b>${r.seen}</b><small>Ko'rilgan so'z</small></div>
       <div class="card"><b style="color:#147A3D">${r.learned}</b><small>Yodlangan so'z</small></div>
     </div>
-    <div class="card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Oxirgi 14 kun</b><span class="muted" style="font-size:13px">Bu hafta: <b style="color:var(--blue)">${week} XP</b></span></div>
+    <div class="card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Oxirgi 14 kun</b><span class="muted" style="font-size:13px">Bu hafta: <b style="color:#C98200">${week} coin</b></span></div>
       <div class="chart">${r.series.map((d) => { const dt = new Date(d.day + "T00:00:00Z"); return `<div class="cb"><span class="cv">${d.xp || ""}</span><i style="height:${Math.max(3, (d.xp / max) * 100)}%;${d.xp ? "" : "background:var(--off)"}"></i><small>${wd[dt.getUTCDay()]}</small></div>`; }).join("")}</div>
       <p class="muted" style="font-size:13px;margin-top:10px">Faol kunlar: ${r.activeDays} · Darslar ${r.runs} marta o'tilgan</p></div>`;
 }
@@ -1202,7 +1202,7 @@ async function sendReview(R, silent) {
   if (silent) { refresh(); return; }
   const good = R.res.filter((x) => x.ok).length;
   $("#ex").innerHTML = `<div class="end"><div class="em">🧠</div><h2>Takrorlash tugadi!</h2>
-    <div class="res"><div><b style="color:var(--green)">${good}</b><small>BILDINGIZ</small></div><div><b style="color:var(--red)">${R.res.length - good}</b><small>QAYTA</small></div><div><b style="color:var(--blue)">+${r.xp || 0}</b><small>XP</small></div></div>
+    <div class="res"><div><b style="color:var(--green)">${good}</b><small>BILDINGIZ</small></div><div><b style="color:var(--red)">${R.res.length - good}</b><small>QAYTA</small></div><div><b style="color:#C98200">+${r.coins || 0}</b><small>COIN</small></div></div>
     <p class="muted">Bilmagan so'zlaringiz ertaga yana chiqadi.</p></div>`;
   $("#lf").innerHTML = `<button class="btn" id="bk">Davom etish</button>`;
   $("#bk").onclick = () => { closeFull(); refresh(); };
@@ -1272,12 +1272,12 @@ async function viewRating() {
   if (!r.ok) return;
   const medal = ["🥇", "🥈", "🥉"];
   $("#rt").innerHTML = `<div class="rme"><div><div style="font-size:13px;opacity:.85">Sizning o'rningiz</div><b>${r.me.place}-o'rin</b></div>
-      <div style="text-align:right"><div style="font-size:13px;opacity:.85">Bu hafta</div><b>${r.me.xp} XP</b></div></div>
-    <p class="muted" style="font-size:13px;margin-bottom:10px">⏳ Hafta tugashiga ${r.daysLeft} kun · XP dars, takrorlash va sandiqlar uchun beriladi</p>
+      <div style="text-align:right"><div style="font-size:13px;opacity:.85">Bu hafta</div><b>${r.me.xp} coin</b></div></div>
+    <p class="muted" style="font-size:13px;margin-bottom:10px">⏳ Hafta tugashiga ${r.daysLeft} kun · coin dars, mashq, takrorlash va sandiqlar uchun beriladi</p>
     <div class="rl">${r.list.length ? r.list.map((x, i) => `<div class="ri ${x.me ? "me" : ""}"><span class="p">${medal[i] || x.place}</span>
       <span class="av" style="background:${AVC[i % AVC.length]}">${userPic(x, 38)}</span>
-      <span class="nm">${esc(x.name)}${x.me ? " (siz)" : ""}</span><span class="xp">${x.xp} XP</span></div>`).join("")
-      : '<div class="card muted" style="text-align:center">Bu hafta hali hech kim XP yig\'madi. Birinchi bo\'ling! 🚀</div>'}</div>`;
+      <span class="nm">${esc(x.name)}${x.me ? " (siz)" : ""}</span><span class="xp">${x.xp} coin</span></div>`).join("")
+      : '<div class="card muted" style="text-align:center">Bu hafta hali hech kim coin yig\'madi. Birinchi bo\'ling! 🚀</div>'}</div>`;
 }
 
 /* ---------- Profilni tahrirlash ---------- */
@@ -1337,8 +1337,7 @@ function viewMe() {
       ${m.user.photo ? `<button class="chip" id="phDel" style="margin:4px auto 8px;background:var(--red-bg);color:var(--red)">Rasmni o'chirish</button>` : ""}
       <h2 class="t" style="margin:0">${esc(m.user.name)}</h2><span class="chip" style="margin-top:6px">⭐ ${esc(m.tier.name)}</span></div>
     <div class="grid2">
-      <div class="card"><b style="color:var(--blue)">${m.user.xp}</b><small>Jami XP</small></div>
-      <div class="card"><b style="color:#C98200">${m.user.coins}</b><small>Coin</small></div>
+      <div class="card"><b style="color:#C98200">${m.user.xp}</b><small>Jami coin</small></div>
       <div class="card"><b style="color:#F2600C">${m.user.streak} 🔥</b><small>Ketma-ket kun</small></div>
       <div class="card"><b>${Object.keys(m.done).length} / ${all.length}</b><small>Darslar</small></div>
     </div>
@@ -1346,7 +1345,7 @@ function viewMe() {
     <div style="display:grid;gap:8px">
       <div class="soon"><span class="e">🥈</span><div><b>Ligalar</b><span class="muted" style="font-size:13px">Bronza → Kumush → Oltin</span></div></div>
       <div class="soon"><span class="e">⚔️</span><div><b>Oktagon</b><span class="muted" style="font-size:13px">1 ga 1 bilim bellashuvi</span></div></div>
-      <div class="soon"><span class="e">🎁</span><div><b>Sovg'alar</b><span class="muted" style="font-size:13px">Yig'ilgan XP ga haqiqiy sovg'alar</span></div></div>
+      <div class="soon"><span class="e">🎁</span><div><b>Sovg'alar</b><span class="muted" style="font-size:13px">Yig'ilgan coinlarga haqiqiy sovg'alar</span></div></div>
     </div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 4px">Xaritadagi qahramonim</h3><p class="muted" style="font-size:13px;margin-bottom:10px">Xaritada siz bilan birga yuradigan qahramon</p>
     <div class="avpick big" id="avp">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>

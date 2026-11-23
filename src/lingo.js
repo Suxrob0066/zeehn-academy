@@ -65,7 +65,9 @@ async function newSession(env, userId) {
 }
 
 // XP, coin va ketma-ket kunlarni yangilash
+// Yagona valyuta — coin (lingo_users.xp ustunida saqlanadi; daraja va reyting ham shunga qarab)
 async function award(env, user, xp, coins) {
+  xp = (xp || 0) + (coins || 0); coins = 0;
   const t = today();
   let streak = user.streak || 0;
   if (user.last_day !== t) streak = user.last_day === addDays(t, -1) ? streak + 1 : 1;
@@ -187,7 +189,7 @@ export async function handleLingo(req, env, url) {
     }
     await env.DB.batch(stmts);
     const streak = await award(env, user, xp, coins);
-    return json({ ok: true, xp, coins, acc, first, streak, newWords: first ? lesson.words.length : 0 });
+    return json({ ok: true, coins: xp + coins, acc, first, streak, newWords: first ? lesson.words.length : 0 });
   }
 
   // Bo'lim sandig'i
@@ -202,7 +204,7 @@ export async function handleLingo(req, env, url) {
     const r = await env.DB.prepare("INSERT OR IGNORE INTO lingo_chests (user_id,unit) VALUES (?,?)").bind(user.id, unit.id).run();
     if (!r.meta.changes) return err("Sandiq allaqachon ochilgan");
     await award(env, user, 10, 20);
-    return json({ ok: true, xp: 10, coins: 20 });
+    return json({ ok: true, coins: 30 });
   }
 
   // Lug'at
@@ -251,7 +253,7 @@ export async function handleLingo(req, env, url) {
     }
     const xp = Math.min(good, 20);
     const streak = xp ? await award(env, user, xp, 0) : user.streak;
-    return json({ ok: true, xp, good, total: res.length, streak });
+    return json({ ok: true, coins: xp, good, total: res.length, streak });
   }
 
   // Haftalik reyting
@@ -326,7 +328,7 @@ export async function handleLingo(req, env, url) {
     const correct = Math.max(0, Math.min(30, parseInt(b.correct, 10) || 0));
     const xp = Math.min(5, Math.ceil(correct / 2));
     const streak = xp ? await award(env, user, xp, 0) : user.streak;
-    return json({ ok: true, xp, coins: 0, streak });
+    return json({ ok: true, coins: xp, streak });
   }
 
   if (path === "password" && m === "POST") {
