@@ -52,6 +52,82 @@ const tierOf = (doneSet) => {
   return { index, name: LEVELS[index].name, next: next ? { name: next.name } : null, done: doneIn, total: ids.length, left: ids.length - doneIn };
 };
 
+
+// ---------- Dictionary & Translator ----------
+// Tarjima manbalari (birinchi sozlangani ishlatiladi):
+//   DEEPL_API_KEY  |  GOOGLE_TRANSLATE_KEY  |  AZURE_TRANSLATOR_KEY (+ AZURE_TRANSLATOR_REGION)
+//   hech biri bo'lmasa — MyMemory bepul xizmati (cheklangan; MYMEMORY_EMAIL qo'shilsa limit oshadi)
+// Inglizcha izoh, talaffuz va audio — Free Dictionary API (dictionaryapi.dev, bepul).
+const DICT_DAILY = 80;
+const POS_UZ = { noun: "ot", verb: "fe'l", adjective: "sifat", adverb: "ravish", pronoun: "olmosh", preposition: "predlog", conjunction: "bog'lovchi", interjection: "undov", numeral: "son", determiner: "aniqlovchi" };
+const cleanQ = (q) => String(q || "").toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9'\- ʻʼoʻgʻ]/gi, " ").replace(/\s+/g, " ").trim().slice(0, 40);
+
+async function translate(env, text, from, to) {
+  try {
+    if (env.DEEPL_API_KEY) {
+      const host = env.DEEPL_API_KEY.endsWith(":fx") ? "api-free.deepl.com" : "api.deepl.com";
+      const r = await fetch(`https://${host}/v2/translate`, {
+        method: "POST",
+        headers: { Authorization: "DeepL-Auth-Key " + env.DEEPL_API_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ text: [text], source_lang: from.toUpperCase(), target_lang: to.toUpperCase() }),
+      });
+      const j = await r.json();
+      if (j.translations?.[0]?.text) return { text: j.translations[0].text, src: "DeepL" };
+    }
+    if (env.GOOGLE_TRANSLATE_KEY) {
+      const r = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${env.GOOGLE_TRANSLATE_KEY}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ q: text, source: from, target: to, format: "text" }),
+      });
+      const j = await r.json();
+      const t = j.data?.translations?.[0]?.translatedText;
+      if (t) return { text: t, src: "Google" };
+    }
+    if (env.AZURE_TRANSLATOR_KEY) {
+      const r = await fetch(`https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${from}&to=${to}`, {
+        method: "POST",
+        headers: { "Ocp-Apim-Subscription-Key": env.AZURE_TRANSLATOR_KEY, "Ocp-Apim-Subscription-Region": env.AZURE_TRANSLATOR_REGION || "global", "Content-Type": "application/json" },
+        body: JSON.stringify([{ Text: text }]),
+      });
+      const j = await r.json();
+      const t = j?.[0]?.translations?.[0]?.text;
+      if (t) return { text: t, src: "Microsoft" };
+    }
+    const u = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}${env.MYMEMORY_EMAIL ? "&de=" + encodeURIComponent(env.MYMEMORY_EMAIL) : ""}`;
+    const r = await fetch(u, { headers: { "User-Agent": "ZeehnLingo/1.0" } });
+    const j = await r.json();
+    let t = j.responseData?.translatedText;
+    if (t && !/MYMEMORY WARNING|INVALID|QUERY LENGTH/i.test(t)) {
+      if (t === t.toUpperCase() && t.length > 3) t = t.toLowerCase();
+      return { text: t, src: "MyMemory" };
+    }
+  } catch (e) {}
+  return null;
+}
+
+async function enInfo(word) {
+  try {
+    const r = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    if (!r.ok) return {};
+    const j = await r.json();
+    const e = Array.isArray(j) ? j[0] : null;
+    if (!e) return {};
+    const ph = (e.phonetics || []).find((p) => p.audio) || {};
+    const mean = (e.meanings || [])[0] || {};
+    const d = (mean.definitions || [])[0] || {};
+    const syn = [...new Set([...(mean.synonyms || []), ...(d.synonyms || [])])].slice(0, 5);
+    let audio = ph.audio || "";
+    if (audio.startsWith("//")) audio = "https:" + audio;
+    return { phonetic: e.phonetic || ph.text || "", audio, pos: mean.partOfSpeech || "", def: d.definition || "", example: d.example || "", syn: syn.join(",") };
+  } catch (e) { return {}; }
+}
+
+const dictOut = (row, extra = {}) => ({
+  en: row.en ?? row.word, uz: row.uz, phonetic: row.phonetic || "", audio: row.audio || "",
+  pos: row.pos || "", posUz: POS_UZ[row.pos] || row.pos || "", def: row.def || "", example: row.example || "",
+  syn: row.syn ? String(row.syn).split(",").filter(Boolean) : [], src: row.src || "", ...extra,
+});
+
 async function readBody(req) {
   try { return await req.json(); } catch { return {}; }
 }
@@ -214,20 +290,109 @@ export async function handleLingo(req, env, url) {
     return json({ ok: true, coins: 30 });
   }
 
+
+  // ---------- Dictionary ----------
+  if (path === "dict/suggest" && m === "GET") {
+    const q = cleanQ(url.searchParams.get("q"));
+    const dir = url.searchParams.get("dir") === "uz-en" ? "uz-en" : "en-uz";
+    if (!q) return json({ ok: true, list: [] });
+    const out = [];
+    const seen = new Set();
+    for (const w of Object.values(WORDS)) {
+      const hay = (dir === "en-uz" ? w.en : w.uz).toLowerCase();
+      if (hay.startsWith(q) || (q.length > 2 && hay.includes(q))) { out.push({ en: w.en, uz: w.uz, course: true }); seen.add(w.en.toLowerCase()); }
+      if (out.length >= 6) break;
+    }
+    if (out.length < 8) {
+      const r = dir === "en-uz"
+        ? await env.DB.prepare("SELECT word,uz FROM lingo_dict WHERE word LIKE ? ORDER BY length(word) LIMIT 8").bind(q + "%").all()
+        : await env.DB.prepare("SELECT word,uz FROM lingo_dict WHERE uz LIKE ? ORDER BY length(uz) LIMIT 8").bind("%" + q + "%").all();
+      for (const x of r.results || []) if (!seen.has(x.word) && out.length < 8) { out.push({ en: x.word, uz: x.uz }); seen.add(x.word); }
+    }
+    return json({ ok: true, list: out });
+  }
+
+  if (path === "dict" && m === "GET") {
+    const q = cleanQ(url.searchParams.get("q"));
+    const dir = url.searchParams.get("dir") === "uz-en" ? "uz-en" : "en-uz";
+    if (!q) return err("So'z yozing");
+    const savedSet = async (en) => !!(await env.DB.prepare("SELECT 1 FROM lingo_words WHERE user_id=? AND word=?").bind(user.id, en.toLowerCase()).first());
+    let en = q;
+    if (dir === "uz-en") {
+      const c = Object.values(WORDS).find((w) => w.uz.toLowerCase().split(/[\/,()]/).map((x) => x.trim()).includes(q));
+      if (c) en = c.en.toLowerCase();
+      else {
+        const d = await env.DB.prepare("SELECT word FROM lingo_dict WHERE uz=? OR uz LIKE ? LIMIT 1").bind(q, q + ",%").first();
+        if (d) en = d.word;
+        else {
+          const used = await env.DB.prepare("SELECT n FROM lingo_dq WHERE user_id=? AND day=?").bind(user.id, today()).first();
+          if ((used?.n || 0) >= DICT_DAILY) return err(`Bugungi qidiruv limiti tugadi (${DICT_DAILY}). Ertaga davom eting!`, 429);
+          const t = await translate(env, q, "uz", "en");
+          if (!t) return err("Tarjima xizmati hozir javob bermadi. Keyinroq urinib ko'ring", 502);
+          await env.DB.prepare("INSERT INTO lingo_dq (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, today()).run();
+          en = cleanQ(t.text);
+        }
+      }
+    }
+    // 1) kurs lug'ati
+    if (WORDS[en]) {
+      const w = WORDS[en];
+      const cache = await env.DB.prepare("SELECT * FROM lingo_dict WHERE word=?").bind(en).first();
+      let info = cache;
+      if (!info) {
+        const e = await enInfo(w.en);
+        info = { ...e };
+        await env.DB.prepare("INSERT OR REPLACE INTO lingo_dict (word,uz,phonetic,audio,pos,def,example,syn,src) VALUES (?,?,?,?,?,?,?,?,?)")
+          .bind(en, w.uz, e.phonetic || "", e.audio || "", e.pos || "", e.def || "", e.example || "", e.syn || "", "Zeehn lug'ati").run();
+      }
+      return json({ ok: true, result: dictOut({ ...info, word: w.en, uz: w.uz, src: "Zeehn lug'ati" }, { course: true, saved: await savedSet(en) }) });
+    }
+    // 2) kesh
+    const cached = await env.DB.prepare("SELECT * FROM lingo_dict WHERE word=?").bind(en).first();
+    if (cached) return json({ ok: true, result: dictOut(cached, { saved: await savedSet(en) }) });
+    // 3) tarjima xizmati
+    const used = await env.DB.prepare("SELECT n FROM lingo_dq WHERE user_id=? AND day=?").bind(user.id, today()).first();
+    if ((used?.n || 0) >= DICT_DAILY) return err(`Bugungi qidiruv limiti tugadi (${DICT_DAILY}). Ertaga davom eting!`, 429);
+    const [t, e] = await Promise.all([translate(env, en, "en", "uz"), enInfo(en)]);
+    if (!t) return err("Tarjima xizmati hozir javob bermadi. Keyinroq urinib ko'ring", 502);
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO lingo_dq (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, today()),
+      env.DB.prepare("INSERT OR REPLACE INTO lingo_dict (word,uz,phonetic,audio,pos,def,example,syn,src) VALUES (?,?,?,?,?,?,?,?,?)")
+        .bind(en, S(t.text, 120), e.phonetic || "", e.audio || "", e.pos || "", S(e.def, 400), S(e.example, 300), e.syn || "", t.src),
+    ]);
+    const row = await env.DB.prepare("SELECT * FROM lingo_dict WHERE word=?").bind(en).first();
+    return json({ ok: true, result: dictOut(row, { saved: false }) });
+  }
+
+  if (path === "dict/save" && m === "POST") {
+    const b = await readBody(req);
+    const w = cleanQ(b.word);
+    if (!WORDS[w]) {
+      const d = await env.DB.prepare("SELECT 1 FROM lingo_dict WHERE word=?").bind(w).first();
+      if (!d) return err("Avval so'zni qidiring");
+    }
+    if (b.remove) {
+      await env.DB.prepare("DELETE FROM lingo_words WHERE user_id=? AND word=?").bind(user.id, w).run();
+      return json({ ok: true, saved: false });
+    }
+    await env.DB.prepare("INSERT OR IGNORE INTO lingo_words (user_id,word,box,due) VALUES (?,?,1,?)").bind(user.id, w, addDays(today(), 1)).run();
+    return json({ ok: true, saved: true });
+  }
+
   // Lug'at
   if (path === "words" && m === "GET") {
-    const r = await env.DB.prepare("SELECT word,box,due FROM lingo_words WHERE user_id=?").bind(user.id).all();
+    const r = await env.DB.prepare("SELECT w.word,w.box,w.due,d.uz duz FROM lingo_words w LEFT JOIN lingo_dict d ON d.word=w.word WHERE w.user_id=?").bind(user.id).all();
     const t = today();
     const list = (r.results || [])
-      .filter((w) => WORDS[w.word])
-      .map((w) => ({ ...WORDS[w.word], box: w.box, due: w.due <= t && w.box < LEARNED_BOX }));
+      .filter((w) => WORDS[w.word] || w.duz)
+      .map((w) => ({ ...(WORDS[w.word] || { en: w.word, uz: w.duz, custom: true }), box: w.box, due: w.due <= t && w.box < LEARNED_BOX }));
     return json({ ok: true, words: list, learnedBox: LEARNED_BOX });
   }
 
   if (path === "review" && m === "GET") {
-    const r = await env.DB.prepare("SELECT word,box FROM lingo_words WHERE user_id=? AND box<? AND due<=? ORDER BY due, box LIMIT 20")
+    const r = await env.DB.prepare("SELECT w.word,w.box,d.uz duz FROM lingo_words w LEFT JOIN lingo_dict d ON d.word=w.word WHERE w.user_id=? AND w.box<? AND w.due<=? ORDER BY w.due, w.box LIMIT 20")
       .bind(user.id, LEARNED_BOX, today()).all();
-    return json({ ok: true, cards: (r.results || []).filter((w) => WORDS[w.word]).map((w) => ({ ...WORDS[w.word], box: w.box })) });
+    return json({ ok: true, cards: (r.results || []).filter((w) => WORDS[w.word] || w.duz).map((w) => ({ ...(WORDS[w.word] || { en: w.word, uz: w.duz }), box: w.box })) });
   }
 
   if (path === "review" && m === "POST") {
@@ -238,7 +403,7 @@ export async function handleLingo(req, env, url) {
     let good = 0;
     for (const it of res) {
       const w = S(it.word, 40).toLowerCase();
-      if (!WORDS[w]) continue;
+      if (!w) continue;
       if (it.ok) {
         good++;
         stmts.push(
@@ -301,8 +466,12 @@ export async function handleLingo(req, env, url) {
       body: JSON.stringify({
         model: env.AI_MODEL || "claude-haiku-5-5",
         max_tokens: 500,
-        system:
-          "Sen Zeehn Lingo platformasidagi ingliz tili o'qituvchisisan. O'quvchilar o'zbek tilida so'zlashadi va A1–A2 darajada. " +
+        system: b.mode === "voice"
+          ? "You are a friendly English conversation partner on the Zeehn Lingo app for A1–A2 learners from Uzbekistan. " +
+            "Reply in simple, natural English: 1–2 short sentences, then ask a short question to keep the conversation going. " +
+            (b.topic ? "Conversation topic: " + S(b.topic, 60) + ". " : "") +
+            "If the learner's last sentence had a grammar or word mistake, add one final line starting with 'Tip:' that explains the correction briefly in Uzbek (Latin script). No markdown, no emojis."
+          : "Sen Zeehn Lingo platformasidagi ingliz tili o'qituvchisisan. O'quvchilar o'zbek tilida so'zlashadi va A1–A2 darajada. " +
           "Har doim o'zbek tilida (lotin yozuvida), qisqa va sodda javob ber: qoida, 1–2 misol (inglizcha + o'zbekcha tarjima). " +
           "So'ralsa, kichik mashq ber va javobni tekshir. Ingliz tili va o'qishdan boshqa mavzularda muloyimlik bilan darsga qaytar.",
         messages: msgs,

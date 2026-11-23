@@ -480,6 +480,67 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .lvgate.lock{border-color:#B9C3DC;color:var(--muted)}
 .lvtag{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--blue);text-transform:uppercase}
 @media (min-width:960px){.lvb{padding:20px 24px}.lvb b{font-size:26px}}
+
+.vseg{display:flex;background:var(--off);border-radius:16px;padding:4px;gap:4px;margin-bottom:14px}
+.vseg button{flex:1;padding:11px 6px;border-radius:12px;font-weight:700;color:var(--muted);font-size:14px}
+.vseg button.on{background:var(--card);color:var(--blue);box-shadow:0 2px 8px rgba(11,27,77,.08)}
+.vfil{display:flex;gap:8px;margin-top:14px}
+.vfil .search{flex:1}
+.dsearch{padding:14px}
+.ddir{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ddir button{font-weight:700;font-size:14px;color:var(--blue);background:var(--sky);padding:8px 12px;border-radius:12px}
+.dbox{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:16px;padding:6px 6px 6px 14px;background:var(--bg)}
+.dbox:focus-within{border-color:var(--blue2);background:var(--card)}
+.dbox input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:17px;font-weight:600;padding:8px 0}
+.dbox #dmic{width:42px;height:42px;border-radius:12px;background:var(--sky);font-size:18px}
+.dgo{background:var(--blue);color:#fff;font-weight:700;padding:11px 16px;border-radius:12px}
+.rec{background:var(--red)!important;color:#fff!important;animation:pulseR 1s infinite}
+@keyframes pulseR{50%{box-shadow:0 0 0 8px rgba(229,72,77,.2)}}
+.dsug{display:flex;flex-direction:column}
+.dsug button{display:flex;gap:10px;align-items:baseline;text-align:left;padding:10px 6px;border-bottom:1px solid var(--line)}
+.dsug b{font-size:15px}.dsug span{font-size:13px;color:var(--muted);flex:1}
+.dsug em{font-style:normal;font-size:11px;font-weight:700;color:#147A3D;background:var(--green-bg);padding:2px 8px;border-radius:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chipb{font-size:14px;font-weight:600;padding:7px 12px;border-radius:20px;background:var(--off);color:var(--ink)}
+.dres{margin-top:12px}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dword{font-size:30px;font-weight:800;color:var(--blue);line-height:1.15;word-break:break-word}
+.dtr{background:var(--sky);border-radius:16px;padding:14px 16px}
+.dtr small,.dsec small{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.dtr b{font-size:24px;font-weight:800}
+.dsec{margin-top:14px}.dsec p{font-size:15px;line-height:1.5}
+.dex{border-left:4px solid var(--blue);padding-left:12px}
+.cmic{width:50px;border-radius:16px;background:var(--sky)!important;color:var(--blue)!important;font-size:20px}
+.vhero{display:flex;gap:14px;align-items:center}
+.vav{width:56px;height:56px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:28px;flex:none}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.vtopic{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.vtopic span{font-size:30px;margin-bottom:4px}.vtopic b{font-size:16px}.vtopic small{font-size:12px}
+.vtopic.free{border:2px dashed var(--blue2)}
+.vfull{background:linear-gradient(170deg,#0B2C8F,#0046E0)}
+.vfull .in{color:#fff}
+.vtime{font-family:monospace;font-weight:700;background:rgba(255,255,255,.16);padding:4px 10px;border-radius:10px}
+.vavb{width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);margin:16px auto 8px;display:flex;align-items:center;justify-content:center;font-size:54px;transition:transform .2s}
+.vavb.talk{animation:talkp 1s infinite}
+.vavb.think{animation:talkp 2s infinite;opacity:.7}
+@keyframes talkp{0%,100%{box-shadow:0 0 0 0 rgba(198,255,61,.5)}50%{box-shadow:0 0 0 22px rgba(198,255,61,0)}}
+.vlog{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:8px 2px}
+.vb{max-width:88%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.45}
+.vb.ai{background:rgba(255,255,255,.14);align-self:flex-start;border-bottom-left-radius:6px}
+.vb.me{background:#fff;color:#0B1B4D;align-self:flex-end;border-bottom-right-radius:6px}
+.vb.good{background:#C6FF3D;color:#0B1B4D;align-self:center;font-weight:700;font-size:14px}
+.vb.tip{background:#FFF1D2;color:#8A5300;align-self:stretch;font-size:14px}
+.vuz{display:block;font-size:12px;opacity:.75;margin-top:4px}
+.vint{min-height:22px;text-align:center;font-style:italic;opacity:.85;font-size:15px}
+.vbar{display:flex;justify-content:space-between;align-items:center;padding:10px 20px 4px}
+.vbtn{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.18);font-size:20px;color:#fff}
+.vmic{width:86px;height:86px;border-radius:50%;background:#C6FF3D;font-size:36px;box-shadow:0 0 0 10px rgba(198,255,61,.22)}
+.vmic:disabled{opacity:.5}
+.vmic.rec{background:#FF5A5F!important}
+.vsub{text-align:center;font-size:13px;opacity:.8;padding-bottom:6px}
+.vfull .end .res div{border-color:rgba(255,255,255,.3)}
+.vfull .end small{color:#C9D6FF}
+@media (min-width:960px){.vgrid{grid-template-columns:repeat(4,1fr)}.wl{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -1232,39 +1293,167 @@ async function sendReview(R, silent) {
 }
 
 /* ---------- Lug'at ---------- */
-async function viewWords() {
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function playWord(w, audio) {
+  if (audio) { const a = new Audio(audio); a.play().catch(() => say(w)); } else say(w);
+}
+function viewWords() {
+  S.vtab = S.vtab || "my";
+  $("#main").innerHTML = `<h2 class="t">Lug'at</h2>
+    <div class="vseg"><button data-v="my" class="${S.vtab === "my" ? "on" : ""}">📚 My Vocabulary</button><button data-v="dict" class="${S.vtab === "dict" ? "on" : ""}">🔍 Dictionary</button></div>
+    <div id="vbody"></div>`;
+  document.querySelectorAll(".vseg button").forEach((b) => (b.onclick = () => { S.vtab = b.dataset.v; viewWords(); }));
+  S.vtab === "my" ? viewMyVocab() : viewDict();
+}
+async function viewMyVocab() {
   const m = S.me;
-  $("#main").innerHTML = `<h2 class="t">Mening lug'atim</h2>
-    <div class="tiles3">
-      <div style="background:var(--green-bg)"><b style="color:#147A3D">${m.words.learned}</b><small>o'rganildi</small></div>
+  $("#vbody").innerHTML = `<div class="tiles3">
+      <div style="background:var(--green-bg)"><b style="color:#147A3D">${m.words.learned}</b><small>yodlandi</small></div>
       <div style="background:var(--coin-bg)"><b style="color:#8A5300">${m.words.learning}</b><small>takrorlanmoqda</small></div>
-      <div style="background:var(--sky)"><b style="color:var(--blue)">${m.words.total - m.words.learned - m.words.learning}</b><small>hali yangi</small></div>
+      <div style="background:var(--sky)"><b style="color:var(--blue)">${m.words.due}</b><small>bugun takrorlash</small></div>
     </div>
     <button class="btn" id="rv" ${m.words.due ? "" : "disabled"}>${m.words.due ? `🃏 Takrorlash · ${m.words.due} ta so'z` : "Bugun takrorlash yo'q ✓"}</button>
     <p class="muted" style="font-size:13px;margin-top:8px;text-align:center">So'z 1 → 3 → 7 → 14 → 30 kundan keyin qayta chiqadi va yodlanadi</p>
-    <input class="search" id="q" placeholder="So'z qidirish…" style="margin-top:14px">
+    <div class="vfil"><input class="search" id="q" placeholder="Lug'atimdan qidirish…"><select id="fl" class="search" style="width:auto"><option value="">Hammasi</option><option value="due">Takrorlash</option><option value="l">Yodlandi</option><option value="c">Saqlanganlar</option></select></div>
     <div class="wl" id="wl"><div class="dots" style="text-align:center;padding:20px"><span></span><span></span><span></span></div></div>`;
   $("#rv").onclick = startReview;
   const r = await api("words");
   if (!r.ok) return;
   const list = r.words.sort((a, b) => a.en.localeCompare(b.en));
-  const draw = (q = "") => {
-    const f = list.filter((w) => !q || norm(w.en).includes(norm(q)) || norm(w.uz).includes(norm(q)));
+  const draw = () => {
+    const q = $("#q").value, f0 = $("#fl").value;
+    const f = list.filter((w) => (!q || norm(w.en).includes(norm(q)) || norm(w.uz).includes(norm(q)))
+      && (!f0 || (f0 === "due" && w.due) || (f0 === "l" && w.box >= r.learnedBox) || (f0 === "c" && w.custom)));
     $("#wl").innerHTML = f.length ? f.map((w) => `<div class="wi"><button class="sb" data-s="${esc(w.en)}">${IC.spk}</button>
       <div class="tx"><b>${esc(w.en)}</b><span>${esc(w.uz)}</span></div>
-      <span class="lvl ${w.box >= r.learnedBox ? "l" : w.due ? "d" : "r"}">${w.box >= r.learnedBox ? "O'rganildi" : w.due ? "Takrorlash" : `${w.box}/${r.learnedBox}`}</span></div>`).join("")
-      : `<div class="card muted" style="text-align:center">${list.length ? "Topilmadi" : "Hali so'z yo'q. Birinchi darsni o'ting — so'zlar shu yerga tushadi 📚"}</div>`;
+      ${w.custom ? '<span class="lvl" style="background:var(--sky);color:var(--blue)">Saqlangan</span>' : ""}
+      <span class="lvl ${w.box >= r.learnedBox ? "l" : w.due ? "d" : "r"}">${w.box >= r.learnedBox ? "Yodlandi" : w.due ? "Takrorlash" : `${w.box}/${r.learnedBox}`}</span></div>`).join("")
+      : `<div class="card muted" style="text-align:center">${list.length ? "Topilmadi" : "Hali so'z yo'q. Dars o'ting yoki Dictionary'dan so'z qo'shing 📚"}</div>`;
     $("#wl").querySelectorAll(".sb").forEach((b) => (b.onclick = () => say(b.dataset.s)));
   };
   draw();
-  $("#q").oninput = (e) => draw(e.target.value);
+  $("#q").oninput = draw; $("#fl").onchange = draw;
+}
+function recentGet() { try { return JSON.parse(localStorage.getItem("zl-recent") || "[]"); } catch { return []; } }
+function recentAdd(w) { try { const r = [w, ...recentGet().filter((x) => x !== w)].slice(0, 8); localStorage.setItem("zl-recent", JSON.stringify(r)); } catch {} }
+function viewDict() {
+  S.ddir = S.ddir || "en-uz";
+  $("#vbody").innerHTML = `<div class="card dsearch">
+      <div class="ddir"><button id="dd">${S.ddir === "en-uz" ? "🇬🇧 Inglizcha → 🇺🇿 O'zbekcha" : "🇺🇿 O'zbekcha → 🇬🇧 Inglizcha"}</button><span class="muted" style="font-size:12px">⇄ almashtirish</span></div>
+      <div class="dbox"><span>🔍</span><input id="dq" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${S.ddir === "en-uz" ? "Istalgan inglizcha so'z…" : "Istalgan o'zbekcha so'z…"}" maxlength="40">
+      ${SR ? `<button id="dmic" aria-label="Ovoz bilan qidirish">🎙</button>` : ""}<button id="dgo" class="dgo">Qidirish</button></div>
+      <div id="dsug" class="dsug"></div>
+    </div>
+    <div id="dres"></div>`;
+  const inp = $("#dq");
+  $("#dd").onclick = () => { S.ddir = S.ddir === "en-uz" ? "uz-en" : "en-uz"; viewDict(); };
+  let t;
+  inp.oninput = () => { clearTimeout(t); const q = inp.value.trim(); if (!q) { $("#dsug").innerHTML = ""; return; } t = setTimeout(() => suggest(q), 180); };
+  inp.onkeydown = (e) => { if (e.key === "Enter") lookup(inp.value); };
+  $("#dgo").onclick = () => lookup(inp.value);
+  const mic = $("#dmic");
+  if (mic) mic.onclick = () => listenOnce(S.ddir === "en-uz" ? "en-US" : "uz-UZ", (txt) => { inp.value = txt; lookup(txt); }, mic);
+  const rec = recentGet();
+  $("#dres").innerHTML = S.dlast ? "" : `<div class="card" style="margin-top:12px">${rec.length ? `<p class="muted" style="font-size:13px;margin-bottom:8px">Oxirgi qidiruvlar</p><div class="chips">${rec.map((w) => `<button class="chipb">${esc(w)}</button>`).join("")}</div>` : `<p style="font-weight:700;margin-bottom:6px">💡 Istalgan so'zni qidiring</p><p class="muted" style="font-size:14px">Kursdagi so'zlar ham, kursda yo'q so'zlar ham tarjima qilinadi. Natijani bir tugma bilan lug'atingizga qo'shib, takrorlab borasiz.</p>`}</div>`;
+  $("#dres").querySelectorAll(".chipb").forEach((b) => (b.onclick = () => { inp.value = b.textContent; lookup(b.textContent); }));
+  if (S.dlast) renderResult(S.dlast);
+  async function suggest(q) {
+    const r = await api(`dict/suggest?q=${encodeURIComponent(q)}&dir=${S.ddir}`);
+    if (!r.ok || inp.value.trim() !== q) return;
+    $("#dsug").innerHTML = r.list.map((x) => `<button data-w="${esc(S.ddir === "en-uz" ? x.en : x.uz)}"><b>${esc(x.en)}</b><span>${esc(x.uz)}</span>${x.course ? '<em>kurs</em>' : ""}</button>`).join("");
+    $("#dsug").querySelectorAll("button").forEach((b) => (b.onclick = () => { inp.value = b.dataset.w; lookup(b.dataset.w); }));
+  }
+  async function lookup(q) {
+    q = String(q || "").trim(); if (!q) return;
+    $("#dsug").innerHTML = "";
+    $("#dres").innerHTML = `<div class="card" style="margin-top:12px;text-align:center"><div class="dots"><span></span><span></span><span></span></div><p class="muted" style="font-size:13px;margin-top:6px">Tarjima qilinmoqda…</p></div>`;
+    const r = await api(`dict?q=${encodeURIComponent(q)}&dir=${S.ddir}`);
+    if (!r.ok) { $("#dres").innerHTML = `<div class="card" style="margin-top:12px;color:var(--red)">${esc(r.error || "Topilmadi")}</div>`; return; }
+    recentAdd(r.result.en); S.dlast = r.result; renderResult(r.result);
+  }
+  function renderResult(x) {
+    $("#dres").innerHTML = `<div class="card dres">
+      <div class="dhead"><div><h3 class="dword">${esc(x.en)}</h3>${x.phonetic ? `<span class="muted">${esc(x.phonetic)}</span>` : ""}</div>
+        <button class="spk" id="dplay" aria-label="Tinglash">${IC.spk}</button></div>
+      <div class="chips" style="margin:8px 0 12px">${x.posUz ? `<span class="chip">${esc(x.posUz)}</span>` : ""}${x.course ? '<span class="chip" style="background:var(--green-bg);color:#147A3D">✓ Kursda bor</span>' : ""}</div>
+      <div class="dtr"><small>Tarjima</small><b>${esc(x.uz)}</b></div>
+      ${x.def ? `<div class="dsec"><small>Ma'nosi (inglizcha)</small><p>${esc(x.def)}</p></div>` : ""}
+      ${x.example ? `<div class="dsec dex"><small>Misol</small><p><i>${esc(x.example)}</i></p></div>` : ""}
+      ${x.syn.length ? `<div class="dsec"><small>Sinonimlar</small><div class="chips">${x.syn.map((w) => `<button class="chipb">${esc(w)}</button>`).join("")}</div></div>` : ""}
+      <button class="btn ${x.saved ? "ghost" : ""}" id="dsave" style="margin-top:14px">${x.saved ? "✓ Lug'atingizda · olib tashlash" : "+ Lug'atimga qo'shish"}</button>
+      <p class="muted" style="font-size:12px;margin-top:10px;text-align:center">Manba: ${esc(x.src || "—")}${x.src && x.src !== "Zeehn lug'ati" ? " · mashina tarjimasi, xato bo'lishi mumkin" : ""}</p>
+    </div>`;
+    $("#dplay").onclick = () => playWord(x.en, x.audio);
+    $("#dres").querySelectorAll(".dsec .chipb").forEach((b) => (b.onclick = () => { S.ddir = "en-uz"; inp.value = b.textContent; lookup(b.textContent); }));
+    $("#dsave").onclick = async () => {
+      const r = await api("dict/save", { word: x.en, remove: x.saved });
+      if (!r.ok) return toast(r.error);
+      x.saved = r.saved; renderResult(x);
+      toast(r.saved ? "📚 Lug'atingizga qo'shildi — ertaga takrorlaymiz" : "Lug'atdan olib tashlandi");
+      loadMe();
+    };
+  }
+}
+
+/* ---------- Ovoz (Speech-to-Text) ---------- */
+function listenOnce(lang, onText, btn, onInterim) {
+  if (!SR) { toast("Brauzeringiz ovozni tanimaydi. Chrome'da oching"); return null; }
+  const r = new SR();
+  r.lang = lang; r.interimResults = true; r.maxAlternatives = 3; r.continuous = false;
+  let final = "", alts = [];
+  if (btn) btn.classList.add("rec");
+  r.onresult = (e) => {
+    let txt = "";
+    for (let i = 0; i < e.results.length; i++) {
+      txt += e.results[i][0].transcript;
+      if (e.results[i].isFinal) alts = [...e.results[i]].map((a) => a.transcript);
+    }
+    final = txt;
+    if (onInterim) onInterim(txt);
+  };
+  r.onerror = (e) => { if (btn) btn.classList.remove("rec"); if (e.error === "not-allowed") toast("Mikrofonga ruxsat bering 🎙", 3000); else if (e.error === "no-speech") toast("Ovoz eshitilmadi, qayta urinib ko'ring"); };
+  r.onend = () => { if (btn) btn.classList.remove("rec"); if (final.trim()) onText(final.trim(), alts); };
+  try { r.start(); } catch {}
+  return r;
 }
 
 /* ---------- AI ustoz ---------- */
+const TALKS = [
+  { id: "meet", e: "👋", t: "Tanishuv", lines: [
+    ["Hello! What's your name?", "Salom! Ismingiz nima?", ["my name is", "i am", "i'm", "name"], "My name is Aziz."],
+    ["Nice to meet you! How old are you?", "Tanishganimdan xursandman! Necha yoshdasiz?", ["years", "i am", "i'm", "#num"], "I am fifteen years old."],
+    ["Where are you from?", "Qayerdansiz?", ["from", "uzbekistan", "tashkent", "i live"], "I am from Uzbekistan."],
+    ["Do you like English?", "Ingliz tilini yoqtirasizmi?", ["yes", "no", "i like", "i do", "i love"], "Yes, I like English."],
+    ["Great! See you soon. Goodbye!", "Ajoyib! Ko'rishguncha. Xayr!", ["bye", "goodbye", "see you"], "Goodbye! See you."]] },
+  { id: "cafe", e: "🍽", t: "Restoranda", lines: [
+    ["Hi! Welcome. What would you like to order?", "Salom! Xush kelibsiz. Nima buyurtma qilasiz?", ["i'd like", "i would like", "i want", "can i have", "please", "tea", "coffee"], "I'd like a cup of tea, please."],
+    ["Sure! Anything to eat?", "Albatta! Yeyishga biror narsa?", ["yes", "no", "sandwich", "pizza", "salad", "soup", "please", "bread", "cake"], "Yes, a sandwich, please."],
+    ["Would you like sugar?", "Shakar qo'shaymi?", ["yes", "no", "please", "thank"], "No, thank you."],
+    ["Here you are. Anything else?", "Marhamat. Yana biror narsa kerakmi?", ["no", "that's all", "that is all", "thank", "nothing"], "No, that's all. Thank you."],
+    ["That's five dollars, please.", "Besh dollar bo'ladi.", ["here", "thank", "card", "cash", "ok"], "Here you are. Thank you!"]] },
+  { id: "shop", e: "🛒", t: "Do'konda", lines: [
+    ["Hello! Can I help you?", "Salom! Yordam beraymi?", ["yes", "looking for", "i want", "i need", "please"], "Yes, I'm looking for a T-shirt."],
+    ["What size do you need?", "Sizga qaysi o'lcham kerak?", ["small", "medium", "large", "size", "big"], "Medium, please."],
+    ["What color do you like?", "Qaysi rangni yoqtirasiz?", ["red", "blue", "green", "black", "white", "yellow", "pink", "grey", "gray", "purple", "orange", "brown"], "I like blue."],
+    ["Here it is. It's ten dollars.", "Mana. O'n dollar turadi.", ["ok", "okay", "i'll take", "take it", "buy", "good", "great", "expensive", "yes"], "OK, I'll take it."],
+    ["Thank you! Have a nice day!", "Rahmat! Kuningiz yaxshi o'tsin!", ["thank", "you too", "bye"], "Thank you, you too!"]] },
+];
+const NUMW = /\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty)\b/;
+function talkOk(texts, keys) {
+  return texts.some((t) => { const n = " " + norm(t) + " "; return keys.some((k) => (k === "#num" ? NUMW.test(n) : n.includes(" " + k + " ") || n.includes(" " + k))); });
+}
 function viewAI() {
+  S.aimode = S.aimode || "text";
+  $("#main").innerHTML = `<h2 class="t">AI ustoz</h2>
+    <div class="vseg"><button data-m="text" class="${S.aimode === "text" ? "on" : ""}">💬 Text Chat</button><button data-m="voice" class="${S.aimode === "voice" ? "on" : ""}">🎙 Voice Chat</button></div>
+    <div id="aibody"></div>`;
+  document.querySelectorAll(".vseg button").forEach((b) => (b.onclick = () => { S.aimode = b.dataset.m; viewAI(); }));
+  S.aimode === "text" ? viewTextChat() : viewVoiceHome();
+}
+function viewTextChat() {
   const quick = ["'Have' va 'has' farqi nima?", "Present Simple nima?", "Menga 5 ta oson savol ber", "'Good morning' qachon aytiladi?"];
-  $("#main").innerHTML = `<h2 class="t">AI ustoz</h2><div class="chat" id="ch"></div>
-    <div class="cin"><input id="ci" placeholder="Savolingizni yozing…" maxlength="500"><button id="cs" aria-label="Yuborish">${IC.send}</button></div>`;
+  $("#aibody").innerHTML = `<div class="chat" id="ch"></div>
+    <div class="cin"><input id="ci" placeholder="Savolingizni yozing…" maxlength="500">${SR ? `<button id="cm" class="cmic" aria-label="Ovoz bilan yozish">🎙</button>` : ""}<button id="cs" aria-label="Yuborish">${IC.send}</button></div>`;
   const ch = $("#ch");
   const draw = () => {
     ch.innerHTML = `<div class="bub ai">Salom, ${esc(S.me.user.name)}! 👋 Men ingliz tili bo'yicha yordamchingizman. Tushunmagan qoida, so'z yoki gap bo'lsa — o'zbek tilida so'rang.</div>
@@ -1280,11 +1469,117 @@ function viewAI() {
     const r = await api("ai", { messages: S.chat.filter((m) => m.role !== "sys") });
     S.typing = false;
     S.chat.push(r.ok ? { role: "assistant", content: r.text } : { role: "sys", content: r.error || "Xatolik" });
-    if (S.tab === "ai") draw();
+    if (S.tab === "ai" && S.aimode === "text") draw();
   };
   $("#cs").onclick = () => send($("#ci").value);
   $("#ci").onkeydown = (e) => { if (e.key === "Enter") send($("#ci").value); };
+  const cm = $("#cm"); if (cm) cm.onclick = () => listenOnce("uz-UZ", (t) => { $("#ci").value = t; }, cm, (t) => { $("#ci").value = t; });
   draw();
+}
+function viewVoiceHome() {
+  $("#aibody").innerHTML = `
+    ${SR && canSpeak ? "" : `<div class="card" style="background:var(--coin-bg);margin-bottom:12px">⚠️ Ovozli suhbat uchun brauzer mikrofon va ovozni qo'llab-quvvatlashi kerak. <b>Google Chrome</b>'da oching.</div>`}
+    <div class="card vhero"><div class="vav">🤖</div><div><b>Ovozli suhbat</b><p class="muted" style="font-size:14px">Mavzuni tanlang va AI bilan inglizcha gaplashing. Mikrofonni bosing — gapiring — AI ovozda javob beradi.</p></div></div>
+    <div class="vgrid">${TALKS.map((t) => `<button class="card vtopic" data-t="${t.id}"><span>${t.e}</span><b>${t.t}</b><small class="muted">${t.lines.length} ta savol-javob</small></button>`).join("")}
+      <button class="card vtopic free" data-t="free"><span>🗣</span><b>Erkin suhbat</b><small class="muted">AI bilan istalgan mavzuda</small></button></div>
+    <p class="muted" style="font-size:13px;margin-top:12px;text-align:center">🎙 Mikrofonga ruxsat so'raladi · gaplaringiz matn ko'rinishida ham chiqadi</p>`;
+  document.querySelectorAll(".vtopic").forEach((b) => (b.onclick = () => startTalk(b.dataset.t)));
+}
+function startTalk(id) {
+  if (!SR) { toast("Brauzeringiz ovozni tanimaydi. Chrome'da oching", 3000); return; }
+  const topic = TALKS.find((t) => t.id === id);
+  const T = { topic, i: 0, ok: 0, tries: 0, log: [], free: !topic, msgs: [], start: Date.now(), busy: false };
+  const d = document.createElement("div");
+  d.className = "full vfull";
+  d.innerHTML = `<div class="in">
+    <div class="lh" style="color:#fff"><button class="x" id="vx" style="color:#fff">${IC.x}</button><b style="flex:1">${topic ? topic.e + " " + topic.t : "🗣 Erkin suhbat"}</b><span class="vtime" id="vt">00:00</span></div>
+    <div class="vavb" id="vav"><span>🤖</span></div>
+    <div class="vlog" id="vlog"></div>
+    <div class="vint" id="vint"></div>
+    <div class="vbar"><button class="vbtn" id="vhint">💡</button><button class="vmic" id="vmic" aria-label="Gapirish">🎙</button><button class="vbtn" id="vskip">⏭</button></div>
+    <p class="vsub" id="vsub">AI gapirmoqda…</p></div>`;
+  document.body.appendChild(d); document.body.style.overflow = "hidden";
+  const timer = setInterval(() => { const s = Math.floor((Date.now() - T.start) / 1000); $("#vt").textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 1000);
+  const close = () => { clearInterval(timer); if (canSpeak) speechSynthesis.cancel(); if (T.rec) try { T.rec.abort(); } catch {} closeFull(); };
+  $("#vx").onclick = () => { if (T.log.length > 1 && !T.done) finish(); else close(); };
+  const log = (who, text, extra = "") => {
+    T.log.push({ who, text });
+    $("#vlog").insertAdjacentHTML("beforeend", `<div class="vb ${who}">${esc(text)}${extra}</div>`);
+    $("#vlog").scrollTop = 1e6;
+  };
+  const speak = (text, after) => {
+    $("#vav").classList.add("talk"); $("#vsub").textContent = "AI gapirmoqda…"; $("#vmic").disabled = true;
+    if (!canSpeak) { $("#vav").classList.remove("talk"); $("#vmic").disabled = false; after && after(); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; if (voice) u.voice = voice; u.rate = 0.88;
+    u.onend = u.onerror = () => { $("#vav").classList.remove("talk"); $("#vmic").disabled = false; $("#vsub").textContent = "Mikrofonni bosing va gapiring"; after && after(); };
+    speechSynthesis.speak(u);
+  };
+  const aiLine = () => {
+    const L = topic.lines[T.i];
+    log("ai", L[0], `<span class="vuz">${esc(L[1])}</span>`);
+    speak(L[0]);
+  };
+  const next = () => { T.i++; T.tries = 0; if (T.i >= topic.lines.length) return finish(); setTimeout(aiLine, 500); };
+  $("#vhint").onclick = () => {
+    if (T.free) return toast("Masalan: \"Tell me about your day\" yoki \"Let's talk about food\"", 3500);
+    const L = topic.lines[Math.min(T.i, topic.lines.length - 1)];
+    toast(`💡 Masalan: "${L[3]}"`, 3500); say(L[3], true);
+  };
+  $("#vskip").onclick = () => { if (T.free) return; if (T.busy) return; log("tip", `O'tkazib yuborildi. Namuna: "${topic.lines[T.i][3]}"`); next(); };
+  $("#vmic").onclick = () => {
+    if (T.busy) return;
+    if (canSpeak) speechSynthesis.cancel();
+    $("#vsub").textContent = "Eshityapman… gapiring";
+    $("#vint").textContent = "";
+    d.classList.add("listening");
+    T.rec = listenOnce("en-US", async (text, alts) => {
+      d.classList.remove("listening"); $("#vint").textContent = "";
+      log("me", text);
+      if (T.free) return freeReply(text);
+      const L = topic.lines[T.i];
+      if (talkOk([text, ...(alts || [])], L[2])) {
+        T.ok += T.tries === 0 ? 1 : 0.5;
+        log("good", ["👍 Zo'r!", "🎉 Barakalla!", "✅ To'g'ri!", "🔥 Ajoyib!"][T.i % 4]);
+        next();
+      } else {
+        T.tries++;
+        log("tip", T.tries >= 2 ? `Hechqisi yo'q! Shunday desa bo'ladi: "${L[3]}"` : `🤔 Tushunmadim. Yana urinib ko'ring. Masalan: "${L[3]}"`);
+        if (T.tries >= 2) next(); else say(L[3], true);
+      }
+    }, $("#vmic"), (t) => { $("#vint").textContent = t; });
+    setTimeout(() => d.classList.remove("listening"), 9000);
+  };
+  async function freeReply(text) {
+    T.busy = true; $("#vsub").textContent = "AI o'ylayapti…"; $("#vav").classList.add("think");
+    T.msgs.push({ role: "user", content: text });
+    const r = await api("ai", { messages: T.msgs, mode: "voice" });
+    $("#vav").classList.remove("think"); T.busy = false;
+    if (!r.ok) { log("tip", r.error || "AI javob bermadi"); $("#vsub").textContent = "Mikrofonni bosing va gapiring"; return; }
+    const parts = r.text.split(/\n+/); const tip = parts.filter((x) => /^tip:/i.test(x.trim())).join(" ");
+    const main = parts.filter((x) => !/^tip:/i.test(x.trim())).join(" ").trim();
+    T.msgs.push({ role: "assistant", content: r.text });
+    log("ai", main);
+    if (tip) log("tip", "💡 " + tip.replace(/^tip:\s*/i, ""));
+    T.ok = Math.min(10, T.ok + 1);
+    speak(main);
+  }
+  async function finish() {
+    T.done = true; clearInterval(timer); if (canSpeak) speechSynthesis.cancel();
+    const total = T.free ? Math.max(1, T.msgs.filter((m) => m.role === "user").length) : topic.lines.length;
+    const correct = Math.round(T.ok);
+    const r = await api("practice", { correct, total });
+    d.querySelector(".in").innerHTML = `<div class="end" style="color:#fff"><div class="em">🎙</div><h2>Suhbat tugadi!</h2>
+      <p style="opacity:.85">${topic ? topic.e + " " + topic.t : "Erkin suhbat"} · ${$("#vt") ? $("#vt").textContent : ""}</p>
+      <div class="res"><div><b>${T.free ? total : `${correct}/${total}`}</b><small>${T.free ? "GAP" : "TO'G'RI"}</small></div><div><b style="color:#FFC768">+${r.coins || 0}</b><small>COIN</small></div><div><b>${T.log.filter((x) => x.who === "me").length}</b><small>GAPIRDINGIZ</small></div></div>
+      <button class="btn" id="vbk" style="max-width:360px">Davom etish</button></div>`;
+    $("#vbk").onclick = () => { close(); refresh(); };
+  }
+  if (T.free) {
+    const hello = "Hi! I'm your English friend. What would you like to talk about today?";
+    T.msgs.push({ role: "assistant", content: hello });
+    log("ai", hello, `<span class="vuz">Salom! Bugun nima haqida gaplashamiz?</span>`); speak(hello);
+  } else setTimeout(aiLine, 400);
 }
 
 /* ---------- Reyting ---------- */
