@@ -421,6 +421,15 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .ri .av{overflow:hidden}
 .pfhero{display:flex;justify-content:center;margin-bottom:6px}
 .pfhero .hero-svg{width:84px;height:140px}
+
+.uph{border-radius:50%;object-fit:cover;display:block}
+.pfph{display:flex;justify-content:center;margin-bottom:10px}
+.phc{position:relative;width:128px;height:128px;border-radius:50%;background:var(--sky);border:4px solid var(--card);box-shadow:0 0 0 4px var(--sky);display:flex;align-items:center;justify-content:center;overflow:visible}
+.phc img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.phe{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--blue);font-weight:700}
+.phe svg{width:34px;height:34px}.phe small{font-size:12px}
+.phedit{position:absolute;right:2px;bottom:2px;width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;border:3px solid var(--card)}
+.phedit svg{width:18px;height:18px}
 </style>
 </head>
 <body>
@@ -450,6 +459,7 @@ const IC = {
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
   logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
   map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>',
   book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>',
@@ -552,6 +562,29 @@ function heroSVG(kind) {
     </g></svg>`;
 }
 const AV = () => (S.me && S.me.user.avatar) || "boy";
+const userPic = (u, size) => u && u.photo ? `<img class="uph" src="${esc(u.photo)}" alt="" width="${size}" height="${size}" style="width:${size}px;height:${size}px">` : faceIcon((u && u.avatar) === "girl" ? "girl" : "boy", size);
+function pickPhoto(onDone) {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "image/*";
+  inp.onchange = () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    if (!/^image\//.test(f.type)) return toast("Faqat rasm tanlang");
+    const url = URL.createObjectURL(f), img = new Image();
+    img.onload = async () => {
+      const N = 320, c = document.createElement("canvas"); c.width = c.height = N;
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      c.getContext("2d").drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, N, N);
+      URL.revokeObjectURL(url);
+      toast("Rasm yuklanmoqda…", 1200);
+      const r = await api("photo", { data: c.toDataURL("image/jpeg", 0.85) });
+      if (!r.ok) return toast(r.error || "Yuklab bo'lmadi");
+      toast("Profil rasmi yangilandi ✓"); onDone && onDone();
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); toast("Rasmni ochib bo'lmadi"); };
+    img.src = url;
+  };
+  inp.click();
+}
 
 /* ---------- Kirish ---------- */
 function renderAuth(mode = "reg") {
@@ -640,7 +673,7 @@ function renderApp() {
       <button data-t="more" class="nv mob">${IC.more}<span>Ko'proq</span></button>
       <div class="navfoot">
         ${themeHTML()}
-        <button class="pcard" data-t="me"><span class="pav">${faceIcon(AV(), 42)}</span><span><b>${esc(m.user.name)}</b><small>⭐ ${esc(m.tier.name)}</small></span></button>
+        <button class="pcard" data-t="me"><span class="pav">${userPic(m.user, 42)}</span><span><b>${esc(m.user.name)}</b><small>⭐ ${esc(m.tier.name)}</small></span></button>
         <button class="lout">${IC.logout}Chiqish</button>
       </div>
     </nav>
@@ -1180,7 +1213,7 @@ async function viewRating() {
       <div style="text-align:right"><div style="font-size:13px;opacity:.85">Bu hafta</div><b>${r.me.xp} XP</b></div></div>
     <p class="muted" style="font-size:13px;margin-bottom:10px">⏳ Hafta tugashiga ${r.daysLeft} kun · XP dars, takrorlash va sandiqlar uchun beriladi</p>
     <div class="rl">${r.list.length ? r.list.map((x, i) => `<div class="ri ${x.me ? "me" : ""}"><span class="p">${medal[i] || x.place}</span>
-      <span class="av" style="background:${AVC[i % AVC.length]}">${faceIcon(x.avatar === "girl" ? "girl" : "boy", 38)}</span>
+      <span class="av" style="background:${AVC[i % AVC.length]}">${userPic(x, 38)}</span>
       <span class="nm">${esc(x.name)}${x.me ? " (siz)" : ""}</span><span class="xp">${x.xp} XP</span></div>`).join("")
       : '<div class="card muted" style="text-align:center">Bu hafta hali hech kim XP yig\'madi. Birinchi bo\'ling! 🚀</div>'}</div>`;
 }
@@ -1188,7 +1221,8 @@ async function viewRating() {
 /* ---------- Profil ---------- */
 function viewMe() {
   const m = S.me, all = lessons();
-  $("#main").innerHTML = `<div class="card pf"><div class="pfhero">${heroSVG(AV())}</div>
+  $("#main").innerHTML = `<div class="card pf"><div class="pfph"><button class="phc" id="phBtn" aria-label="Profil rasmi">${m.user.photo ? `<img src="${esc(m.user.photo)}" alt="Profil rasmi">` : `<span class="phe">${IC.camera}<small>Rasm qo'yish</small></span>`}<span class="phedit">${IC.camera}</span></button></div>
+      ${m.user.photo ? `<button class="chip" id="phDel" style="margin:4px auto 8px;background:var(--red-bg);color:var(--red)">Rasmni o'chirish</button>` : ""}
       <h2 class="t" style="margin:0">${esc(m.user.name)}</h2><span class="chip" style="margin-top:6px">⭐ ${esc(m.tier.name)}</span></div>
     <div class="grid2">
       <div class="card"><b style="color:var(--blue)">${m.user.xp}</b><small>Jami XP</small></div>
@@ -1202,7 +1236,7 @@ function viewMe() {
       <div class="soon"><span class="e">⚔️</span><div><b>Oktagon</b><span class="muted" style="font-size:13px">1 ga 1 bilim bellashuvi</span></div></div>
       <div class="soon"><span class="e">🎁</span><div><b>Sovg'alar</b><span class="muted" style="font-size:13px">Yig'ilgan XP ga haqiqiy sovg'alar</span></div></div>
     </div>
-    <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Qahramonim</h3>
+    <h3 style="font-size:16px;font-weight:800;margin:18px 0 4px">Xaritadagi qahramonim</h3><p class="muted" style="font-size:13px;margin-bottom:10px">Xaritada siz bilan birga yuradigan qahramon</p>
     <div class="avpick big" id="avp">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Ko'rinish</h3>
     <div id="pth">${themeHTML()}</div>
@@ -1210,6 +1244,8 @@ function viewMe() {
     <button class="btn ghost" id="lo" style="margin-top:10px;color:var(--red)">Chiqish</button>`;
   $("#lo").onclick = logout;
   bindTheme($("#pth"));
+  $("#phBtn").onclick = () => pickPhoto(refresh);
+  const pd = $("#phDel"); if (pd) pd.onclick = async () => { if (!confirm("Profil rasmini o'chirasizmi?")) return; await api("photo", { remove: true }); refresh(); };
   document.querySelectorAll("#avp [data-av]").forEach((b) => (b.onclick = async () => {
     const r = await api("profile", { avatar: b.dataset.av }); if (!r.ok) return toast(r.error);
     toast(b.dataset.av === "girl" ? "Qahramon: qiz bola 👧" : "Qahramon: o'g'il bola 👦"); refresh();

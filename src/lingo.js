@@ -38,6 +38,7 @@ const getCookie = (req, name) => {
   return m ? m[1] : null;
 };
 const cookie = (tok, maxAge) => `zl=${tok}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
+const photoUrl = (u) => (u.photo_v ? `/api/l/photo/${u.id}?v=${u.photo_v}` : null);
 const tierOf = (xp) => {
   let i = 0;
   TIERS.forEach((t, k) => { if (xp >= t.xp) i = k; });
@@ -53,7 +54,7 @@ async function currentUser(req, env) {
   if (!tok) return null;
   const ses = await env.DB.prepare("SELECT user_id,expires FROM lingo_sessions WHERE token=?").bind(tok).first();
   if (!ses || ses.expires < Date.now()) return null;
-  return env.DB.prepare("SELECT id,name,phone,xp,coins,streak,last_day,avatar FROM lingo_users WHERE id=?").bind(ses.user_id).first();
+  return env.DB.prepare("SELECT id,name,phone,xp,coins,streak,last_day,avatar,photo_v FROM lingo_users WHERE id=?").bind(ses.user_id).first();
 }
 
 async function newSession(env, userId) {
@@ -89,7 +90,7 @@ async function state(env, user) {
   // Ketma-ket kun uzilgan bo'lsa 0 ko'rsatamiz
   const streak = user.last_day === t || user.last_day === addDays(t, -1) ? user.streak : 0;
   return {
-    user: { id: user.id, name: user.name, avatar: user.avatar === "girl" ? "girl" : "boy", xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
+    user: { id: user.id, name: user.name, avatar: user.avatar === "girl" ? "girl" : "boy", photo: photoUrl(user), xp: user.xp, coins: user.coins, streak, today: user.last_day === t },
     tier: tierOf(user.xp),
     tiers: TIERS,
     done: Object.fromEntries((done.results || []).map((r) => [r.lesson, { best: r.best, times: r.times }])),
@@ -106,6 +107,15 @@ export async function handleLingo(req, env, url) {
 
   if (path === "course" && m === "GET") {
     return json({ ok: true, course: COURSE, tiers: TIERS }, 200, { "Cache-Control": "public, max-age=300" });
+  }
+
+  if (path.startsWith("photo/") && m === "GET") {
+    const id = parseInt(path.slice(6), 10);
+    const r = id ? await env.DB.prepare("SELECT photo FROM lingo_users WHERE id=?").bind(id).first() : null;
+    const mm = r?.photo && /^data:image\/(jpeg|png|webp);base64,(.+)$/.exec(r.photo);
+    if (!mm) return new Response("not found", { status: 404 });
+    const bin = Uint8Array.from(atob(mm[2]), (c) => c.charCodeAt(0));
+    return new Response(bin, { headers: { "Content-Type": "image/" + mm[1], "Cache-Control": "public, max-age=31536000, immutable" } });
   }
 
   if (path === "register" && m === "POST") {
@@ -248,16 +258,16 @@ export async function handleLingo(req, env, url) {
   if (path === "rating" && m === "GET") {
     const ws = weekStart();
     const r = await env.DB.prepare(
-      "SELECT u.id,u.name,u.avatar,SUM(x.xp) xp FROM lingo_xp x JOIN lingo_users u ON u.id=x.user_id WHERE x.day>=? GROUP BY u.id ORDER BY xp DESC, u.id LIMIT 50"
+      "SELECT u.id,u.name,u.avatar,u.photo_v,SUM(x.xp) xp FROM lingo_xp x JOIN lingo_users u ON u.id=x.user_id WHERE x.day>=? GROUP BY u.id ORDER BY xp DESC, u.id LIMIT 50"
     ).bind(ws).all();
-    const list = (r.results || []).map((x, i) => ({ place: i + 1, name: x.name, avatar: x.avatar, xp: x.xp, me: x.id === user.id }));
+    const list = (r.results || []).map((x, i) => ({ place: i + 1, name: x.name, avatar: x.avatar, photo: photoUrl(x), xp: x.xp, me: x.id === user.id }));
     let me = list.find((x) => x.me) || null;
     if (!me) {
       const mine = await env.DB.prepare("SELECT COALESCE(SUM(xp),0) xp FROM lingo_xp WHERE user_id=? AND day>=?").bind(user.id, ws).first();
       const above = await env.DB.prepare(
         "SELECT COUNT(*) n FROM (SELECT user_id,SUM(xp) s FROM lingo_xp WHERE day>=? GROUP BY user_id HAVING s>?)"
       ).bind(ws, mine?.xp || 0).first();
-      me = { place: (above?.n || 0) + 1, name: user.name, avatar: user.avatar, xp: mine?.xp || 0, me: true };
+      me = { place: (above?.n || 0) + 1, name: user.name, avatar: user.avatar, photo: photoUrl(user), xp: mine?.xp || 0, me: true };
     }
     const daysLeft = 7 - ((nowTz().getUTCDay() + 6) % 7);
     return json({ ok: true, list, me, daysLeft });
@@ -317,6 +327,20 @@ export async function handleLingo(req, env, url) {
     const xp = Math.min(5, Math.ceil(correct / 2));
     const streak = xp ? await award(env, user, xp, 0) : user.streak;
     return json({ ok: true, xp, coins: 0, streak });
+  }
+
+  if (path === "photo" && m === "POST") {
+    const b = await readBody(req);
+    if (b.remove) {
+      await env.DB.prepare("UPDATE lingo_users SET photo=NULL, photo_v=0 WHERE id=?").bind(user.id).run();
+      return json({ ok: true, photo: null });
+    }
+    const data = String(b.data || "");
+    if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(data)) return err("Rasm formati noto'g'ri");
+    if (data.length > 400000) return err("Rasm juda katta");
+    await env.DB.prepare("UPDATE lingo_users SET photo=?, photo_v=photo_v+1 WHERE id=?").bind(data, user.id).run();
+    const u = await env.DB.prepare("SELECT id,photo_v FROM lingo_users WHERE id=?").bind(user.id).first();
+    return json({ ok: true, photo: photoUrl(u) });
   }
 
   if (path === "profile" && m === "POST") {
