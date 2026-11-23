@@ -592,6 +592,9 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .okops .opt{text-align:center;font-size:16px;padding:16px 8px;color:#0B1B4D;background:#fff;border-color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18)}
 .okops .opt.ok{background:#DFFBEA;border-color:#3DDC84;color:#147A3D}.okops .opt.bad{background:#FFE3E4;border-color:#FF5A5F;color:#B8333A}
 .okfin{display:flex;align-items:center;gap:22px}.okfin>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.oktime{font-size:13px!important;font-weight:700;background:rgba(255,255,255,.14);padding:3px 10px;border-radius:10px;opacity:1!important}
+.okfull .res small{color:#C9D6FF}.okfull .res div{border-color:rgba(255,255,255,.35)}
+.okres2{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:360px}
 .okfin b{font-size:30px;font-weight:800}.okfin small{opacity:.8}.okfin>span{font-size:30px;opacity:.6}
 .gfhero{background:linear-gradient(140deg,#FFB21E,#FF8A00);color:#fff;border-radius:24px;padding:20px}
 .gfhero small{font-size:13px;opacity:.9}.gfhero b{display:flex;align-items:center;gap:8px;font-size:30px;font-weight:800}
@@ -1749,11 +1752,13 @@ async function startDuel() {
   };
   async function finish(quit) {
     const f = await api("oktagon/finish", { id: r.id, answers: ans });
+    const myT = ans.reduce((t, a) => t + a.ms, 0), opT = r.opp.reduce((t, a) => t + Math.min(LIM, a.ms), 0);
+    const mmss = (ms) => { const x = Math.round(ms / 1000); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, "0")}`; };
     if (!f.ok) { closeFull(); toast(f.error || "Xatolik"); return; }
     const big = { win: ["🏆", "G'alaba!", "Zo'r o'ynadingiz!"], lose: ["💪", "Mag'lubiyat", quit ? "Bellashuvni tark etdingiz" : "Keyingi safar albatta yutasiz!"], draw: ["🤝", "Durrang!", "Kuchlar teng keldi"] }[f.result];
     d.querySelector(".in").innerHTML = `<div class="end" style="color:#fff"><div class="em">${big[0]}</div><h2>${big[1]}</h2><p style="opacity:.85">${big[2]}</p>
-      <div class="okfin"><div>${pic(me, 56)}<b>${f.score}</b><small>${f.correct}/${N} to'g'ri</small></div><span>:</span><div>${pic(rv, 56)}<b>${f.oppScore}</b><small>${f.oppCorrect}/${N} to'g'ri</small></div></div>
-      <div class="res" style="max-width:240px"><div><b style="color:#FFC768">+${f.coins}</b><small>COIN</small></div></div>
+      <div class="okfin"><div>${pic(me, 56)}<b>${f.score}</b><small>${f.correct}/${N} to'g'ri</small><small class="oktime">⏱ ${mmss(myT)}</small></div><span>:</span><div>${pic(rv, 56)}<b>${f.oppScore}</b><small>${f.oppCorrect}/${N} to'g'ri</small><small class="oktime">⏱ ${mmss(opT)}</small></div></div>
+      <div class="res okres2"><div><b style="color:#FFC768">+${f.coins}</b><small>COIN</small></div><div><b>${mmss(myT)}</b><small>VAQTINGIZ</small></div><div><b>${(myT / N / 1000).toFixed(1)}s</b><small>O'RTACHA</small></div></div>
       ${f.coins ? "" : `<p style="opacity:.75;font-size:13px">Bugungi 10 ta coinli o'yin tugadi</p>`}
       <button class="btn" id="oka" style="max-width:360px;background:#C6FF3D;color:#0B1B4D;box-shadow:0 4px 0 #8DBF1F">⚡ Yana o'ynash</button>
       <button class="btn ghost" id="okc" style="max-width:360px;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Yopish</button></div>`;
