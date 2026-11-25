@@ -612,6 +612,32 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .gfs{display:block;font-style:normal;font-size:12px;font-weight:600;margin-top:2px}.gfs.n{color:#C98200}.gfs.d{color:#147A3D}.gfs.c{color:var(--muted)}
 .okr .okres{min-width:0}.okcols .nm{white-space:normal;overflow:visible}.ri .xp{white-space:nowrap}
 @media (min-width:960px){.oksteps{grid-template-columns:repeat(4,1fr)}.okcols{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}.gfl{grid-template-columns:1fr 1fr}.okq h2{font-size:44px}}
+
+.invb{background:var(--coin-bg);color:#8A5300;border-radius:14px;padding:11px 14px;font-size:14px;font-weight:600;margin:6px 0 12px;line-height:1.4}
+.okfr{width:100%;max-width:380px;margin-top:10px;padding:13px;border-radius:16px;background:rgba(255,255,255,.14);color:#fff;font-size:15px;font-weight:700;border:2px solid rgba(255,255,255,.35)}
+.okshr{background:var(--blue)!important;color:#fff!important}
+.lnk{background:var(--off);border-radius:12px;padding:11px 12px;font-family:monospace;font-size:13px;word-break:break-all;margin-bottom:10px;color:var(--ink)}
+.tgb{display:flex;align-items:center;justify-content:center;text-decoration:none;background:#229ED9!important;box-shadow:0 4px 0 #1A7FB0!important;color:#fff!important}
+.chm{text-align:center}.chav{display:flex;justify-content:center}.chav .uph,.chav .face{border-radius:50%;box-shadow:0 0 0 4px var(--sky)}
+.ivhero{background:linear-gradient(150deg,#0046E0,#3A6BFF);color:#fff;border-radius:24px;padding:22px 18px;text-align:center}
+.ivhero .ive{font-size:44px;line-height:1}.ivhero h3{font-size:21px;font-weight:800;margin:8px 0 6px;line-height:1.25}.ivhero h3 span{color:#C6FF3D}
+.ivhero p{font-size:14px;opacity:.9;margin-bottom:14px}.ivhero .lnk{background:rgba(255,255,255,.14);color:#fff}
+.ivcp{margin-top:10px;background:transparent!important;color:#fff!important;border-color:rgba(255,255,255,.4)!important}
+.invside{display:flex;align-items:center;gap:12px;text-align:left;border:2px dashed var(--blue2)}
+.invside .ise{font-size:28px}.invside b{display:block;font-size:15px}.invside small{font-size:12px;color:var(--muted)}.invside .isa{margin-left:auto;font-size:24px;color:var(--blue)}
+.bgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bdg{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.bdg .bde{font-size:34px;line-height:1.1;filter:grayscale(1);opacity:.45}
+.bdg.on{border-color:#FFC768;background:linear-gradient(180deg,var(--coin-bg),var(--card))}
+.bdg.on .bde{filter:none;opacity:1}
+.bdg b{font-size:14px}.bdg small{font-size:11.5px;color:var(--muted);line-height:1.3}
+.bdk{font-style:normal;font-size:12px;font-weight:700;color:#147A3D;background:var(--green-bg);padding:3px 10px;border-radius:10px;margin-top:4px}
+.bdp{width:100%;height:6px;background:var(--off);border-radius:6px;overflow:hidden;margin-top:6px}.bdp div{height:100%;background:var(--blue);border-radius:6px}
+.bdn{font-weight:700}
+.bpop{position:fixed;left:50%;top:80px;transform:translateX(-50%);z-index:95;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FFB21E,#FF8A00);color:#fff;padding:12px 20px 12px 14px;border-radius:20px;box-shadow:0 12px 30px rgba(255,138,0,.35);animation:bpop .45s cubic-bezier(.2,1.4,.4,1)}
+.bpop .bpe{font-size:34px}.bpop small{display:block;font-size:12px;opacity:.9}.bpop b{font-size:17px}
+@keyframes bpop{from{opacity:0;transform:translate(-50%,-20px) scale(.8)}}
+@media (min-width:960px){.bgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -701,16 +727,57 @@ function toast(msg, ms = 2200) {
   setTimeout(() => t.remove(), ms);
 }
 
+const LS = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
+(() => {
+  const q = new URLSearchParams(location.search), ref = q.get("ref"), duel = q.get("duel");
+  if (ref) LS.set("zl-ref", ref.replace(/[^a-z0-9]/gi, "").slice(0, 12).toLowerCase());
+  if (duel) LS.set("zl-duel", duel.replace(/[^a-z0-9]/gi, "").slice(0, 16).toLowerCase());
+  if (ref || duel) history.replaceState(null, "", location.pathname);
+})();
+const BADGE_UI = { lesson1: ["🎯", "Birinchi qadam"], lesson10: ["📘", "Bilimdon"], lessonAll: ["🎓", "Kurs bitiruvchisi"], streak3: ["🔥", "Olov yoqildi"], streak7: ["⚡", "Bir hafta to'xtovsiz"], streak30: ["🌟", "Temir iroda"], words50: ["🧠", "So'z ustasi"], words100: ["📚", "Yurgan lug'at"], win1: ["⚔️", "Birinchi g'alaba"], win10: ["🥊", "Jangchi"], win50: ["🏆", "Oktagon chempioni"], inv1: ["🤝", "Do'stona"], inv5: ["👥", "Jamoa sardori"], coin1000: ["💰", "Boy o'quvchi"] };
+function checkBadges() {
+  if (!S.me || !S.me.badges) return;
+  const key = "zl-badges-" + S.me.user.id, seen = LS.get(key), now = S.me.badges;
+  if (seen != null) {
+    const old = new Set(seen.split(",").filter(Boolean));
+    now.filter((b) => !old.has(b)).forEach((b, i) => setTimeout(() => badgePop(b), 600 + i * 2600));
+  }
+  LS.set(key, now.join(","));
+}
+function badgePop(id) {
+  const [e, n] = BADGE_UI[id] || ["🏅", "Yangi nishon"];
+  const d = document.createElement("div");
+  d.className = "bpop"; d.innerHTML = `<span class="bpe">${e}</span><div><small>Yangi nishon!</small><b>${esc(n)}</b></div>`;
+  document.body.appendChild(d); setTimeout(() => d.remove(), 2400);
+}
+async function checkDuel() {
+  const tk = LS.get("zl-duel"); if (!tk || !S.me) return;
+  LS.set("zl-duel", null);
+  const r = await api(`oktagon/challenge?t=${tk}`);
+  if (!r.ok) return toast(r.error || "Chaqiruv topilmadi", 3000);
+  if (r.status === "own") return toast("Bu o'zingizning chaqiruvingiz — havolani do'stingizga yuboring", 3500);
+  if (r.status === "done") return toast("Bu chaqiruv allaqachon o'ynalgan", 3000);
+  const d = document.createElement("div");
+  d.className = "dim";
+  d.innerHTML = `<div class="sheet chm"><div class="chav">${userPic(r.from, 84)}</div>
+    <h2 class="t" style="margin:10px 0 4px;text-align:center">${esc(r.from.name)} sizni bellashuvga chaqirdi! ⚔️</h2>
+    <p class="muted" style="text-align:center;font-size:14px">Uning natijasi: <b style="color:var(--blue)">${r.score} ball</b>. Xuddi shu 10 ta savolga javob bering — kim ko'proq ball olsa, o'sha g'olib.</p>
+    <button class="btn" id="cha" style="margin-top:16px">⚔️ Qabul qilish</button>
+    <button class="btn ghost" id="chl" style="margin-top:10px">Keyinroq</button></div>`;
+  document.body.appendChild(d);
+  $("#chl", d).onclick = () => { d.remove(); LS.set("zl-duel", tk); toast("Havolani qayta ochsangiz, chaqiruv shu yerda bo'ladi", 3000); };
+  $("#cha", d).onclick = () => { d.remove(); startDuel({ token: tk }); };
+}
 async function boot() {
   const c = await api("course");
   if (!c.ok) { $("#root").innerHTML = '<div class="auth"><p class="muted">Yuklab bo\'lmadi. Sahifani yangilang.</p></div>'; return; }
   S.course = c.course;
   await loadMe();
-  if (S.me) renderApp();
+  if (S.me) { renderApp(); checkDuel(); }
 }
 async function loadMe() {
   const r = await api("me");
-  if (r.ok) S.me = r; else if (!S.me) renderAuth();
+  if (r.ok) { S.me = r; checkBadges(); } else if (!S.me) renderAuth();
 }
 
 
@@ -794,6 +861,7 @@ function renderAuth(mode = "reg") {
     <div class="lg"><img src="/img/logo-mark-blue.png" alt="">Zeehn Lingo<span id="ath" style="margin-left:auto;width:150px;flex:none">${themeHTML()}</span></div>
     <h1>Ingliz tilini <span>o'yin kabi</span> o'rganing</h1>
     <p class="muted">Har kuni 10 daqiqa — o'zbek tilida, qadam-baqadam.</p>
+    ${LS.get("zl-duel") ? `<div class="invb" id="invb">⚔️ Do'stingiz sizni Oktagon bellashuviga chaqirdi! Kiring yoki ro'yxatdan o'ting.</div>` : LS.get("zl-ref") ? `<div class="invb">🎁 Do'stingiz sizni taklif qildi! Birinchi darsni tugatsangiz, ikkalangizga <b>+100 coin</b>.</div>` : ""}
     <div class="tabs"><button data-m="reg" class="${mode === "reg" ? "on" : ""}">Ro'yxatdan o'tish</button><button data-m="login" class="${mode === "login" ? "on" : ""}">Kirish</button></div>
     <form id="af">
       ${mode === "reg" ? `<label class="fld"><span>Ismingiz</span><input name="name" autocomplete="given-name" placeholder="Masalan: Aziz" required></label>` : ""}
@@ -821,12 +889,16 @@ function renderAuth(mode = "reg") {
   $("#af").onsubmit = async (e) => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
+    if (mode === "reg" && LS.get("zl-ref")) f.ref = LS.get("zl-ref");
     const btn = e.target.querySelector("button"); btn.disabled = true;
     const r = await api(mode === "reg" ? "register" : "login", f);
     btn.disabled = false;
     if (!r.ok) { $("#fe").textContent = r.error || "Xatolik"; return; }
-    await loadMe(); S.tab = "home"; renderApp();
+    if (mode === "reg") LS.set("zl-ref", null);
+    await loadMe(); S.tab = "home"; renderApp(); checkDuel();
   };
+  const dt = LS.get("zl-duel");
+  if (dt) api(`oktagon/challenge?t=${dt}`).then((r) => { const b = $("#invb"); if (r.ok && b) b.innerHTML = `⚔️ <b>${esc(r.from.name)}</b> sizni Oktagon bellashuviga chaqirdi (${r.score} ball). Kiring yoki ro'yxatdan o'ting — bellashuv darhol boshlanadi.`; });
 }
 
 /* ---------- Ilova qobig'i ---------- */
@@ -851,7 +923,7 @@ function bindTheme(root, after) {
 function moreSheet() {
   const d = document.createElement("div");
   d.className = "dim";
-  const items = [["words", IC.book, "Lug'at"], ["ai", IC.ai, "AI ustoz"], ["stats", IC.chart, "Statistika"], ["oktagon", IC.swords, "Oktagon"], ["gifts", IC.gift, "Sovg'alar"], ["me", IC.user, "Profil"]];
+  const items = [["words", IC.book, "Lug'at"], ["ai", IC.ai, "AI ustoz"], ["stats", IC.chart, "Statistika"], ["oktagon", IC.swords, "Oktagon"], ["gifts", IC.gift, "Sovg'alar"], ["invite", IC.user, "Do'stlar"], ["me", IC.user, "Profil"]];
   d.innerHTML = `<div class="sheet"><div class="mgrid">${items.map(([k, i, t, soon]) => `<button data-k="${k}">${i}<span>${t}</span>${soon ? '<em class="soonb">Tez orada</em>' : ""}</button>`).join("")}</div>
     <div style="margin-top:14px">${themeHTML()}</div>
     <button class="btn ghost" id="lo2" style="margin-top:12px;color:var(--red)">Chiqish</button></div>`;
@@ -888,7 +960,7 @@ function renderApp() {
   document.querySelectorAll(".nav [data-t]").forEach((b) => (b.onclick = () => go(b.dataset.t)));
   $(".lout").onclick = logout;
   bindTheme($(".navfoot"));
-  ({ home: viewHome, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: viewMe, oktagon: viewOktagon, gifts: viewGifts })[S.tab]();
+  ({ home: viewHome, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: viewMe, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite })[S.tab]();
   renderSide();
 }
 const desk = () => matchMedia("(min-width:960px)").matches;
@@ -917,6 +989,7 @@ function renderSide() {
   <div class="card sidecard"><h4>Bu hafta</h4>
     <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">Yig'ilgan coin</span><b style="font-size:22px;color:var(--blue)">${m.weekXp}</b></div>
     <button class="btn ghost" id="toRating" style="margin-top:12px;padding:11px">🏆 Reytingni ko'rish</button></div>
+  <button class="card sidecard invside" id="toInv"><span class="ise">🎁</span><span><b>Do'stingizni taklif qiling</b><small>Ikkalangizga +100 coin</small></span><span class="isa">›</span></button>
   <div class="card sidecard"><h4>Lug'atim</h4>
     <div class="tiles3" style="margin:0">
       <div style="background:var(--green-bg)"><b style="color:#147A3D;font-size:20px">${m.words.learned}</b><small>o'rganildi</small></div>
@@ -924,6 +997,7 @@ function renderSide() {
       <div style="background:var(--sky)"><b style="color:var(--blue);font-size:20px">${m.words.due}</b><small>bugun</small></div></div></div>`;
   side.querySelectorAll(".goRev").forEach((b) => (b.onclick = startReview));
   $("#toRating").onclick = () => { S.tab = "rating"; renderApp(); };
+  $("#toInv").onclick = () => go("invite");
 }
 async function refresh() { await loadMe(); renderApp(); }
 
@@ -1204,6 +1278,7 @@ async function finishLesson(L) {
   $("#ex").innerHTML = `<div class="end"><div class="dots"><span></span><span></span><span></span></div></div>`;
   $("#lf").innerHTML = "";
   const r = L.kind === "lesson" ? await api("lesson", { lesson: L.l.id, correct: L.firstOk, total: L.graded }) : await api("practice", { correct: L.firstOk, total: L.graded });
+  if (r.ok && r.refBonus) setTimeout(() => toast(`🎁 Do'stingiz taklifi uchun +${r.refBonus} coin! Do'stingiz ham +${r.refBonus} oldi`, 4000), 800);
   if (!r.ok) { $("#ex").innerHTML = `<div class="end"><div class="em">😕</div><h2>${esc(r.error || "Saqlab bo'lmadi")}</h2></div>`; $("#lf").innerHTML = `<button class="btn" id="bk">Xaritaga qaytish</button>`; $("#bk").onclick = () => { closeFull(); refresh(); }; return; }
   $("#ex").innerHTML = `<div class="end">
     <div class="em">${acc === 100 ? "🏆" : acc >= 70 ? "🎉" : "💪"}</div>
@@ -1682,9 +1757,13 @@ async function viewOktagon() {
       <p>Raqib bilan bir xil ${r.questions} ta savol. Kim to'g'ri va tezroq javob bersa — g'olib!</p>
       <div class="oks"><div><b>${w.coins}</b><small>Haftalik coin</small></div><div><b>${w.wins}/${w.games}</b><small>G'alabalar</small></div><div><b>${w.place ? "#" + w.place : "—"}</b><small>O'rin</small></div></div>
       <button class="okplay" id="okp">⚡ O'YNASH</button>
+      <button class="okfr" id="okf">👥 Do'stni chaqirish</button>
       <p class="okn">${left ? `Bugun yana <b>${left}</b> ta o'yinga coin beriladi: g'alaba +${r.prize.win}, durrang +${r.prize.draw}, mag'lubiyat +${r.prize.lose}` : "Bugungi coinli o'yinlar tugadi — mashq uchun o'ynashingiz mumkin"}</p>
     </div>
     <div class="oksteps">${[["🔎", "Tizim raqib topadi"], ["❓", `${r.questions} ta savol, har biriga ${r.seconds} soniya`], ["⚡", "Tez javob — ko'proq ball"], ["🏆", "Haftalik top 5 ga unvon"]].map(([e, t]) => `<div><span>${e}</span>${t}</div>`).join("")}</div>
+    ${r.challenges.length ? `<h3 class="okh">👥 Do'stlarga chaqiruvlarim</h3><div class="rl" style="margin-bottom:6px">${r.challenges.map((c) => c.result === "wait"
+      ? `<div class="ri okr"><span class="okres d">Kutilmoqda</span><span class="nm">Siz: ${c.score} ball</span><button class="chip okshr" data-u="${esc(c.url)}" data-s="${c.score}">Yuborish</button></div>`
+      : `<div class="ri okr"><span class="okres ${res[c.result][1]}">${res[c.result][0]}</span><span class="nm">vs ${esc(c.opp_name || "Do'st")}</span><span class="xp">${c.score} : ${c.opp_score}</span></div>`).join("")}</div>` : ""}
     <div class="okcols"><div>
       <h3 class="okh">🏆 Haftalik reyting <small class="muted">· ${r.daysLeft} kun qoldi</small></h3>
       <div class="rl">${r.list.length ? r.list.map((x, i) => `<div class="ri ${x.me ? "me" : ""}"><span class="p">${medal[i] || x.place}</span>
@@ -1696,21 +1775,41 @@ async function viewOktagon() {
       <div class="rl">${r.recent.length ? r.recent.map((x) => `<div class="ri okr"><span class="okres ${res[x.result][1]}">${res[x.result][0]}</span><span class="nm">vs ${esc(x.opp_name)}</span><span class="xp">${x.score} : ${x.opp_score}</span></div>`).join("")
         : `<div class="card muted" style="text-align:center">Hali o'yin yo'q</div>`}</div>
     </div></div>`;
-  $("#okp").onclick = startDuel;
+  $("#okp").onclick = () => startDuel();
+  $("#okf").onclick = () => startDuel({ challenge: true });
+  $("#ok").querySelectorAll(".okshr").forEach((b) => (b.onclick = () => shareDuel(b.dataset.u, b.dataset.s)));
 }
-async function startDuel() {
+function shareLink(url, text) {
+  const tg = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  return { tg, copy: async () => { try { await navigator.clipboard.writeText(url); toast("Havola nusxalandi ✓"); } catch { prompt("Havolani nusxalang:", url); } } };
+}
+function shareDuel(url, score) {
+  const sh = shareLink(url, `⚔️ Men Zeehn Lingo Oktagonida ${score} ball oldim! Meni yuta olasanmi?`);
+  const d = document.createElement("div");
+  d.className = "dim";
+  d.innerHTML = `<div class="sheet"><h2 class="t" style="margin-bottom:6px">Do'stingizga yuboring</h2><p class="muted" style="font-size:14px;margin-bottom:12px">Do'stingiz havolani ochib, xuddi shu savollarga javob beradi.</p>
+    <div class="lnk">${esc(url)}</div>
+    <a class="btn tgb" href="${esc(sh.tg)}" target="_blank" rel="noopener">✈️ Telegram orqali yuborish</a>
+    <button class="btn ghost" id="cpy" style="margin-top:10px">📋 Havolani nusxalash</button>
+    <button class="btn ghost" id="shc" style="margin-top:10px">Yopish</button></div>`;
+  document.body.appendChild(d);
+  d.onclick = (e) => { if (e.target === d) d.remove(); };
+  $("#cpy", d).onclick = sh.copy; $("#shc", d).onclick = () => d.remove();
+}
+async function startDuel(opts = {}) {
   const d = document.createElement("div");
   d.className = "full okfull";
-  d.innerHTML = `<div class="in"><div class="end" style="color:#fff"><div class="okradar"><span>⚔️</span></div><h2>Raqib qidirilmoqda…</h2><p style="opacity:.8">Siz darajasidagi o'quvchi topilmoqda</p></div></div>`;
+  d.innerHTML = `<div class="in"><div class="end" style="color:#fff"><div class="okradar"><span>⚔️</span></div><h2>${opts.challenge ? "Savollar tayyorlanmoqda…" : opts.token ? "Bellashuv boshlanmoqda…" : "Raqib qidirilmoqda…"}</h2><p style="opacity:.8">${opts.challenge ? "Avval siz o'ynaysiz, keyin do'stingizga yuborasiz" : opts.token ? "Do'stingiz bilan bir xil savollar" : "Siz darajasidagi o'quvchi topilmoqda"}</p></div></div>`;
   document.body.appendChild(d); document.body.style.overflow = "hidden";
-  const [r] = await Promise.all([api("oktagon/start", {}), new Promise((ok) => setTimeout(ok, 1600))]);
+  const [r] = await Promise.all([api("oktagon/start", opts), new Promise((ok) => setTimeout(ok, 1600))]);
   if (!r.ok) { closeFull(); toast(r.error || "Xatolik"); return; }
   const me = S.me.user, rv = r.rival, Q = r.questions, N = Q.length, LIM = r.seconds * 1000;
-  const pic = (u, sz) => (u.bot ? `<span class="okbot" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.55}px">🤖</span>` : userPic(u, sz));
+  const solo = !!rv.pending;
+  const pic = (u, sz) => (u.pending ? `<span class="okbot" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.5}px">?</span>` : u.bot ? `<span class="okbot" style="width:${sz}px;height:${sz}px;font-size:${sz * 0.55}px">🤖</span>` : userPic(u, sz));
   d.querySelector(".in").innerHTML = `<div class="end okvs" style="color:#fff">
     <div class="okp1">${pic(me, 92)}<b>${esc(me.name)}</b><small>Siz</small></div>
     <div class="okvsb">VS</div>
-    <div class="okp2">${pic(rv, 92)}<b>${esc(rv.name)}</b><small>${rv.bot ? "Hozircha raqib yo'q — bot bilan" : "Raqib"}</small></div></div>`;
+    <div class="okp2">${pic(rv, 92)}<b>${esc(rv.name)}</b><small>${solo ? "O'yindan keyin havolani yuborasiz" : rv.bot ? "Hozircha raqib yo'q — bot bilan" : r.friend ? "Do'stingiz" : "Raqib"}</small></div></div>`;
   await new Promise((ok) => setTimeout(ok, 1900));
   const ans = [], pts = (a) => (a.c ? 100 + Math.max(0, Math.round((10000 - Math.min(10000, a.ms)) / 100)) : 0);
   let my = 0, op = 0, i = 0, t0 = 0, tick = null, oppT = null, locked = false;
@@ -1723,7 +1822,7 @@ async function startDuel() {
     <div class="okops" id="qo"></div>`;
   const dots = () => {
     $("#dm").innerHTML = Q.map((_, k) => `<i class="${k < ans.length ? (ans[k].c ? "g" : "r") : k === i ? "c" : ""}"></i>`).join("");
-    $("#do").innerHTML = Q.map((_, k) => `<i class="${k < i || (k === i && $("#oa").dataset.done) ? (r.opp[k].c ? "g" : "r") : ""}"></i>`).join("");
+    $("#do").innerHTML = solo ? "" : Q.map((_, k) => `<i class="${k < i || (k === i && $("#oa").dataset.done) ? (r.opp[k].c ? "g" : "r") : ""}"></i>`).join("");
   };
   $("#okx").onclick = () => { if (confirm("Bellashuvdan chiqasizmi? Bu mag'lubiyat hisoblanadi.")) { clearInterval(tick); clearTimeout(oppT); while (ans.length < N) ans.push({ a: null, ms: LIM }); finish(true); } };
   const show = () => {
@@ -1731,23 +1830,24 @@ async function startDuel() {
     $("#qn").textContent = `${i + 1}/${N}`;
     $("#qd").textContent = q.dir === "en-uz" ? "🇬🇧 → 🇺🇿 Tarjimasini toping" : "🇺🇿 → 🇬🇧 Inglizchasini toping";
     $("#qq").textContent = q.q;
-    $("#oa").textContent = `${rv.name} o'ylayapti…`; delete $("#oa").dataset.done; $("#oa").className = "okopp";
+    $("#oa").textContent = `${rv.name} o'ylayapti…`; delete $("#oa").dataset.done; $("#oa").className = "okopp"; $("#oa").style.visibility = solo ? "hidden" : "";
     $("#qo").innerHTML = q.opts.map((o) => `<button class="opt">${esc(o)}</button>`).join("");
     $("#qo").querySelectorAll(".opt").forEach((b) => (b.onclick = () => answer(b.textContent, b)));
     if (q.dir === "en-uz") say(q.q);
     dots(); t0 = Date.now();
     const oa = r.opp[i];
-    oppT = setTimeout(() => { $("#oa").dataset.done = 1; $("#oa").textContent = `${rv.name} javob berdi`; $("#oa").className = "okopp done"; dots(); }, Math.min(LIM, oa.ms));
+    if (oa) oppT = setTimeout(() => { $("#oa").dataset.done = 1; $("#oa").textContent = `${rv.name} javob berdi`; $("#oa").className = "okopp done"; dots(); }, Math.min(LIM, oa.ms));
     clearInterval(tick);
     tick = setInterval(() => { const e = Date.now() - t0; $("#tb").style.width = Math.max(0, 100 - (e / LIM) * 100) + "%"; $("#tb").className = e > LIM * 0.7 ? "hot" : ""; if (e >= LIM) answer(null, null); }, 100);
   };
   const answer = (a, btn) => {
     if (locked) return; locked = true; clearInterval(tick); clearTimeout(oppT);
     const ms = Math.min(LIM, Date.now() - t0), q = Q[i], c = a != null && a === q.answer ? 1 : 0;
-    ans.push({ a, ms }); my += pts({ c, ms }); op += pts(r.opp[i]);
+    ans.push({ a, ms }); my += pts({ c, ms }); if (!solo) op += pts(r.opp[i]);
     $("#qo").querySelectorAll(".opt").forEach((b) => { b.disabled = true; if (b.textContent === q.answer) b.classList.add("ok"); else if (b === btn) b.classList.add("bad"); });
-    $("#oa").dataset.done = 1; $("#oa").textContent = r.opp[i].c ? `${rv.name}: to'g'ri ✓` : `${rv.name}: xato ✗`; $("#oa").className = "okopp done " + (r.opp[i].c ? "g" : "r");
-    $("#sm").textContent = my; $("#so").textContent = op; dots();
+    if (!solo) $("#oa").dataset.done = 1;
+    if (!solo) { $("#oa").textContent = r.opp[i].c ? `${rv.name}: to'g'ri ✓` : `${rv.name}: xato ✗`; $("#oa").className = "okopp done " + (r.opp[i].c ? "g" : "r"); }
+    $("#sm").textContent = my; $("#so").textContent = solo ? "?" : op; dots();
     setTimeout(() => { i++; i < N ? show() : finish(false); }, c ? 900 : 1500);
   };
   async function finish(quit) {
@@ -1755,14 +1855,27 @@ async function startDuel() {
     const myT = ans.reduce((t, a) => t + a.ms, 0), opT = r.opp.reduce((t, a) => t + Math.min(LIM, a.ms), 0);
     const mmss = (ms) => { const x = Math.round(ms / 1000); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, "0")}`; };
     if (!f.ok) { closeFull(); toast(f.error || "Xatolik"); return; }
+    if (f.challenge) {
+      const sh = shareLink(f.url, `⚔️ Men Zeehn Lingo Oktagonida ${f.score} ball oldim! Meni yuta olasanmi?`);
+      d.querySelector(".in").innerHTML = `<div class="end" style="color:#fff"><div class="em">📨</div><h2>Natijangiz: ${f.score} ball</h2>
+        <p style="opacity:.85">${f.correct}/${N} to'g'ri · ⏱ ${mmss(myT)}. Endi havolani do'stingizga yuboring — u xuddi shu savollarga javob beradi. Natija «Oktagon» bo'limida chiqadi.</p>
+        <div class="lnk" style="max-width:360px;width:100%;background:rgba(255,255,255,.12);color:#fff">${esc(f.url)}</div>
+        <a class="btn tgb" href="${esc(sh.tg)}" target="_blank" rel="noopener" style="max-width:360px">✈️ Telegram orqali yuborish</a>
+        <button class="btn ghost" id="okcp" style="max-width:360px;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">📋 Havolani nusxalash</button>
+        <button class="btn ghost" id="okc" style="max-width:360px;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Yopish</button></div>`;
+      $("#okcp").onclick = sh.copy; $("#okc").onclick = () => { closeFull(); refresh(); };
+      return;
+    }
     const big = { win: ["🏆", "G'alaba!", "Zo'r o'ynadingiz!"], lose: ["💪", "Mag'lubiyat", quit ? "Bellashuvni tark etdingiz" : "Keyingi safar albatta yutasiz!"], draw: ["🤝", "Durrang!", "Kuchlar teng keldi"] }[f.result];
     d.querySelector(".in").innerHTML = `<div class="end" style="color:#fff"><div class="em">${big[0]}</div><h2>${big[1]}</h2><p style="opacity:.85">${big[2]}</p>
       <div class="okfin"><div>${pic(me, 56)}<b>${f.score}</b><small>${f.correct}/${N} to'g'ri</small><small class="oktime">⏱ ${mmss(myT)}</small></div><span>:</span><div>${pic(rv, 56)}<b>${f.oppScore}</b><small>${f.oppCorrect}/${N} to'g'ri</small><small class="oktime">⏱ ${mmss(opT)}</small></div></div>
       <div class="res okres2"><div><b style="color:#FFC768">+${f.coins}</b><small>COIN</small></div><div><b>${mmss(myT)}</b><small>VAQTINGIZ</small></div><div><b>${(myT / N / 1000).toFixed(1)}s</b><small>O'RTACHA</small></div></div>
       ${f.coins ? "" : `<p style="opacity:.75;font-size:13px">Bugungi 10 ta coinli o'yin tugadi</p>`}
+      ${r.friend ? `<p style="opacity:.85;font-size:13px">Natija ${esc(rv.name)}ga ham ko'rinadi va u ham coin oladi</p>` : ""}
       <button class="btn" id="oka" style="max-width:360px;background:#C6FF3D;color:#0B1B4D;box-shadow:0 4px 0 #8DBF1F">⚡ Yana o'ynash</button>
       <button class="btn ghost" id="okc" style="max-width:360px;background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Yopish</button></div>`;
-    $("#oka").onclick = () => { closeFull(); loadMe().then(() => { renderApp(); startDuel(); }); };
+    $("#oka").onclick = () => { closeFull(); loadMe().then(() => { renderApp(); startDuel(r.friend ? { challenge: true } : {}); }); };
+    if (r.friend) $("#oka").textContent = "👥 Men ham do'stimni chaqiraman";
     $("#okc").onclick = () => { closeFull(); refresh(); };
   }
   show();
@@ -1794,6 +1907,26 @@ async function viewGifts() {
     toast("🎉 So'rov qabul qilindi! Sovg'ani akademiyadan olasiz", 3500);
     await loadMe(); renderApp();
   }));
+}
+
+/* ---------- Do'stlar (taklif) ---------- */
+async function viewInvite() {
+  $("#main").innerHTML = `<h2 class="t">Do'stlarni taklif qilish</h2><div id="iv"><div class="dots" style="text-align:center;padding:30px"><span></span><span></span><span></span></div></div>`;
+  const r = await api("invite");
+  if (!r.ok || S.tab !== "invite") return;
+  const sh = shareLink(r.url, `🎁 Zeehn Lingo'da ingliz tilini o'yin kabi o'rganamiz! Shu havola orqali ro'yxatdan o'tsang, ikkalamizga +${r.bonus} coin:`);
+  $("#iv").innerHTML = `<div class="ivhero"><div class="ive">🎁</div><h3>Do'st olib keling — ikkalangizga <span>+${r.bonus} coin</span></h3>
+      <p>Do'stingiz havolangiz orqali ro'yxatdan o'tib, birinchi darsini tugatsa, sizga ham, unga ham ${r.bonus} coindan beriladi.</p>
+      <div class="lnk">${esc(r.url)}</div>
+      <a class="btn tgb" href="${esc(sh.tg)}" target="_blank" rel="noopener">✈️ Telegram orqali yuborish</a>
+      <button class="btn ghost ivcp" id="ivcp">📋 Havolani nusxalash</button></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card"><b style="color:var(--blue)">${r.total}</b><small>Taklif qilinganlar</small></div>
+      <div class="card"><b style="color:#C98200">+${r.paid * r.bonus}</b><small>Olingan coin</small></div>
+    </div>
+    <div class="oksteps" style="grid-template-columns:repeat(3,minmax(0,1fr))">${[["🔗", "Havolani yuboring"], ["📝", "Do'stingiz ro'yxatdan o'tadi"], ["🎉", "1-darsdan keyin +" + r.bonus + " coin"]].map(([e, t]) => `<div><span>${e}</span>${t}</div>`).join("")}</div>
+    ${r.friends.length ? `<h3 class="okh">👥 Taklif qilgan do'stlarim</h3><div class="rl">${r.friends.map((x, i) => `<div class="ri"><span class="av" style="background:${AVC[i % AVC.length]}">${userPic(x, 38)}</span><span class="nm">${esc(x.name)}</span>${x.paid ? `<span class="xp" style="color:#147A3D">✓ +${r.bonus}</span>` : `<span class="xp muted" style="font-size:12px">1-darsni kutyapmiz</span>`}</div>`).join("")}</div>` : `<div class="card muted" style="text-align:center;margin-top:12px">Hali hech kimni taklif qilmadingiz. Birinchi do'stingizga havola yuboring! 🚀</div>`}`;
+  $("#ivcp").onclick = sh.copy;
 }
 
 /* ---------- Profilni tahrirlash ---------- */
@@ -1857,6 +1990,9 @@ function viewMe() {
       <div class="card"><b style="color:#F2600C">${m.user.streak} 🔥</b><small>Ketma-ket kun</small></div>
       <div class="card"><b>${Object.keys(m.done).length} / ${all.length}</b><small>Darslar</small></div>
     </div>
+    <button class="card invside" id="meInv" style="margin-top:12px;width:100%"><span class="ise">🎁</span><span><b>Do'stingizni taklif qiling</b><small>Ikkalangizga +100 coin</small></span><span class="isa">›</span></button>
+    <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">🏅 Nishonlar <span class="muted" id="bgc" style="font-weight:600;font-size:14px"></span></h3>
+    <div class="bgrid" id="bgs"><div class="dots" style="text-align:center;padding:20px;grid-column:1/-1"><span></span><span></span><span></span></div></div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Tez orada</h3>
     <div style="display:grid;gap:8px">
       <div class="soon"><span class="e">🥈</span><div><b>Ligalar</b><span class="muted" style="font-size:13px">Bronza → Kumush → Oltin</span></div></div>
@@ -1876,6 +2012,13 @@ function viewMe() {
     toast(b.dataset.av === "girl" ? "Qahramon: qiz bola 👧" : "Qahramon: o'g'il bola 👦"); refresh();
   }));
   $("#en").onclick = editProfile;
+  $("#meInv").onclick = () => go("invite");
+  api("badges").then((r) => {
+    if (!r.ok || S.tab !== "me" || !$("#bgs")) return;
+    $("#bgc").textContent = `${r.done} / ${r.list.length}`;
+    $("#bgs").innerHTML = r.list.map((b) => `<div class="bdg ${b.done ? "on" : ""}" title="${esc(b.desc)}"><span class="bde">${b.e}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small>
+      ${b.done ? `<em class="bdk">✓ Olindi</em>` : `<div class="bdp"><div style="width:${Math.round((b.cur / b.n) * 100)}%"></div></div><small class="bdn">${b.cur} / ${b.n}</small>`}</div>`).join("");
+  });
 }
 
 boot();
