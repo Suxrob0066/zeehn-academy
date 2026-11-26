@@ -638,6 +638,99 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 .bpop .bpe{font-size:34px}.bpop small{display:block;font-size:12px;opacity:.9}.bpop b{font-size:17px}
 @keyframes bpop{from{opacity:0;transform:translate(-50%,-20px) scale(.8)}}
 @media (min-width:960px){.bgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* ===== Ilova (telefon) ko'rinishi — iPost uslubida ===== */
+.rbtn{width:42px;height:42px;border-radius:50%;background:var(--card);display:inline-flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 6px 18px -8px rgba(11,27,77,.28);flex:none}
+.rbtn svg{width:20px;height:20px}
+.mnav{display:none}
+@media (max-width:959px){
+ .app{background:linear-gradient(180deg,var(--sky) 0,var(--bg) 380px)}
+ .top{background:transparent;backdrop-filter:none;border-bottom:0;padding:14px 18px 6px;padding-top:max(14px,env(safe-area-inset-top))}
+ .top.scr{background:var(--topbg);backdrop-filter:blur(12px)}
+ .brand{font-size:19px;color:var(--ink);font-weight:700;letter-spacing:-.2px}.brand b{color:var(--blue);font-weight:800}.brand img{width:34px;height:34px}
+ .stats{gap:8px;align-items:center}
+ .st{border:0;box-shadow:0 6px 18px -8px rgba(11,27,77,.28);padding:9px 12px;background:var(--card)}
+ main{padding:6px 18px 130px}
+ .nav{display:none}
+ .mnav{display:block;position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;z-index:30;padding:0 14px max(12px,env(safe-area-inset-bottom))}
+ .mbar{display:flex;align-items:center;background:var(--card);border-radius:30px;padding:7px;box-shadow:0 14px 34px -14px rgba(11,27,77,.35),0 0 0 1px var(--line)}
+ .mbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0;border-radius:24px;font-size:11.5px;font-weight:600;color:#8A96B6}
+ .mbar button svg{width:24px;height:24px}
+ .mbar button.on{background:var(--sky);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(47,107,255,.25)}
+ .mgap{flex:0 0 74px}
+ .mfab{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 30px);width:66px;height:66px;border-radius:50%;background:linear-gradient(150deg,#3A7BFF,#0046E0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px var(--bg),0 12px 26px -6px rgba(0,70,224,.55)}
+ .mfab svg{width:28px;height:28px;margin-left:3px}
+ .mfab:active{transform:translateX(-50%) scale(.94)}
+}
+.mgreet{font-size:26px;color:var(--muted);margin:6px 2px 14px;letter-spacing:-.3px}.mgreet b{color:var(--ink);font-weight:800}
+.mc{background:var(--card);border-radius:26px;padding:18px;box-shadow:0 10px 30px -22px rgba(11,27,77,.4);display:block;width:100%;text-align:left;margin-bottom:12px}
+.mch{display:flex;justify-content:space-between;align-items:center}.mch b{font-size:18px;font-weight:800}
+.mlink{display:inline-flex;align-items:center;gap:2px;color:var(--blue2);font-weight:700;font-size:15px}.mlink svg{width:18px;height:18px}
+.mtrack{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+.mtl{font-size:11px;font-weight:700;color:var(--muted);background:var(--sky);padding:5px 9px;border-radius:10px;flex:none}
+.mline{flex:1;height:5px;background:var(--off);border-radius:5px;position:relative}
+.mline i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:5px}
+.mline i:before{content:"";position:absolute;left:-4px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:var(--blue)}
+.mme{position:absolute;top:50%;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 0 3px var(--card),0 4px 10px rgba(0,70,224,.35);display:flex}
+.mme .uph,.mme .face{border-radius:50%}
+.mplane{position:absolute;right:-4px;top:-26px;font-size:18px}
+.mjs{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}.mjs b{color:var(--ink)}.mjs span{font-weight:700;color:var(--blue)}
+.mq3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.mq{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 6px;margin:0;text-align:center}
+.mq b{font-size:14px;font-weight:600;display:flex;align-items:center;gap:4px}.mq em{font-style:normal;font-size:11px;background:var(--red);color:#fff;border-radius:10px;padding:0 6px}
+.mqi{width:50px;height:50px;border-radius:50%;background:var(--sky);color:var(--blue);display:flex;align-items:center;justify-content:center}
+.mqi svg{width:24px;height:24px}.mqi.f{background:linear-gradient(150deg,#3A7BFF,#0046E0);color:#fff;box-shadow:0 8px 18px -6px rgba(0,70,224,.55)}.mqi.f svg{margin-left:3px}
+.mpromo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.mpc{position:relative;overflow:hidden;border-radius:26px;padding:16px;min-height:150px;color:#fff;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(150deg,#2F6BFF,#0039C4);box-shadow:0 14px 28px -16px rgba(0,57,196,.7)}
+.mpc.b{background:linear-gradient(150deg,#4C86FF,#1F5BF0)}
+.mpc:after{content:"";position:absolute;right:-40px;bottom:-60px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.08)}
+.mpc b{font-size:19px;font-weight:700;line-height:1.15;position:relative;z-index:1}.mpc small{font-size:13px;opacity:.85;position:relative;z-index:1}
+.mpi{position:absolute;left:14px;top:14px;width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center}.mpi svg{width:20px;height:20px}
+.mart{position:absolute;right:12px;top:10px;font-size:46px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.25));transform:rotate(-8deg)}
+.mpa{position:absolute;right:12px;bottom:16px;z-index:1}.mpa svg{width:20px;height:20px}
+.coin3d{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF1B0 0,#FFD24A 30%,#F2A900 62%,#B97800 100%);box-shadow:inset 0 0 0 4px rgba(255,255,255,.35),inset 0 -6px 10px rgba(150,90,0,.35),0 8px 14px rgba(0,0,0,.25)}
+.coin3d img{width:46%;height:auto;filter:drop-shadow(0 1px 0 rgba(150,90,0,.6))}
+.mpc.wide{flex-direction:row;align-items:center;min-height:0;padding:16px;gap:14px;margin-bottom:12px;width:100%}
+.mpc.wide .mpi{position:static;width:46px;height:46px;flex:none}.mpc.wide .mwt{flex:1;display:flex;flex-direction:column;position:relative;z-index:1}
+.mpc.wide .mart{position:static;transform:none}.mpc.wide .mpa{position:static}
+.mrow{display:flex;align-items:center;gap:12px;padding:15px 16px}
+.mrow b,.mli b{flex:1;font-size:16px;font-weight:600}
+.mri{width:42px;height:42px;border-radius:50%;background:var(--sky);color:var(--blue);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(47,107,255,.18)}
+.mri svg{width:20px;height:20px}
+.mrc{color:var(--muted);display:flex}.mrc svg{width:20px;height:20px}
+.mpill{font-style:normal;font-size:12.5px;font-weight:700;color:var(--blue);background:var(--sky);padding:5px 11px;border-radius:20px;white-space:nowrap}.mpill.o{color:#B86A00;background:var(--coin-bg)}
+.mgoal{display:flex;align-items:center;gap:14px}.mgoal .ring{width:88px;height:88px;flex:none}.mgoal b{font-size:17px}.mgoal p{font-size:13px;margin:2px 0 8px}
+.mfire{display:inline-block;font-size:12px;font-weight:700;background:#FFE9DA;color:#C2410C;padding:4px 10px;border-radius:12px}
+.msh{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 12px}.msh h3{font-size:21px;font-weight:700;letter-spacing:-.3px}
+.mscroll{display:flex;gap:6px;overflow-x:auto;padding:16px 10px;scrollbar-width:none}.mscroll::-webkit-scrollbar{display:none}
+.mun{flex:0 0 94px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.mue{width:66px;height:66px;border-radius:20px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:inset 0 0 0 1px var(--line)}
+.mue.d{background:var(--green-bg)}
+.mun b{font-size:12.5px;font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mun small{font-size:11px;color:var(--muted)}
+.mtips{display:flex;gap:12px;overflow-x:auto;margin:0 -18px;padding:0 18px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}.mtips::-webkit-scrollbar{display:none}
+.mtip{flex:0 0 72%;scroll-snap-align:start;min-height:170px;border-radius:26px;padding:18px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7);position:relative}
+.mtip.t1{background:linear-gradient(160deg,#EEF2FF,#D7E1FF)}.mtip.t2{background:linear-gradient(160deg,#F3EEFF,#E1D6FF)}.mtip.t3{background:linear-gradient(160deg,#E9FBF1,#CDF2DE)}.mtip.t4{background:linear-gradient(160deg,#FFF4E5,#FFE2BD)}
+.mti{position:absolute;left:18px;top:18px;width:52px;height:52px;border-radius:16px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 16px -8px rgba(11,27,77,.35)}
+.mtip b{font-size:19px;font-weight:700;color:#0B1B4D;line-height:1.2}.mtip small{font-size:13px;color:#46557A}
+.mph{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 16px}.mph h1{font-size:32px;font-weight:800;letter-spacing:-.6px}
+.mpr{display:flex;align-items:center;gap:16px}.mpr b{display:block;font-size:21px;font-weight:700}.mpr small{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin-top:4px}.mpr small svg{width:16px;height:16px}
+.mav{position:relative;border-radius:50%;box-shadow:0 0 0 3px var(--blue2);display:flex;flex:none}.mav .uph,.mav .face{border-radius:50%}
+.mav>span{position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;background:var(--card);color:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.15)}.mav>span svg{width:14px;height:14px}
+.mcode{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:18px;padding:12px 14px;margin-top:16px}.mcode b{flex:1;font-size:17px;letter-spacing:.12em}
+.mcb{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--ink)}.mcb svg{width:22px;height:22px}
+.mlvl{display:flex;align-items:center;gap:14px}.mring{width:60px;height:60px;flex:none}.mlt{flex:1;display:flex;flex-direction:column;border-left:1px solid var(--line);padding-left:14px}.mlt b{font-size:16px}.mlt small{font-size:13px;color:var(--muted)}
+.mlist{padding:8px 16px}.mlist h4{font-size:15px;font-weight:600;color:var(--muted);margin:10px 0 2px}
+.mli{display:flex;align-items:center;gap:14px;width:100%;padding:12px 0;text-align:left}
+.mli+.mli{border-top:1px solid var(--line);margin-left:56px;width:calc(100% - 56px);padding-left:0}
+.mli+.mli .mri{margin-left:-56px}
+.mli.red b{color:var(--red)}.mli.red .mri{background:var(--red-bg);color:var(--red);box-shadow:inset 0 0 0 1px rgba(229,72,77,.25)}
+.mth{width:170px}.mth .thm{margin:0}
+.mq2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mt2{position:relative;padding:16px;margin:0 0 12px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end}.mt2 .mri{position:absolute;left:16px;top:16px;width:46px;height:46px}.mt2 .mrc{position:absolute;right:14px;top:26px}.mt2 b{font-size:17px;font-weight:700}
+.mver{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.6;margin:20px 0 6px}.mver img{width:34px}.mver b{font-size:14px}.mver small{font-size:13px;color:var(--muted)}
+[data-theme=dark] .mtip b{color:#0B1B4D}
+[data-theme=dark] .mfab{box-shadow:0 0 0 6px var(--bg),0 12px 26px -6px rgba(0,0,0,.6)}
+@media (min-width:960px){.tsr{display:none}}
 </style>
 </head>
 <body>
@@ -938,10 +1031,11 @@ function renderApp() {
   $("#root").innerHTML = `
   <div class="app">
     <header class="top">
-      <div class="brand"><img src="/img/logo-mark-blue.png" alt="">Lingo</div>
+      <div class="brand"><img src="/img/logo-mark-blue.png" alt=""><span>Zeehn <b>Lingo</b></span></div>
       <div class="stats">
         <span class="st fire ${m.user.today ? "on" : "off"}" title="Ketma-ket kunlar">${IC.fire}${m.user.streak}</span>
         <span class="st" title="Coin">${IC.coin}${m.user.xp}</span>
+        <button class="rbtn tsr" id="tSearch" aria-label="Lug'atdan qidirish">${MI.search}</button>
       </div>
     </header>
     <main id="main"></main>
@@ -956,13 +1050,19 @@ function renderApp() {
         <button class="lout">${IC.logout}Chiqish</button>
       </div>
     </nav>
+    <nav class="mnav" aria-label="Asosiy menyu"><div class="mbar">
+      ${[["home", IC.home, "Bosh"], ["map", IC.map, "Xarita"], null, ["rating", IC.trophy, "Reyting"], ["me", IC.user, "Profil"]].map((x) => x ? `<button data-t="${x[0]}" class="${S.tab === x[0] ? "on" : ""}">${x[1]}<span>${x[2]}</span></button>` : `<span class="mgap"></span>`).join("")}
+    </div><button class="mfab" id="mfab" aria-label="Darsni davom ettirish">${IC.play}</button></nav>
   </div>`;
-  document.querySelectorAll(".nav [data-t]").forEach((b) => (b.onclick = () => go(b.dataset.t)));
+  document.querySelectorAll(".nav [data-t], .mnav [data-t]").forEach((b) => (b.onclick = () => go(b.dataset.t)));
+  $("#mfab").onclick = fabAction;
+  $("#tSearch").onclick = () => { S.vtab = "dict"; go("words"); };
   $(".lout").onclick = logout;
   bindTheme($(".navfoot"));
-  ({ home: viewHome, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: viewMe, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite })[S.tab]();
+  ({ home: desk() ? viewHome : viewHomeM, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: desk() ? viewMe : viewMeM, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite, badges: viewBadges })[S.tab]();
   renderSide();
 }
+addEventListener("scroll", () => { const t = document.querySelector(".top"); if (t) t.classList.toggle("scr", scrollY > 8); }, { passive: true });
 const desk = () => matchMedia("(min-width:960px)").matches;
 let wasDesk = desk();
 addEventListener("resize", () => { if (desk() !== wasDesk) { wasDesk = desk(); if (S.me && !document.querySelector(".full")) renderApp(); } });
@@ -2019,6 +2119,145 @@ function viewMe() {
     $("#bgs").innerHTML = r.list.map((b) => `<div class="bdg ${b.done ? "on" : ""}" title="${esc(b.desc)}"><span class="bde">${b.e}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small>
       ${b.done ? `<em class="bdk">✓ Olindi</em>` : `<div class="bdp"><div style="width:${Math.round((b.cur / b.n) * 100)}%"></div></div><small class="bdn">${b.cur} / ${b.n}</small>`}</div>`).join("");
   });
+}
+
+/* ---------- Ilova (telefon) ko'rinishi ---------- */
+const MI = {
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+  crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8z"/></svg>',
+  cards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2.5"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg>',
+  invite: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c.8-4 3.6-6 7-6s6.2 2 7 6M19 8v6M16 11h6"/></svg>',
+  medal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>',
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.5-1-2-1-3s.8-2 2-2h2a4 4 0 0 0 4-4c0-4-4-7-9-7z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></svg>',
+  face: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1.8 2 5.2 2 7 0M9 9.5h.01M15 9.5h.01"/></svg>',
+};
+const coin3d = (sz = 64) => `<span class="coin3d" style="width:${sz}px;height:${sz}px"><img src="/img/logo-mark-white.png" alt=""></span>`;
+function fabAction() {
+  const m = S.me, next = lessons().find((l) => !m.done[l.id]);
+  if (next) return startLesson(next);
+  if (m.words.due) return startReview();
+  go("practice");
+}
+const UNIT_E = ["👋", "🎒", "👨‍👩‍👧", "🍎", "🏠", "🌤️", "🚀", "📚"];
+const TIPS = [
+  ["⭐", "Har kuni 10 daqiqa", "Ketma-ket kunlar so'zlarni tezroq yodlatadi", "t1", "map"],
+  ["🎧", "Ovoz chiqarib gapiring", "AI ustoz bilan ovozli suhbat qiling", "t2", "ai"],
+  ["🃏", "Takrorlashni qoldirmang", "So'z 1·3·7·14·30 kunda qaytib keladi", "t3", "words"],
+  ["⚔️", "Do'st bilan bellashing", "Oktagonda chaqiruv havolasini yuboring", "t4", "oktagon"],
+];
+function viewHomeM() {
+  const m = S.me, all = lessons(), next = all.find((l) => !m.done[l.id]), doneN = Object.keys(m.done).length;
+  const pct = Math.round((doneN / all.length) * 100), goal = 20, gp = Math.min(100, Math.round((m.todayXp / goal) * 100));
+  $("#main").innerHTML = `
+    <p class="mgreet">Salom, <b>${esc(m.user.name)}</b></p>
+    <section class="mc mjour">
+      <div class="mch"><b>Mening yo'lim</b><button class="mlink" data-go="map">Xarita ${MI.chev}</button></div>
+      <div class="mtrack">
+        <span class="mtl">${esc(m.tiers[0].name)}</span>
+        <div class="mline"><i style="width:${Math.max(3, pct)}%"></i><span class="mme" style="left:${Math.max(3, pct)}%">${userPic(m.user, 30)}</span><span class="mplane">🎓</span></div>
+        <span class="mtl r">${esc(m.tiers[m.tiers.length - 1].name)}</span>
+      </div>
+      <p class="mjs">${next ? `Keyingi: <b>${all.indexOf(next) + 1}-dars · ${esc(next.title)}</b>` : "Barcha darslar tugatildi! 🎉"}<span>${doneN}/${all.length}</span></p>
+    </section>
+    <div class="mq3">
+      <button class="mc mq" id="mqGo"><span class="mqi f">${IC.play}</span><b>${doneN ? "Davom etish" : "Boshlash"}</b></button>
+      <button class="mc mq" id="mqRev"><span class="mqi">${MI.cards}</span><b>Takrorlash${m.words.due ? ` <em>${m.words.due}</em>` : ""}</b></button>
+      <button class="mc mq" data-go="words"><span class="mqi">${IC.book}</span><b>Lug'at</b></button>
+    </div>
+    <div class="mpromo">
+      <button class="mpc a" data-go="oktagon"><span class="mpi">${IC.swords}</span><span class="mart">⚔️</span><b>Oktagon</b><small>1 ga 1 bellashuv</small><span class="mpa">${MI.chev}</span></button>
+      <button class="mpc b" data-go="gifts"><span class="mpi">${MI.crown}</span><span class="mart c">${coin3d(62)}</span><b>Sovg'alar</b><small>${m.user.xp} coin</small><span class="mpa">${MI.chev}</span></button>
+    </div>
+    <button class="mc mrow" data-go="invite"><span class="mri">${MI.invite}</span><b>Do'stingizni taklif qiling</b><em class="mpill">+100 coin</em><span class="mrc">${MI.chev}</span></button>
+    <button class="mc mrow" data-go="ai"><span class="mri">${IC.ai}</span><b>AI ustoz bilan gaplashing</b><span class="mrc">${MI.chev}</span></button>
+    <section class="mc mgoal">
+      <svg viewBox="0 0 120 120" class="ring" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="none" style="stroke:var(--off)" stroke-width="13"/><circle cx="60" cy="60" r="50" fill="none" stroke="${gp >= 100 ? "#1FB45A" : "#0046E0"}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${(gp / 100) * 314} 314" transform="rotate(-90 60 60)"/><text x="60" y="68" text-anchor="middle" font-size="26" font-weight="800" style="fill:var(--ink)">${gp}%</text></svg>
+      <div><b>Kunlik maqsad</b><p class="muted">${gp >= 100 ? "Bajarildi! Barakalla 🎉" : `${m.todayXp} / ${goal} coin · yana ${goal - m.todayXp}`}</p><span class="mfire">🔥 ${m.user.streak} kun ketma-ket</span></div>
+    </section>
+    <div class="msh"><h3>Kurs mavzulari</h3><button class="mlink" data-go="map">Barchasi ${MI.chev}</button></div>
+    <div class="mc mscroll">${S.course.units.map((u, ui) => { const dn = u.lessons.filter((l) => m.done[l.id]).length; return `<button class="mun" data-go="map"><span class="mue ${dn === u.lessons.length ? "d" : ""}">${UNIT_E[ui % UNIT_E.length]}</span><b>${esc(u.title)}</b><small>${dn}/${u.lessons.length} dars</small></button>`; }).join("")}</div>
+    <div class="msh"><h3>Foydali maslahatlar</h3></div>
+    <div class="mtips">${TIPS.map((t) => `<button class="mtip ${t[3]}" data-go="${t[4]}"><span class="mti">${t[0]}</span><b>${t[1]}</b><small>${t[2]}</small></button>`).join("")}</div>`;
+  document.querySelectorAll("#main [data-go]").forEach((b) => (b.onclick = () => go(b.dataset.go)));
+  $("#mqGo").onclick = fabAction;
+  $("#mqRev").onclick = () => (m.words.due ? startReview() : go("practice"));
+}
+function mRow(go_, icon, title, extra = "", cls = "") { return `<button class="mli ${cls}" data-go="${go_}"><span class="mri">${icon}</span><b>${title}</b>${extra}<span class="mrc">${MI.chev}</span></button>`; }
+function viewMeM() {
+  const m = S.me, all = lessons(), doneN = Object.keys(m.done).length, t = m.tier;
+  const lp = t.total ? Math.round((t.done / t.total) * 100) : 100;
+  $("#main").innerHTML = `
+    <div class="mph"><h1>Profil</h1><div><button class="rbtn" id="mEdit" aria-label="Profilni tahrirlash">${MI.pen}</button></div></div>
+    <section class="mc mprof">
+      <div class="mpr"><button class="mav" id="mPh" aria-label="Profil rasmini o'zgartirish">${userPic(m.user, 68)}<span>${IC.camera}</span></button>
+        <div><b>${esc(m.user.name)}</b><small>${MI.phone}${esc(fmtPhone(m.user.phone))}</small></div></div>
+      <div class="mcode"><span class="muted">Taklif kodi</span><b id="mCode">••••••</b><button class="mcb" id="mCopy" aria-label="Taklif havolasini nusxalash">${MI.copy}</button></div>
+    </section>
+    <button class="mc mlvl" data-go="map">
+      <svg viewBox="0 0 60 60" class="mring" aria-hidden="true"><circle cx="30" cy="30" r="24" fill="none" style="stroke:var(--off)" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="#E8890C" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(lp / 100) * 151} 151" transform="rotate(-90 30 30)"/><text x="30" y="35" text-anchor="middle" font-size="13" font-weight="800" fill="#B86A00">${lp}%</text></svg>
+      <span class="mlt"><b>Daraja: ${esc(t.name)}</b><small>${t.next ? `${esc(t.next.name)} gacha ${t.left} dars qoldi` : t.left ? `Yakunigacha ${t.left} dars` : "Barcha darajalar tugatildi 🏆"}</small></span><span class="mrc">${MI.chev}</span></button>
+    <button class="mpc wide" data-go="gifts"><span class="mpi">${MI.crown}</span><span class="mwt"><b>Sovg'alar va bonuslar</b><small>${m.user.xp} coin · ${m.badges ? m.badges.length : 0} ta nishon</small></span><span class="mart c">${coin3d(56)}</span><span class="mpa">${MI.chev}</span></button>
+    <section class="mc mlist"><h4>Hisob</h4>
+      ${mRow("edit", MI.pen, "Profil ma'lumotlari")}
+      ${mRow("invite", MI.invite, "Do'st taklif qilish", `<em class="mpill">+100 coin</em>`)}
+      ${mRow("badges", MI.medal, "Nishonlarim", `<em class="mpill">${m.badges ? m.badges.length : 0} / 14</em>`)}
+      ${mRow("words", IC.book, "Lug'atim", m.words.due ? `<em class="mpill o">${m.words.due} takror</em>` : "")}
+      ${mRow("stats", IC.chart, "Statistika")}
+    </section>
+    <div class="msh"><h3>O'rganish</h3></div>
+    <div class="mq2">
+      <button class="mc mt2" data-go="ai"><span class="mri">${IC.ai}</span><span class="mrc">${MI.chev}</span><b>AI ustoz</b></button>
+      <button class="mc mt2" data-go="oktagon"><span class="mri">${IC.swords}</span><span class="mrc">${MI.chev}</span><b>Oktagon</b></button>
+    </div>
+    <section class="mc mlist">
+      ${mRow("practice", IC.game, "Mashqlar")}
+      ${mRow("rating", IC.trophy, "Haftalik reyting")}
+      ${mRow("hero", MI.face, "Xaritadagi qahramon", `<em class="mpill">${AV() === "girl" ? "Qiz bola" : "O'g'il bola"}</em>`)}
+      <div class="mli"><span class="mri">${MI.palette}</span><b>Ko'rinish</b><span id="mTh" class="mth">${themeHTML()}</span></div>
+    </section>
+    <section class="mc mlist"><button class="mli red" id="mOut"><span class="mri">${IC.logout}</span><b>Profildan chiqish</b></button></section>
+    <div class="mver"><img src="/img/logo-mark-blue.png" alt=""><b>Zeehn Lingo</b><small>Versiya 1.0</small></div>`;
+  document.querySelectorAll("#main [data-go]").forEach((b) => (b.onclick = () => {
+    const g = b.dataset.go;
+    if (g === "edit") return editProfile();
+    if (g === "hero") return heroSheet();
+    go(g);
+  }));
+  $("#mEdit").onclick = editProfile;
+  $("#mPh").onclick = () => pickPhoto(refresh);
+  $("#mOut").onclick = () => { if (confirm("Profildan chiqasizmi?")) logout(); };
+  bindTheme($("#mTh"));
+  api("invite").then((r) => {
+    if (!r.ok || !$("#mCode")) return;
+    $("#mCode").textContent = "•••" + r.code.slice(-3).toUpperCase();
+    $("#mCopy").onclick = shareLink(r.url, "").copy;
+  });
+}
+function heroSheet() {
+  const d = document.createElement("div");
+  d.className = "dim";
+  d.innerHTML = `<div class="sheet"><h2 class="t" style="margin-bottom:4px">Xaritadagi qahramon</h2><p class="muted" style="font-size:13px;margin-bottom:12px">Xaritada siz bilan birga yuradigan qahramon</p>
+    <div class="avpick big">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>
+    <button class="btn ghost" id="hsc" style="margin-top:14px">Yopish</button></div>`;
+  document.body.appendChild(d);
+  d.onclick = (e) => { if (e.target === d) d.remove(); };
+  $("#hsc", d).onclick = () => d.remove();
+  d.querySelectorAll("[data-av]").forEach((b) => (b.onclick = async () => {
+    const r = await api("profile", { avatar: b.dataset.av }); if (!r.ok) return toast(r.error);
+    d.remove(); toast(b.dataset.av === "girl" ? "Qahramon: qiz bola 👧" : "Qahramon: o'g'il bola 👦"); refresh();
+  }));
+}
+async function viewBadges() {
+  $("#main").innerHTML = `<h2 class="t">Nishonlarim <span class="muted" id="bgc" style="font-size:15px;font-weight:600"></span></h2><div class="bgrid" id="bgs"><div class="dots" style="text-align:center;padding:20px;grid-column:1/-1"><span></span><span></span><span></span></div></div>`;
+  const r = await api("badges");
+  if (!r.ok || S.tab !== "badges") return;
+  $("#bgc").textContent = `${r.done} / ${r.list.length}`;
+  $("#bgs").innerHTML = r.list.map((b) => `<div class="bdg ${b.done ? "on" : ""}"><span class="bde">${b.e}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small>
+    ${b.done ? `<em class="bdk">✓ Olindi</em>` : `<div class="bdp"><div style="width:${Math.round((b.cur / b.n) * 100)}%"></div></div><small class="bdn">${b.cur} / ${b.n}</small>`}</div>`).join("");
 }
 
 boot();
