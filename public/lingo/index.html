@@ -317,7 +317,7 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
  .nav{overflow-y:auto}
 }
 
-[data-theme=dark]{--card:#161E33;--topbg:rgba(14,20,36,.92);--off:#26314F;--bg:#0E1424;--ink:#E8EEFF;--muted:#9AA8CC;--line:#26314F;--sky:#1C2A4E;--blue:#4C86FF;--blue2:#6B9BFF;--green-bg:#123322;--red-bg:#3A1A20;--coin-bg:#3A2D12;color-scheme:dark}
+[data-theme=dark]{--card:#151C38;--topbg:rgba(10,16,44,.88);--off:#232D52;--bg:#070B1E;--ink:#EEF2FF;--muted:#98A5CC;--line:#222B4D;--sky:#1D2756;--blue:#4C86FF;--blue2:#6B9BFF;--green-bg:#123322;--red-bg:#3A1A20;--coin-bg:#3A2D12;color-scheme:dark}
 [data-theme=dark] .btn{background:#2F6BFF;box-shadow:0 4px 0 #1B47B8}
 [data-theme=dark] .btn.ghost{background:var(--card);color:#8FB2FF;border-color:var(--line);box-shadow:0 4px 0 var(--line)}
 [data-theme=dark] .btn.green{background:#1FB45A;box-shadow:0 4px 0 #148A43}
@@ -731,6 +731,48 @@ h2.t{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
 [data-theme=dark] .mtip b{color:#0B1B4D}
 [data-theme=dark] .mfab{box-shadow:0 0 0 6px var(--bg),0 12px 26px -6px rgba(0,0,0,.6)}
 @media (min-width:960px){.tsr{display:none}}
+
+.mphb{display:flex;gap:10px}.rbtn{position:relative}
+.ndot{position:absolute;top:9px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--card)}
+.msub{display:flex;align-items:center;gap:14px;margin:2px 0 18px}.msub h1{font-size:24px;font-weight:700;letter-spacing:-.3px;flex:1}
+.msb{width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:var(--ink);border-radius:50%}.msb svg{width:26px;height:26px}
+.tgl{width:58px;height:34px;border-radius:20px;background:var(--off);position:relative;flex:none;transition:background .2s}
+.tgl i{position:absolute;left:5px;top:5px;width:24px;height:24px;border-radius:50%;background:#5E6A8E;transition:all .2s}
+.tgl.on{background:#1F5BF0}.tgl.on i{left:29px;background:#fff}
+.mval{color:var(--muted);font-size:15px}
+.mthl{font-size:16px;font-weight:600;margin:10px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+.mseg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border-radius:20px;padding:5px;margin-bottom:12px}
+.mseg button{padding:11px;border-radius:16px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--ink)}.mseg button svg{width:22px;height:22px}
+.mseg button.on{background:#1F5BF0;color:#fff}
+.mseg2{display:grid;grid-template-columns:1fr 1fr;background:var(--off);border-radius:26px;padding:5px;margin-bottom:16px}
+.mseg2 button{padding:12px;border-radius:22px;font-weight:600;color:var(--muted);font-size:15px}.mseg2 button.on{background:var(--card);color:var(--ink);box-shadow:0 6px 16px -8px rgba(11,27,77,.3)}
+.mni{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:10px}.mne{width:44px;height:44px;border-radius:14px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.mni b{font-size:15px;display:block}.mni p{font-size:13.5px;color:var(--muted);margin:2px 0 4px}.mni small{font-size:12px;color:var(--muted);opacity:.8}
+.mempty{text-align:center;padding:50px 20px}.mempty span{display:inline-flex;width:96px;height:96px;border-radius:50%;background:var(--sky);align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 0 14px color-mix(in srgb,var(--sky) 50%,transparent);margin-bottom:24px}
+.mempty b{display:block;font-size:18px;margin-bottom:6px}.mempty p{font-size:14px}
+.mvt{text-align:center;color:var(--muted);font-size:13px;margin:16px 0}
+.mabout{text-align:center;padding:30px 20px}.maicon{display:inline-flex;width:112px;height:112px;border-radius:30px;background:linear-gradient(150deg,#2F6BFF,#0039C4);align-items:center;justify-content:center;box-shadow:0 14px 30px -12px rgba(0,57,196,.6)}.maicon img{width:58%}
+.mabout h2{font-size:28px;font-weight:800;margin:14px 0 4px}.mabout p{font-size:15px}
+.msoc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.msi{display:flex;align-items:center;gap:10px;padding:14px;text-decoration:none;color:var(--ink);margin:0}
+.msic{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}.msic svg{width:20px;height:20px}
+.msi b{flex:1;font-size:14.5px;font-weight:600}.msx{color:var(--blue2);display:flex}.msx svg{width:18px;height:18px}
+.legal .lgb{max-height:60vh;overflow:auto;font-size:14px;line-height:1.55}.legal .lgb p{margin-bottom:10px}
+/* qorong'i rejim — chuqur ko'k */
+[data-theme=dark] body{background:#070B1E}
+[data-theme=dark] .mc,[data-theme=dark] .card{border:1px solid rgba(120,140,255,.10);box-shadow:0 14px 34px -20px rgba(0,0,0,.8)}
+[data-theme=dark] .mri{background:#1D2756;box-shadow:inset 0 0 0 1px rgba(120,150,255,.25);color:#7FA6FF}
+[data-theme=dark] .rbtn,[data-theme=dark] .st{background:#18204A;box-shadow:none;border:1px solid rgba(120,140,255,.14)}
+[data-theme=dark] .mcode,[data-theme=dark] .mseg{background:#0B1029}
+[data-theme=dark] .mbar{background:#121938;box-shadow:0 14px 34px -14px rgba(0,0,0,.8),0 0 0 1px rgba(120,140,255,.14)}
+[data-theme=dark] .mbar button.on{background:#1D2756;color:#7FA6FF;box-shadow:inset 0 0 0 1px rgba(120,150,255,.35)}
+[data-theme=dark] .mpc{box-shadow:0 14px 30px -14px rgba(31,91,240,.55)}
+[data-theme=dark] .mtip{box-shadow:none}
+[data-theme=dark] .mseg2{background:#121938}[data-theme=dark] .mseg2 button.on{background:#1F5BF0;color:#fff}
+@media (max-width:959px){
+ [data-theme=dark] .app{background:radial-gradient(120% 60% at 50% -10%,#123A9C 0,#0B1B5C 30%,#08102E 55%,#070B1E 75%)}
+ [data-theme=dark] .top.scr{background:rgba(8,14,40,.85)}
+}
 </style>
 </head>
 <body>
@@ -743,14 +785,21 @@ const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
 const pick = (a, n) => shuffle(a).slice(0, n);
 const norm = (s) => String(s).toLowerCase().replace(/[’`]/g, "'").replace(/[.,!?;:"]/g, "").replace(/\s+/g, " ").trim();
 
-let THEME = "light";
-try { THEME = localStorage.getItem("zl-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch {}
+let THEME = "light", THEME_PREF = "system";
+const DARKMQ = matchMedia("(prefers-color-scheme: dark)");
+try { THEME_PREF = localStorage.getItem("zl-theme") || "system"; } catch {}
 function applyTheme(t) {
-  THEME = t; document.documentElement.dataset.theme = t;
-  const mt = document.querySelector('meta[name=theme-color]'); if (mt) mt.content = t === "dark" ? "#0E1424" : "#0046E0";
+  THEME_PREF = t;
+  THEME = t === "system" ? (DARKMQ.matches ? "dark" : "light") : t;
+  document.documentElement.dataset.theme = THEME;
+  const mt = document.querySelector('meta[name=theme-color]'); if (mt) mt.content = THEME === "dark" ? "#0A1238" : "#E8F0FF";
   try { localStorage.setItem("zl-theme", t); } catch {}
 }
-applyTheme(THEME);
+applyTheme(THEME_PREF);
+DARKMQ.addEventListener && DARKMQ.addEventListener("change", () => { if (THEME_PREF === "system") { applyTheme("system"); if (S.me) renderApp(); } });
+const PREF = (k, d) => { try { const v = localStorage.getItem("zl-p-" + k); return v == null ? d : v === "1"; } catch { return d; } };
+const setPref = (k, v) => { try { localStorage.setItem("zl-p-" + k, v ? "1" : "0"); } catch {} };
+function haptic(ok) { if (!PREF("vib", true) || !navigator.vibrate) return; try { navigator.vibrate(ok ? 18 : [50, 40, 50]); } catch {} }
 const IC = {
   home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>',
   game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10v5M4.5 12.5h5M15 11h.01M18 14h.01"/></svg>',
@@ -1059,7 +1108,7 @@ function renderApp() {
   $("#tSearch").onclick = () => { S.vtab = "dict"; go("words"); };
   $(".lout").onclick = logout;
   bindTheme($(".navfoot"));
-  ({ home: desk() ? viewHome : viewHomeM, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: desk() ? viewMe : viewMeM, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite, badges: viewBadges })[S.tab]();
+  ({ home: desk() ? viewHome : viewHomeM, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: desk() ? viewMe : viewMeM, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite, badges: viewBadges, settings: viewSettings, notif: viewNotif, about: viewAbout })[S.tab]();
   renderSide();
 }
 addEventListener("scroll", () => { const t = document.querySelector(".top"); if (t) t.classList.toggle("scr", scrollY > 8); }, { passive: true });
@@ -1357,6 +1406,7 @@ function grade(L, e, answer) {
   else { ok = answer === e.ans; right = e.ans; }
   const key = L.i;
   if (!e.retry) { L.graded++; if (ok) L.firstOk++; }
+  haptic(ok);
   if (e.t === "mcq" || e.t === "listen") {
     $("#ex").querySelectorAll(".opt").forEach((b) => { b.disabled = true; if (b.dataset.v === e.ans) b.classList.add("ok"); else if (b.classList.contains("sel")) b.classList.add("bad"); });
   }
@@ -1944,6 +1994,7 @@ async function startDuel(opts = {}) {
     if (locked) return; locked = true; clearInterval(tick); clearTimeout(oppT);
     const ms = Math.min(LIM, Date.now() - t0), q = Q[i], c = a != null && a === q.answer ? 1 : 0;
     ans.push({ a, ms }); my += pts({ c, ms }); if (!solo) op += pts(r.opp[i]);
+    haptic(c);
     $("#qo").querySelectorAll(".opt").forEach((b) => { b.disabled = true; if (b.textContent === q.answer) b.classList.add("ok"); else if (b === btn) b.classList.add("bad"); });
     if (!solo) $("#oa").dataset.done = 1;
     if (!solo) { $("#oa").textContent = r.opp[i].c ? `${rv.name}: to'g'ri ✓` : `${rv.name}: xato ✗`; $("#oa").className = "okopp done " + (r.opp[i].c ? "g" : "r"); }
@@ -2101,7 +2152,8 @@ function viewMe() {
     <div class="avpick big" id="avp">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Ko'rinish</h3>
     <div id="pth">${themeHTML()}</div>
-    <button class="btn ghost" id="en" style="margin-top:18px">✏️ Profilni tahrirlash</button>
+    <div class="grid2" style="margin-top:18px;grid-template-columns:1fr 1fr 1fr"><button class="btn ghost" id="dSet">⚙️ Sozlamalar</button><button class="btn ghost" id="dNot">🔔 Bildirishnomalar</button><button class="btn ghost" id="dAb">ℹ️ Ilova haqida</button></div>
+    <button class="btn ghost" id="en" style="margin-top:10px">✏️ Profilni tahrirlash</button>
     <button class="btn ghost" id="lo" style="margin-top:10px;color:var(--red)">Chiqish</button>`;
   $("#lo").onclick = logout;
   bindTheme($("#pth"));
@@ -2113,6 +2165,7 @@ function viewMe() {
   }));
   $("#en").onclick = editProfile;
   $("#meInv").onclick = () => go("invite");
+  $("#dSet").onclick = () => go("settings"); $("#dNot").onclick = () => go("notif"); $("#dAb").onclick = () => go("about");
   api("badges").then((r) => {
     if (!r.ok || S.tab !== "me" || !$("#bgs")) return;
     $("#bgc").textContent = `${r.done} / ${r.list.length}`;
@@ -2133,6 +2186,17 @@ const MI = {
   invite: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c.8-4 3.6-6 7-6s6.2 2 7 6M19 8v6M16 11h6"/></svg>',
   medal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>',
   palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.5-1-2-1-3s.8-2 2-2h2a4 4 0 0 0 4-4c0-4-4-7-9-7z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9M10 20a2.2 2.2 0 0 0 4 0"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+  vib: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4 9v6M20 9v6M1.5 11v2M22.5 11v2"/></svg>',
+  lang: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8.5 3v2M6 5c.5 3 2.5 6 6 8M11 5c-.5 3-3 6.5-7 8.5M13 21l4-10 4 10M14.5 17.5h5"/></svg>',
+  key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c.8-4 3.6-6 7-6 1.4 0 2.6.3 3.7.9M16 15l5 5M21 15l-5 5"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>',
   face: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1.8 2 5.2 2 7 0M9 9.5h.01M15 9.5h.01"/></svg>',
 };
 const coin3d = (sz = 64) => `<span class="coin3d" style="width:${sz}px;height:${sz}px"><img src="/img/logo-mark-white.png" alt=""></span>`;
@@ -2191,7 +2255,7 @@ function viewMeM() {
   const m = S.me, all = lessons(), doneN = Object.keys(m.done).length, t = m.tier;
   const lp = t.total ? Math.round((t.done / t.total) * 100) : 100;
   $("#main").innerHTML = `
-    <div class="mph"><h1>Profil</h1><div><button class="rbtn" id="mEdit" aria-label="Profilni tahrirlash">${MI.pen}</button></div></div>
+    <div class="mph"><h1>Profil</h1><div class="mphb"><button class="rbtn" id="mBell" aria-label="Bildirishnomalar">${MI.bell}<i class="ndot hide" id="nDot"></i></button><button class="rbtn" id="mSet" aria-label="Sozlamalar">${MI.gear}</button></div></div>
     <section class="mc mprof">
       <div class="mpr"><button class="mav" id="mPh" aria-label="Profil rasmini o'zgartirish">${userPic(m.user, 68)}<span>${IC.camera}</span></button>
         <div><b>${esc(m.user.name)}</b><small>${MI.phone}${esc(fmtPhone(m.user.phone))}</small></div></div>
@@ -2217,7 +2281,8 @@ function viewMeM() {
       ${mRow("practice", IC.game, "Mashqlar")}
       ${mRow("rating", IC.trophy, "Haftalik reyting")}
       ${mRow("hero", MI.face, "Xaritadagi qahramon", `<em class="mpill">${AV() === "girl" ? "Qiz bola" : "O'g'il bola"}</em>`)}
-      <div class="mli"><span class="mri">${MI.palette}</span><b>Ko'rinish</b><span id="mTh" class="mth">${themeHTML()}</span></div>
+      ${mRow("settings", MI.gear, "Sozlamalar")}
+      ${mRow("about", MI.info, "Ilova haqida")}
     </section>
     <section class="mc mlist"><button class="mli red" id="mOut"><span class="mri">${IC.logout}</span><b>Profildan chiqish</b></button></section>
     <div class="mver"><img src="/img/logo-mark-blue.png" alt=""><b>Zeehn Lingo</b><small>Versiya 1.0</small></div>`;
@@ -2227,10 +2292,11 @@ function viewMeM() {
     if (g === "hero") return heroSheet();
     go(g);
   }));
-  $("#mEdit").onclick = editProfile;
+  $("#mBell").onclick = () => go("notif");
+  $("#mSet").onclick = () => go("settings");
+  notifDot();
   $("#mPh").onclick = () => pickPhoto(refresh);
   $("#mOut").onclick = () => { if (confirm("Profildan chiqasizmi?")) logout(); };
-  bindTheme($("#mTh"));
   api("invite").then((r) => {
     if (!r.ok || !$("#mCode")) return;
     $("#mCode").textContent = "•••" + r.code.slice(-3).toUpperCase();
@@ -2258,6 +2324,134 @@ async function viewBadges() {
   $("#bgc").textContent = `${r.done} / ${r.list.length}`;
   $("#bgs").innerHTML = r.list.map((b) => `<div class="bdg ${b.done ? "on" : ""}"><span class="bde">${b.e}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small>
     ${b.done ? `<em class="bdk">✓ Olindi</em>` : `<div class="bdp"><div style="width:${Math.round((b.cur / b.n) * 100)}%"></div></div><small class="bdn">${b.cur} / ${b.n}</small>`}</div>`).join("");
+}
+
+/* ---------- Sozlamalar / Bildirishnomalar / Ilova haqida ---------- */
+const subHead = (title, extra = "") => `<div class="msub"><button class="msb" id="sBack" aria-label="Orqaga">${MI.back}</button><h1>${title}</h1>${extra}</div>`;
+const bindBack = () => { $("#sBack").onclick = () => go("me"); };
+const tgl = (id, on, label) => `<button class="tgl ${on ? "on" : ""}" id="${id}" role="switch" aria-checked="${on}" aria-label="${label}"><i></i></button>`;
+function viewSettings() {
+  const tp = THEME_PREF;
+  $("#main").innerHTML = subHead("Sozlamalar") + `
+    <section class="mc mlist"><h4>Bildirishnomalar</h4>
+      <div class="mli"><span class="mri">${MI.bell}</span><b>Eslatmalar</b>${tgl("tNot", PREF("notif", true), "Eslatmalar")}</div>
+      <div class="mli"><span class="mri">${MI.vib}</span><b>Tebranish</b>${tgl("tVib", PREF("vib", true), "Tebranish")}</div>
+    </section>
+    <section class="mc mlist"><h4>Ko'rinish</h4>
+      <button class="mli" id="sLang"><span class="mri">${MI.lang}</span><b>Til</b><span class="mval">O'zbekcha</span><span class="mrc">${MI.chev}</span></button>
+      <div class="mthl">Mavzu</div>
+      <div class="mseg" id="sTheme">${[["system", "Tizim"], ["light", IC.sun], ["dark", IC.moon]].map(([k, l]) => `<button data-th2="${k}" class="${tp === k ? "on" : ""}" aria-label="${k === "system" ? "Tizim mavzusi" : k === "light" ? "Yorug' mavzu" : "Qorong'i mavzu"}">${l}</button>`).join("")}</div>
+    </section>
+    <section class="mc mlist"><h4>Xavfsizlik</h4>
+      <button class="mli" id="sPass"><span class="mri">${MI.key}</span><b>Parolni o'zgartirish</b><span class="mrc">${MI.chev}</span></button>
+    </section>
+    <section class="mc mlist"><h4>Hisob</h4>
+      <button class="mli" id="sEdit"><span class="mri">${MI.pen}</span><b>Profil ma'lumotlari</b><span class="mrc">${MI.chev}</span></button>
+      <button class="mli red" id="sDel"><span class="mri">${MI.trash}</span><b>Akkauntni o'chirish</b></button>
+    </section>
+    <section class="mc mlist"><button class="mli" id="sAbout"><span class="mri">${MI.info}</span><b>Ilova haqida</b><span class="mrc">${MI.chev}</span></button></section>
+    <p class="mvt">Versiya 1.0</p>`;
+  bindBack();
+  const flip = (id, key, after) => { const b = $("#" + id); b.onclick = async () => { const on = !b.classList.contains("on"); b.classList.toggle("on", on); b.setAttribute("aria-checked", on); setPref(key, on); after && after(on); }; };
+  flip("tNot", "notif", async (on) => {
+    if (on && "Notification" in window && Notification.permission === "default") { try { await Notification.requestPermission(); } catch {} }
+    toast(on ? "🔔 Eslatmalar yoqildi" : "Eslatmalar o'chirildi");
+  });
+  flip("tVib", "vib", (on) => { if (on) haptic(true); toast(on ? "📳 Javoblarda tebranish yoqildi" : "Tebranish o'chirildi"); });
+  document.querySelectorAll("#sTheme [data-th2]").forEach((b) => (b.onclick = () => { applyTheme(b.dataset.th2); renderApp(); }));
+  $("#sLang").onclick = () => toast("Hozircha faqat o'zbek tili. Rus tili tez orada 🇷🇺", 2600);
+  $("#sPass").onclick = editProfile; $("#sEdit").onclick = editProfile;
+  $("#sAbout").onclick = () => go("about");
+  $("#sDel").onclick = deleteAccount;
+}
+function deleteAccount() {
+  const d = document.createElement("div");
+  d.className = "dim";
+  d.innerHTML = `<div class="sheet"><div style="font-size:42px;text-align:center">⚠️</div>
+    <h2 class="t" style="text-align:center;margin:6px 0">Akkauntni o'chirasizmi?</h2>
+    <p class="muted" style="text-align:center;font-size:14px;margin-bottom:14px">Barcha darslaringiz, coinlaringiz, so'zlaringiz, nishon va bellashuvlaringiz <b>butunlay o'chadi</b>. Buni qaytarib bo'lmaydi.</p>
+    <form id="delf">${pwField("password", "Tasdiqlash uchun parolingiz", "current-password")}<p class="ferr" id="dfe"></p>
+    <button class="btn" type="submit" style="background:var(--red);box-shadow:0 4px 0 #B8333A">Ha, butunlay o'chirish</button></form>
+    <button class="btn ghost" id="dcl" style="margin-top:10px">Bekor qilish</button></div>`;
+  document.body.appendChild(d);
+  d.onclick = (e) => { if (e.target === d) d.remove(); };
+  $("#dcl", d).onclick = () => d.remove();
+  d.querySelectorAll(".eye").forEach((b) => (b.onclick = () => { const i = b.previousElementSibling, sh = i.type === "password"; i.type = sh ? "text" : "password"; b.innerHTML = sh ? IC.eyeOff : IC.eye; }));
+  $("#delf", d).onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await api("account/delete", { password: e.target.password.value });
+    if (!r.ok) { $("#dfe", d).textContent = r.error || "Xatolik"; return; }
+    d.remove(); S.me = null; S.chat = []; renderAuth("reg"); toast("Akkauntingiz o'chirildi", 3000);
+  };
+}
+const NEWS = [
+  ["2026-11-26", "📱", "Yangi ilova dizayni", "Bosh sahifa, profil, sozlamalar va qorong'i rejim yangilandi."],
+  ["2026-11-25", "⚔️", "Do'st bilan Oktagon", "Do'stingizga chaqiruv havolasini yuboring va bir xil savollarda bellashing."],
+  ["2026-11-25", "🏅", "Yutuq nishonlari", "14 ta nishon: darslar, ketma-ket kunlar, so'zlar, g'alabalar uchun."],
+  ["2026-11-25", "🎁", "Do'st taklif qilish", "Do'stingiz birinchi darsini tugatsa, ikkalangizga +100 coin."],
+  ["2026-11-23", "🎙", "AI ovozli suhbat va lug'at", "Istalgan so'zni tarjima qiling, AI bilan inglizcha gaplashing."],
+];
+const fmtDay = (t) => { const d = String(t || "").slice(0, 10).split("-"); return d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : ""; };
+function notifDot() {
+  const seen = LS.get("zl-notif-seen") || "";
+  const has = NEWS[0][0] > seen.slice(0, 10);
+  const el = $("#nDot"); if (el) el.classList.toggle("hide", !has);
+}
+async function viewNotif() {
+  S.ntab = S.ntab || "news";
+  $("#main").innerHTML = subHead("Bildirishnomalar") + `
+    <div class="mseg2"><button data-n="news" class="${S.ntab === "news" ? "on" : ""}">Yangiliklar</button><button data-n="msg" class="${S.ntab === "msg" ? "on" : ""}">Xabarlar</button></div>
+    <div id="nl"></div>`;
+  bindBack();
+  document.querySelectorAll(".mseg2 [data-n]").forEach((b) => (b.onclick = () => { S.ntab = b.dataset.n; viewNotif(); }));
+  LS.set("zl-notif-seen", new Date().toISOString());
+  const empty = (e, t, x) => `<div class="mempty"><span>${e}</span><b>${t}</b><p class="muted">${x}</p></div>`;
+  const item = (e, title, text, t) => `<div class="mc mni"><span class="mne">${e}</span><div><b>${esc(title)}</b><p>${esc(text)}</p><small>${fmtDay(t)}</small></div></div>`;
+  if (S.ntab === "news") { $("#nl").innerHTML = NEWS.map((n) => item(n[1], n[2], n[3], n[0])).join(""); return; }
+  $("#nl").innerHTML = `<div class="dots" style="text-align:center;padding:30px"><span></span><span></span><span></span></div>`;
+  const r = await api("notifications");
+  if (!r.ok || S.tab !== "notif") return;
+  $("#nl").innerHTML = r.items.length ? r.items.map((x) => item(x.e, x.title, x.text, x.t)).join("") : empty("📭", "Hozircha xabarlar yo'q", "Do'stlaringiz qo'shilganda, chaqiruvlaringiz qabul qilinganda va sovg'alar bo'yicha xabarlar shu yerda chiqadi.");
+}
+const LEGAL = {
+  terms: ["Foydalanish shartlari", `<p>Zeehn Lingo — Zeehn Innovatsion Academy tomonidan yaratilgan ingliz tilini o'rganish ilovasi.</p>
+    <p><b>1. Hisob.</b> Ro'yxatdan o'tishda o'z ismingiz va telefon raqamingizni kiriting. Parolingizni boshqalarga bermang.</p>
+    <p><b>2. Coin va sovg'alar.</b> Coin faqat ilova ichidagi ballar bo'lib, pulga almashtirilmaydi. Sovg'alar ro'yxati va narxlari akademiya tomonidan o'zgartirilishi mumkin. Soxta hisoblar orqali coin yig'ish aniqlansa, coin va sovg'alar bekor qilinadi.</p>
+    <p><b>3. Xulq-atvor.</b> Ism va profil rasmida haqoratli yoki boshqa odamga tegishli ma'lumot ishlatmang.</p>
+    <p><b>4. O'zgarishlar.</b> Ilova va bu shartlar yangilanishi mumkin; muhim o'zgarishlar «Bildirishnomalar»da e'lon qilinadi.</p>`],
+  privacy: ["Maxfiylik siyosati", `<p><b>Qanday ma'lumot saqlanadi:</b> ismingiz, telefon raqamingiz, parolingiz (shifrlangan holda), profil rasmingiz (agar qo'ysangiz), darslar natijalari, coinlar, lug'atingiz va bellashuvlaringiz.</p>
+    <p><b>Nima uchun:</b> faqat ilovani ishlatishingiz, progressingizni saqlash va reytingni ko'rsatish uchun. Reytingda boshqa foydalanuvchilarga faqat ismingiz va rasmingiz ko'rinadi.</p>
+    <p><b>Ovoz:</b> ovozli mashq va qidiruvda mikrofon faqat siz tugmani bosganingizda ishlaydi; ovoz brauzer/telefon tomonidan matnga aylantiriladi.</p>
+    <p><b>Uchinchi tomonlar:</b> ma'lumotlaringiz sotilmaydi. Lug'atda kursda yo'q so'zlar tarjima xizmatiga yuboriladi (faqat so'zning o'zi).</p>
+    <p><b>O'chirish:</b> Sozlamalar → «Akkauntni o'chirish» orqali barcha ma'lumotlaringizni istalgan vaqtda butunlay o'chirishingiz mumkin.</p>
+    <p><b>Aloqa:</b> +998 99 299 55 88 · t.me/ZeehnAcademy</p>`],
+};
+function legalSheet(k) {
+  const [t, h] = LEGAL[k];
+  const d = document.createElement("div");
+  d.className = "dim";
+  d.innerHTML = `<div class="sheet legal"><h2 class="t">${t}</h2><div class="lgb">${h}</div><button class="btn ghost" id="lgc" style="margin-top:14px">Yopish</button></div>`;
+  document.body.appendChild(d);
+  d.onclick = (e) => { if (e.target === d) d.remove(); };
+  $("#lgc", d).onclick = () => d.remove();
+}
+function viewAbout() {
+  const soc = [
+    ["Telegram", "https://t.me/ZeehnAcademy", "#229ED9", '<svg viewBox="0 0 24 24" fill="#fff"><path d="M21.5 4.3L2.9 11.5c-1.1.4-1.1 1.5 0 1.8l4.6 1.4 1.8 5.5c.2.6 1 .8 1.5.3l2.6-2.4 4.7 3.4c.6.4 1.4.1 1.6-.6l3.1-14.6c.2-.9-.6-1.5-1.3-1z"/></svg>'],
+    ["Instagram", "https://instagram.com/zeehn.academy", "linear-gradient(45deg,#F9CE34,#EE2A7B,#6228D7)", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>'],
+    ["Rasmiy sayt", "https://zeehnacademy.uz", "#0046E0", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/></svg>'],
+    ["Qo'ng'iroq", "tel:+998992995588", "#1FB45A", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>'],
+  ];
+  $("#main").innerHTML = subHead("Ilova haqida") + `
+    <section class="mc mabout"><span class="maicon"><img src="/img/logo-mark-white.png" alt=""></span><h2>Zeehn Lingo</h2><p class="muted">Ingliz tilini har kuni 10 daqiqada, o'yin kabi o'rganing</p></section>
+    <section class="mc mlist">
+      <button class="mli" data-lg="terms"><span class="mri">${MI.doc}</span><b>Foydalanish shartlari</b><span class="mrc">${MI.chev}</span></button>
+      <button class="mli" data-lg="privacy"><span class="mri">${MI.shield}</span><b>Maxfiylik siyosati</b><span class="mrc">${MI.chev}</span></button>
+    </section>
+    <div class="msoc">${soc.map(([n, u, c, i]) => `<a class="mc msi" href="${u}" target="_blank" rel="noopener"><span class="msic" style="background:${c}">${i}</span><b>${n}</b><span class="msx">${MI.ext}</span></a>`).join("")}</div>
+    <p class="mvt">Versiya 1.0 · © 2026 Zeehn Innovatsion Academy</p>`;
+  bindBack();
+  document.querySelectorAll("[data-lg]").forEach((b) => (b.onclick = () => legalSheet(b.dataset.lg)));
 }
 
 boot();

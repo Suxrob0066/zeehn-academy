@@ -747,6 +747,37 @@ export async function handleLingo(req, env, url) {
     return json({ ok: true, coins: xp, streak });
   }
 
+  // Bildirishnomalar: shaxsiy xabarlar (do'stlar, bellashuvlar, sovg'alar)
+  if (path === "notifications" && m === "GET") {
+    const [fr, ch, cl] = await Promise.all([
+      env.DB.prepare("SELECT name,ref_paid,created_at FROM lingo_users WHERE ref_by=? ORDER BY id DESC LIMIT 15").bind(user.id).all(),
+      env.DB.prepare("SELECT d.score,d.opp_score,d.result,d.coins,d.created_at,u.name FROM lingo_duels d LEFT JOIN lingo_users u ON u.id=d.opp_user WHERE d.user_id=? AND d.token IS NOT NULL AND d.result IN ('win','lose','draw') ORDER BY d.id DESC LIMIT 15").bind(user.id).all(),
+      env.DB.prepare("SELECT gift,cost,status,created_at FROM lingo_claims WHERE user_id=? ORDER BY id DESC LIMIT 10").bind(user.id).all(),
+    ]);
+    const gname = Object.fromEntries(GIFTS.map((g) => [g.id, g.name]));
+    const items = [];
+    for (const f of fr.results || []) items.push({ t: f.created_at, e: "🤝", title: f.ref_paid ? `${f.name} birinchi darsini tugatdi` : `${f.name} havolangiz orqali qo'shildi`, text: f.ref_paid ? `Sizga +${REF_BONUS} coin berildi` : `U birinchi darsni tugatsa, ikkalangizga +${REF_BONUS} coin` });
+    const rs = { win: "Siz yutdingiz! 🏆", lose: "Bu safar do'stingiz yutdi", draw: "Durrang 🤝" };
+    for (const c of ch.results || []) items.push({ t: c.created_at, e: "⚔️", title: `${c.name || "Do'stingiz"} chaqiruvingizni qabul qildi`, text: `${rs[c.result]} · ${c.score} : ${c.opp_score} · +${c.coins} coin` });
+    for (const c of cl.results || []) items.push({ t: c.created_at, e: "🎁", title: `${gname[c.gift] || "Sovg'a"} — ${c.status === "done" ? "berildi" : c.status === "cancel" ? "bekor qilindi" : "so'rov qabul qilindi"}`, text: c.status === "new" ? "Sovg'ani akademiyadan olib ketishingiz mumkin" : `${c.cost} coin` });
+    items.sort((x, y) => (x.t < y.t ? 1 : -1));
+    return json({ ok: true, items: items.slice(0, 30) });
+  }
+
+  // Hisobni butunlay o'chirish (parol bilan tasdiqlanadi)
+  if (path === "account/delete" && m === "POST") {
+    const b = await readBody(req);
+    const row = await env.DB.prepare("SELECT pass FROM lingo_users WHERE id=?").bind(user.id).first();
+    if (!row || !(await verifyPassword(String(b.password || ""), row.pass))) return err("Parol noto'g'ri");
+    const id = user.id;
+    await env.DB.batch([
+      ...["lingo_sessions", "lingo_done", "lingo_chests", "lingo_words", "lingo_xp", "lingo_ai", "lingo_dq", "lingo_duels", "lingo_claims"].map((t) => env.DB.prepare(`DELETE FROM ${t} WHERE user_id=?`).bind(id)),
+      env.DB.prepare("UPDATE lingo_users SET ref_by=NULL WHERE ref_by=?").bind(id),
+      env.DB.prepare("DELETE FROM lingo_users WHERE id=?").bind(id),
+    ]);
+    return json({ ok: true }, 200, { "Set-Cookie": "zl=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax" });
+  }
+
   if (path === "password" && m === "POST") {
     const b = await readBody(req);
     const np = String(b.new || "");
