@@ -1,0 +1,25 @@
+{
+  "name": "zeehn-lingo-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zeehn Lingo — Android/iOS ilova (Capacitor). Kontent zeehnacademy.uz/lingo dan yuklanadi.",
+  "scripts": {
+    "add:android": "cap add android",
+    "assets": "capacitor-assets generate --android --iconBackgroundColor '#0046E0' --iconBackgroundColorDark '#070B1E' --splashBackgroundColor '#0046E0' --splashBackgroundColorDark '#070B1E'",
+    "sync": "cap sync android",
+    "open": "cap open android",
+    "apk": "cd android && ./gradlew assembleDebug",
+    "aab": "cd android && ./gradlew bundleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0"
+  }
+}

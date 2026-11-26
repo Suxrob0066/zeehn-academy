@@ -92,65 +92,85 @@ const GIFTS = [
 // Inglizcha izoh, talaffuz va audio — Free Dictionary API (dictionaryapi.dev, bepul).
 const DICT_DAILY = 80;
 const POS_UZ = { noun: "ot", verb: "fe'l", adjective: "sifat", adverb: "ravish", pronoun: "olmosh", preposition: "predlog", conjunction: "bog'lovchi", interjection: "undov", numeral: "son", determiner: "aniqlovchi" };
-const cleanQ = (q) => String(q || "").toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9'\- ʻʼoʻgʻ]/gi, " ").replace(/\s+/g, " ").trim().slice(0, 40);
+const cleanQ = (q) => String(q || "").toLowerCase().replace(/[’‘`ʻʼ´]/g, "'").replace(/[^a-z0-9'\- Ѐ-ӿ]/gi, " ").replace(/\s+/g, " ").trim().slice(0, 40);
+const tfetch = (u, o = {}) => fetch(u, { ...o, signal: AbortSignal.timeout(7000) });
+async function tlog(env, provider, ok, q, note) {
+  try { await env.DB.prepare("INSERT INTO lingo_tlog (provider,ok,q,note) VALUES (?,?,?,?)").bind(provider, ok ? 1 : 0, String(q).slice(0, 40), String(note || "").slice(0, 200)).run(); } catch {}
+}
+const uniqLow = (arr) => { const seen = new Set(); return arr.map((x) => String(x || "").trim()).filter((x) => { const k = x.toLowerCase(); if (!x || seen.has(k)) return false; seen.add(k); return true; }); };
 
+// Tarjima: kalitli xizmatlar → Google (kalitsiz) → MyMemory. Natija: { text, alts[], pos, src }
 async function translate(env, text, from, to) {
+  const single = !/\s/.test(text.trim());
+  const fix = (t) => { t = String(t || "").trim().replace(/^["'«]+|["'».!]+$/g, ""); return single && t === t.toUpperCase() && t.length > 3 ? t.toLowerCase() : t; };
+  const bad = (t) => !t || t.toLowerCase() === text.toLowerCase() || /MYMEMORY WARNING|INVALID|QUERY LENGTH|NO QUERY/i.test(t);
   try {
     if (env.DEEPL_API_KEY) {
       const host = env.DEEPL_API_KEY.endsWith(":fx") ? "api-free.deepl.com" : "api.deepl.com";
-      const r = await fetch(`https://${host}/v2/translate`, {
-        method: "POST",
-        headers: { Authorization: "DeepL-Auth-Key " + env.DEEPL_API_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ text: [text], source_lang: from.toUpperCase(), target_lang: to.toUpperCase() }),
-      });
-      const j = await r.json();
-      if (j.translations?.[0]?.text) return { text: j.translations[0].text, src: "DeepL" };
+      const r = await tfetch(`https://${host}/v2/translate`, { method: "POST", headers: { Authorization: "DeepL-Auth-Key " + env.DEEPL_API_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ text: [text], source_lang: from.toUpperCase(), target_lang: to.toUpperCase() }) });
+      const t = fix((await r.json()).translations?.[0]?.text);
+      if (!bad(t)) return { text: t, alts: [], src: "DeepL" };
     }
     if (env.GOOGLE_TRANSLATE_KEY) {
-      const r = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${env.GOOGLE_TRANSLATE_KEY}`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ q: text, source: from, target: to, format: "text" }),
-      });
-      const j = await r.json();
-      const t = j.data?.translations?.[0]?.translatedText;
-      if (t) return { text: t, src: "Google" };
+      const r = await tfetch(`https://translation.googleapis.com/language/translate/v2?key=${env.GOOGLE_TRANSLATE_KEY}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ q: text, source: from, target: to, format: "text" }) });
+      const t = fix((await r.json()).data?.translations?.[0]?.translatedText);
+      if (!bad(t)) return { text: t, alts: [], src: "Google" };
     }
     if (env.AZURE_TRANSLATOR_KEY) {
-      const r = await fetch(`https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${from}&to=${to}`, {
-        method: "POST",
-        headers: { "Ocp-Apim-Subscription-Key": env.AZURE_TRANSLATOR_KEY, "Ocp-Apim-Subscription-Region": env.AZURE_TRANSLATOR_REGION || "global", "Content-Type": "application/json" },
-        body: JSON.stringify([{ Text: text }]),
-      });
-      const j = await r.json();
-      const t = j?.[0]?.translations?.[0]?.text;
-      if (t) return { text: t, src: "Microsoft" };
-    }
-    const u = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}${env.MYMEMORY_EMAIL ? "&de=" + encodeURIComponent(env.MYMEMORY_EMAIL) : ""}`;
-    const r = await fetch(u, { headers: { "User-Agent": "ZeehnLingo/1.0" } });
-    const j = await r.json();
-    let t = j.responseData?.translatedText;
-    if (t && !/MYMEMORY WARNING|INVALID|QUERY LENGTH/i.test(t)) {
-      if (t === t.toUpperCase() && t.length > 3) t = t.toLowerCase();
-      return { text: t, src: "MyMemory" };
+      const r = await tfetch(`https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${from}&to=${to}`, { method: "POST", headers: { "Ocp-Apim-Subscription-Key": env.AZURE_TRANSLATOR_KEY, "Ocp-Apim-Subscription-Region": env.AZURE_TRANSLATOR_REGION || "global", "Content-Type": "application/json" }, body: JSON.stringify([{ Text: text }]) });
+      const t = fix((await r.json())?.[0]?.translations?.[0]?.text);
+      if (!bad(t)) return { text: t, alts: [], src: "Microsoft" };
     }
   } catch (e) {}
+  // Google (kalitsiz) — lug'at ma'nolari bilan
+  try {
+    const r = await tfetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(text)}`, { headers: { "User-Agent": "Mozilla/5.0 (Linux; Android 13) ZeehnLingo/1.0", Accept: "application/json" } });
+    if (r.ok) {
+      const j = await r.json();
+      const main = fix((j.sentences || []).map((x) => x.trans || "").join(""));
+      const dict = Array.isArray(j.dict) ? j.dict : [];
+      const alts = uniqLow(dict.flatMap((d) => (d.entry || []).slice(0, 3).map((e) => e.word))).filter((x) => x.toLowerCase() !== main.toLowerCase()).slice(0, 4);
+      if (!bad(main) || alts.length) { await tlog(env, "google", 1, text, main); return { text: bad(main) ? alts[0] : main, alts: bad(main) ? alts.slice(1) : alts, pos: dict[0]?.pos || "", src: "Google Tarjimon" }; }
+      await tlog(env, "google", 0, text, "bo'sh javob");
+    } else await tlog(env, "google", 0, text, "HTTP " + r.status);
+  } catch (e) { await tlog(env, "google", 0, text, String(e && e.message || e)); }
+  // MyMemory — eng sifatli moslikni tanlaymiz
+  try {
+    const u = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}${env.MYMEMORY_EMAIL ? "&de=" + encodeURIComponent(env.MYMEMORY_EMAIL) : ""}`;
+    const r = await tfetch(u, { headers: { "User-Agent": "ZeehnLingo/1.0" } });
+    if (r.ok) {
+      const j = await r.json();
+      const cands = [{ t: j.responseData?.translatedText, q: (j.responseData?.match || 0) * 100 }, ...(j.matches || []).map((m) => ({ t: m.translation, q: Number(m.quality) || 0 }))]
+        .map((c) => ({ ...c, t: fix(c.t) })).filter((c) => !bad(c.t) && c.t.length <= 60);
+      cands.sort((a, b) => b.q - a.q);
+      const list = uniqLow(cands.map((c) => c.t));
+      if (list.length) { await tlog(env, "mymemory", 1, text, list[0]); return { text: list[0], alts: list.slice(1, 4), src: "MyMemory" }; }
+      await tlog(env, "mymemory", 0, text, "mos tarjima yo'q");
+    } else await tlog(env, "mymemory", 0, text, "HTTP " + r.status);
+  } catch (e) { await tlog(env, "mymemory", 0, text, String(e && e.message || e)); }
   return null;
 }
+const POS_EN = { noun: "noun", verb: "verb", adjective: "adjective", adverb: "adverb", pronoun: "pronoun", preposition: "preposition", conjunction: "conjunction", interjection: "interjection" };
+const uzJoin = (t) => uniqLow([t.text, ...(t.alts || [])]).slice(0, 4).join(", ");
 
 async function enInfo(word) {
   try {
-    const r = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    const r = await tfetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
     if (!r.ok) return {};
     const j = await r.json();
-    const e = Array.isArray(j) ? j[0] : null;
-    if (!e) return {};
-    const ph = (e.phonetics || []).find((p) => p.audio) || {};
-    const mean = (e.meanings || [])[0] || {};
-    const d = (mean.definitions || [])[0] || {};
-    const syn = [...new Set([...(mean.synonyms || []), ...(d.synonyms || [])])].slice(0, 5);
+    if (!Array.isArray(j) || !j.length) return {};
+    const meanings = j.flatMap((e) => e.meanings || []);
+    const okDef = (d) => d && d.definition && !/^\(|obsolete|archaic|slang|dialect|singlish|vulgar|rare\b/i.test(d.definition);
+    let best = null;
+    for (const m of meanings) { const d = (m.definitions || []).find(okDef); if (d) { best = { m, d }; break; } }
+    if (!best) { const m = meanings[0] || {}; best = { m, d: (m.definitions || [])[0] || {} }; }
+    const ex = best.d.example || (best.m.definitions || []).find((d) => okDef(d) && d.example)?.example || "";
+    const phs = j.flatMap((e) => e.phonetics || []);
+    const ph = phs.find((p) => p.audio && /-us\./.test(p.audio)) || phs.find((p) => p.audio) || {};
+    const syn = [...new Set([...(best.m.synonyms || []), ...(best.d.synonyms || [])])].filter((x) => !/\s/.test(x)).slice(0, 5);
     let audio = ph.audio || "";
     if (audio.startsWith("//")) audio = "https:" + audio;
-    return { phonetic: e.phonetic || ph.text || "", audio, pos: mean.partOfSpeech || "", def: d.definition || "", example: d.example || "", syn: syn.join(",") };
+    return { phonetic: j[0].phonetic || ph.text || phs.find((p) => p.text)?.text || "", audio, pos: best.m.partOfSpeech || "", def: best.d.definition || "", example: ex, syn: syn.join(",") };
   } catch (e) { return {}; }
 }
 
@@ -321,6 +341,14 @@ export async function handleLingo(req, env, url) {
     return json({ ok: true }, 200, { "Set-Cookie": cookie("", 0) });
   }
 
+  // Tarjima xizmatlari tekshiruvi (faqat belgilangan so'zlar)
+  if (path === "dict/selftest" && m === "GET") {
+    const out = {};
+    for (const [w, f, t] of [["beautiful", "en", "uz"], ["run", "en", "uz"], ["kitob", "uz", "en"]]) out[w] = await translate(env, w, f, t);
+    const e = await enInfo("what");
+    return json({ ok: true, out, def: e.def, pos: e.pos });
+  }
+
   // Do'st chaqiruvi haqida (kirmasdan ham ko'rinadi)
   if (path === "oktagon/challenge" && m === "GET") {
     const tk = String(url.searchParams.get("t") || "").replace(/[^a-z0-9]/g, "").slice(0, 16);
@@ -443,7 +471,7 @@ export async function handleLingo(req, env, url) {
       const c = Object.values(WORDS).find((w) => w.uz.toLowerCase().split(/[\/,()]/).map((x) => x.trim()).includes(q));
       if (c) en = c.en.toLowerCase();
       else {
-        const d = await env.DB.prepare("SELECT word FROM lingo_dict WHERE uz=? OR uz LIKE ? LIMIT 1").bind(q, q + ",%").first();
+        const d = await env.DB.prepare("SELECT word FROM lingo_dict WHERE uz=? OR uz LIKE ? OR uz LIKE ? OR uz LIKE ? LIMIT 1").bind(q, q + ",%", "%, " + q, "%, " + q + ",%").first();
         if (d) en = d.word;
         else {
           const used = await env.DB.prepare("SELECT n FROM lingo_dq WHERE user_id=? AND day=?").bind(user.id, today()).first();
@@ -452,6 +480,7 @@ export async function handleLingo(req, env, url) {
           if (!t) return err("Tarjima xizmati hozir javob bermadi. Keyinroq urinib ko'ring", 502);
           await env.DB.prepare("INSERT INTO lingo_dq (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, today()).run();
           en = cleanQ(t.text);
+          if (!en) return err("Bu so'zning tarjimasi topilmadi", 404);
         }
       }
     }
@@ -479,7 +508,7 @@ export async function handleLingo(req, env, url) {
     await env.DB.batch([
       env.DB.prepare("INSERT INTO lingo_dq (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, today()),
       env.DB.prepare("INSERT OR REPLACE INTO lingo_dict (word,uz,phonetic,audio,pos,def,example,syn,src) VALUES (?,?,?,?,?,?,?,?,?)")
-        .bind(en, S(t.text, 120), e.phonetic || "", e.audio || "", e.pos || "", S(e.def, 400), S(e.example, 300), e.syn || "", t.src),
+        .bind(en, S(uzJoin(t), 120), e.phonetic || "", e.audio || "", e.pos || POS_EN[t.pos] || "", S(e.def, 400), S(e.example, 300), e.syn || "", t.src),
     ]);
     const row = await env.DB.prepare("SELECT * FROM lingo_dict WHERE word=?").bind(en).first();
     return json({ ok: true, result: dictOut(row, { saved: false }) });

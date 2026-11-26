@@ -1,0 +1,28 @@
+{
+  "appId": "uz.zeehnacademy.lingo",
+  "appName": "Zeehn Lingo",
+  "webDir": "www",
+  "server": {
+    "url": "https://zeehnacademy.uz/lingo/",
+    "androidScheme": "https",
+    "allowNavigation": ["zeehnacademy.uz"],
+    "errorPath": "offline.html"
+  },
+  "android": {
+    "backgroundColor": "#E8F0FF"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#0046E0",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "LIGHT",
+      "backgroundColor": "#E8F0FF"
+    }
+  }
+}
