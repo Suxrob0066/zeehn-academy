@@ -151,6 +151,7 @@ async function translate(env, text, from, to) {
   return null;
 }
 const POS_EN = { noun: "noun", verb: "verb", adjective: "adjective", adverb: "adverb", pronoun: "pronoun", preposition: "preposition", conjunction: "conjunction", interjection: "interjection" };
+const HAS_KEYS = (env) => !!(env.DEEPL_API_KEY || env.GOOGLE_TRANSLATE_KEY || env.AZURE_TRANSLATOR_KEY);
 const uzJoin = (t) => uniqLow([t.text, ...(t.alts || [])]).slice(0, 4).join(", ");
 
 async function enInfo(word) {
@@ -476,6 +477,7 @@ export async function handleLingo(req, env, url) {
         else {
           const used = await env.DB.prepare("SELECT n FROM lingo_dq WHERE user_id=? AND day=?").bind(user.id, today()).first();
           if ((used?.n || 0) >= DICT_DAILY) return err(`Bugungi qidiruv limiti tugadi (${DICT_DAILY}). Ertaga davom eting!`, 429);
+          if (!HAS_KEYS(env)) return json({ ok: true, client: true, dir: "uz-en", q });
           const t = await translate(env, q, "uz", "en");
           if (!t) return err("Tarjima xizmati hozir javob bermadi. Keyinroq urinib ko'ring", 502);
           await env.DB.prepare("INSERT INTO lingo_dq (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, today()).run();
@@ -503,6 +505,8 @@ export async function handleLingo(req, env, url) {
     // 3) tarjima xizmati
     const used = await env.DB.prepare("SELECT n FROM lingo_dq WHERE user_id=? AND day=?").bind(user.id, today()).first();
     if ((used?.n || 0) >= DICT_DAILY) return err(`Bugungi qidiruv limiti tugadi (${DICT_DAILY}). Ertaga davom eting!`, 429);
+    // Kalit bo'lmasa, tarjimani foydalanuvchi qurilmasi bajaradi (tarjima xizmatlari server IP'larini bloklaydi)
+    if (!HAS_KEYS(env)) return json({ ok: true, client: true, dir: "en-uz", en });
     const [t, e] = await Promise.all([translate(env, en, "en", "uz"), enInfo(en)]);
     if (!t) return err("Tarjima xizmati hozir javob bermadi. Keyinroq urinib ko'ring", 502);
     await env.DB.batch([
@@ -512,6 +516,28 @@ export async function handleLingo(req, env, url) {
     ]);
     const row = await env.DB.prepare("SELECT * FROM lingo_dict WHERE word=?").bind(en).first();
     return json({ ok: true, result: dictOut(row, { saved: false }) });
+  }
+
+  // Qurilmada tarjima qilingan so'zni umumiy keshga saqlash
+  if (path === "dict/store" && m === "POST") {
+    const b = await readBody(req);
+    const en = cleanQ(b.en);
+    const uz = S(String(b.uz || "").replace(/[<>]/g, ""), 120);
+    if (!en || !uz || en.length > 40 || uz.toLowerCase() === en) return err("Tarjima topilmadi", 404);
+    if (WORDS[en]) return err("Kurs so'zi", 400);
+    const used = await env.DB.prepare("SELECT n FROM lingo_dq WHERE user_id=? AND day=?").bind(user.id, today()).first();
+    if ((used?.n || 0) >= DICT_DAILY) return err(`Bugungi qidiruv limiti tugadi (${DICT_DAILY}). Ertaga davom eting!`, 429);
+    const clip = (x, n) => S(String(x || "").replace(/[<>]/g, ""), n);
+    const audio = /^https:\/\/[a-z0-9.-]+\/[^\s"']+$/i.test(String(b.audio || "")) ? clip(b.audio, 300) : "";
+    const src = ["Google Tarjimon", "MyMemory"].includes(b.src) ? b.src : "Tarjimon";
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO lingo_dq (user_id,day,n) VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1").bind(user.id, today()),
+      env.DB.prepare("INSERT OR REPLACE INTO lingo_dict (word,uz,phonetic,audio,pos,def,example,syn,src) VALUES (?,?,?,?,?,?,?,?,?)")
+        .bind(en, uz, clip(b.phonetic, 60), audio, clip(b.pos, 20), clip(b.def, 400), clip(b.example, 300), clip(b.syn, 120), src),
+    ]);
+    const row = await env.DB.prepare("SELECT * FROM lingo_dict WHERE word=?").bind(en).first();
+    const saved = !!(await env.DB.prepare("SELECT 1 FROM lingo_words WHERE user_id=? AND word=?").bind(user.id, en).first());
+    return json({ ok: true, result: dictOut(row, { saved }) });
   }
 
   if (path === "dict/save" && m === "POST") {

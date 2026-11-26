@@ -1700,7 +1700,7 @@ function viewDict() {
   const inp = $("#dq");
   $("#dd").onclick = () => { S.ddir = S.ddir === "en-uz" ? "uz-en" : "en-uz"; viewDict(); };
   let t;
-  inp.oninput = () => { clearTimeout(t); const q = inp.value.trim(); if (!q) { $("#dsug").innerHTML = ""; return; } t = setTimeout(() => suggest(q), 180); };
+  inp.oninput = () => { clearTimeout(t); delete inp.dataset.done; const q = inp.value.trim(); if (!q) { $("#dsug").innerHTML = ""; return; } t = setTimeout(() => suggest(q), 180); };
   inp.onkeydown = (e) => { if (e.key === "Enter") lookup(inp.value); };
   $("#dgo").onclick = () => lookup(inp.value);
   const mic = $("#dmic");
@@ -1711,15 +1711,18 @@ function viewDict() {
   if (S.dlast) renderResult(S.dlast);
   async function suggest(q) {
     const r = await api(`dict/suggest?q=${encodeURIComponent(q)}&dir=${S.ddir}`);
-    if (!r.ok || inp.value.trim() !== q) return;
+    if (!r.ok || inp.value.trim() !== q || inp.dataset.done === q) return;
     $("#dsug").innerHTML = r.list.map((x) => `<button data-w="${esc(S.ddir === "en-uz" ? x.en : x.uz)}"><b>${esc(x.en)}</b><span>${esc(x.uz)}</span>${x.course ? '<em>kurs</em>' : ""}</button>`).join("");
     $("#dsug").querySelectorAll("button").forEach((b) => (b.onclick = () => { inp.value = b.dataset.w; lookup(b.dataset.w); }));
   }
   async function lookup(q) {
     q = String(q || "").trim(); if (!q) return;
+    inp.dataset.done = q.toLowerCase() === inp.value.trim().toLowerCase() ? inp.value.trim() : q;
     $("#dsug").innerHTML = "";
     $("#dres").innerHTML = `<div class="card" style="margin-top:12px;text-align:center"><div class="dots"><span></span><span></span><span></span></div><p class="muted" style="font-size:13px;margin-top:6px">Tarjima qilinmoqda…</p></div>`;
-    const r = await api(`dict?q=${encodeURIComponent(q)}&dir=${S.ddir}`);
+    let r = await api(`dict?q=${encodeURIComponent(q)}&dir=${S.ddir}`);
+    if (r.ok && r.client) r = await clientLookup(r);
+    if (r.ok && r.result && !r.result.def) { const e = await cEnInfo(r.result.en); if (e.def) Object.assign(r.result, { def: e.def, example: e.example, phonetic: r.result.phonetic || e.phonetic, audio: r.result.audio || e.audio, posUz: r.result.posUz || POSUZ[e.pos] || "", syn: r.result.syn.length ? r.result.syn : (e.syn ? e.syn.split(",") : []) }); }
     if (!r.ok) { $("#dres").innerHTML = `<div class="card" style="margin-top:12px;color:var(--red)">${esc(r.error || "Topilmadi")}</div>`; return; }
     recentAdd(r.result.en); S.dlast = r.result; renderResult(r.result);
   }
@@ -2528,6 +2531,61 @@ if (NATIVE) {
   const sb = () => { if (P.StatusBar) { P.StatusBar.setStyle({ style: THEME === "dark" ? "DARK" : "LIGHT" }).catch(() => {}); P.StatusBar.setBackgroundColor && P.StatusBar.setBackgroundColor({ color: THEME === "dark" ? "#0A1238" : "#E8F0FF" }).catch(() => {}); } };
   sb(); const _at = applyTheme; applyTheme = (t) => { _at(t); sb(); };
   P.SplashScreen && setTimeout(() => P.SplashScreen.hide().catch(() => {}), 300);
+}
+
+/* ---------- Tarjima (foydalanuvchi qurilmasida) ---------- */
+const POSUZ = { noun: "ot", verb: "fe'l", adjective: "sifat", adverb: "ravish", pronoun: "olmosh", preposition: "predlog", conjunction: "bog'lovchi", interjection: "undov", numeral: "son" };
+const tget = async (u) => { const c = new AbortController(); const t = setTimeout(() => c.abort(), 7000); try { const r = await fetch(u, { signal: c.signal }); return r.ok ? await r.json() : null; } catch { return null; } finally { clearTimeout(t); } };
+const uniqL = (a) => { const s = new Set(); return a.map((x) => String(x || "").trim()).filter((x) => { const k = x.toLowerCase(); if (!x || s.has(k)) return false; s.add(k); return true; }); };
+async function ctranslate(text, from, to) {
+  const single = !/\s/.test(text.trim());
+  const fix = (t) => { t = String(t || "").trim().replace(/^["'«]+|["'».!]+$/g, ""); return single && t === t.toUpperCase() && t.length > 3 ? t.toLowerCase() : t; };
+  const bad = (t) => !t || t.toLowerCase() === text.toLowerCase() || /MYMEMORY WARNING|INVALID|QUERY LENGTH/i.test(t);
+  const g = await tget(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(text)}`);
+  if (g) {
+    const main = fix((g.sentences || []).map((x) => x.trans || "").join(""));
+    const dict = Array.isArray(g.dict) ? g.dict : [];
+    const alts = uniqL(dict.flatMap((d) => (d.entry || []).slice(0, 3).map((e) => e.word))).filter((x) => x.toLowerCase() !== main.toLowerCase()).slice(0, 4);
+    if (!bad(main) || alts.length) return { text: bad(main) ? alts[0] : main, alts: bad(main) ? alts.slice(1) : alts, pos: dict[0]?.pos || "", src: "Google Tarjimon" };
+  }
+  const j = await tget(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
+  if (j) {
+    const c = [{ t: j.responseData?.translatedText, q: (j.responseData?.match || 0) * 100 }, ...(j.matches || []).map((m) => ({ t: m.translation, q: Number(m.quality) || 0 }))]
+      .map((x) => ({ ...x, t: fix(x.t) })).filter((x) => !bad(x.t) && x.t.length <= 60).sort((a, b) => b.q - a.q);
+    const list = uniqL(c.map((x) => x.t));
+    if (list.length) return { text: list[0], alts: list.slice(1, 4), pos: "", src: "MyMemory" };
+  }
+  return null;
+}
+async function cEnInfo(word) {
+  const j = await tget(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+  if (!Array.isArray(j) || !j.length) return {};
+  const ms = j.flatMap((e) => e.meanings || []);
+  const ok = (d) => d && d.definition && !/^\(|obsolete|archaic|slang|dialect|singlish|vulgar|rare\b/i.test(d.definition);
+  let best = null;
+  for (const m of ms) { const d = (m.definitions || []).find(ok); if (d) { best = { m, d }; break; } }
+  if (!best) { const m = ms[0] || {}; best = { m, d: (m.definitions || [])[0] || {} }; }
+  const phs = j.flatMap((e) => e.phonetics || []);
+  const ph = phs.find((p) => p.audio && /-us\./.test(p.audio)) || phs.find((p) => p.audio) || {};
+  let audio = ph.audio || ""; if (audio.startsWith("//")) audio = "https:" + audio;
+  const syn = [...new Set([...(best.m.synonyms || []), ...(best.d.synonyms || [])])].filter((x) => !/\s/.test(x)).slice(0, 5);
+  return { phonetic: j[0].phonetic || ph.text || phs.find((p) => p.text)?.text || "", audio, pos: best.m.partOfSpeech || "", def: best.d.definition || "",
+    example: best.d.example || (best.m.definitions || []).find((d) => ok(d) && d.example)?.example || "", syn: syn.join(",") };
+}
+async function clientLookup(r) {
+  let en = r.en;
+  if (r.dir === "uz-en") {
+    const t = await ctranslate(r.q, "uz", "en");
+    if (!t) return { ok: false, error: "Tarjima topilmadi. Internetni tekshirib, qayta urinib ko'ring" };
+    const w = String(t.text).toLowerCase().replace(/^(to|a|an|the)\s+/, "").trim();
+    const r2 = await api(`dict?q=${encodeURIComponent(w)}&dir=en-uz`);
+    if (!r2.ok || !r2.client) return r2;
+    en = r2.en;
+  }
+  const [t, e] = await Promise.all([ctranslate(en, "en", "uz"), cEnInfo(en)]);
+  if (!t) return { ok: false, error: "Tarjima topilmadi. Internetni tekshirib, qayta urinib ko'ring" };
+  const uz = uniqL([t.text, ...(t.alts || [])]).slice(0, 4).join(", ");
+  return api("dict/store", { en, uz, src: t.src, pos: e.pos || t.pos || "", phonetic: e.phonetic || "", audio: e.audio || "", def: e.def || "", example: e.example || "", syn: e.syn || "" });
 }
 
 boot();
