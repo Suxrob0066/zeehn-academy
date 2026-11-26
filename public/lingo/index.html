@@ -828,6 +828,17 @@ input,select,textarea{font-size:16px}
 .vavb .tutor{border-radius:50%}
 .vavb{background:rgba(255,255,255,.14)!important}
 .vname{text-align:center;font-weight:800;font-size:17px;margin:-2px 0 4px}
+
+.lvhero{display:flex;align-items:center;gap:14px}.lvhero b{display:block;font-size:18px}.lvhero small{display:block;font-size:13px}.lvhero small b{display:inline;font-size:13px}
+.lvbig{width:64px;height:64px;border-radius:20px;color:#fff;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 10px 20px -10px rgba(0,0,0,.4)}
+.lvc{border-left:5px solid var(--lc);padding:14px 16px}.lvc.cur{box-shadow:0 0 0 2px var(--lc),0 14px 30px -18px rgba(11,27,77,.5)}
+.lvt{display:flex;align-items:center;gap:12px}.lvcode{width:46px;height:46px;border-radius:14px;background:var(--lc);color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;flex:none}
+.lvt b{display:block;font-size:16px}.lvi{display:inline-block;margin-top:3px;font-size:12px;font-weight:700;color:var(--lc);background:color-mix(in srgb,var(--lc) 14%,transparent);padding:3px 9px;border-radius:10px}
+.lvc p{font-size:14px;line-height:1.5;color:var(--muted);margin-top:10px}
+.lvhere{font-style:normal;font-size:11.5px;font-weight:700;color:#fff;background:var(--lc);padding:5px 9px;border-radius:12px;white-space:nowrap}
+.lvok{font-style:normal;width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.lvc.done{opacity:.8}
+.mlvb.info{color:var(--blue)}.mlvb.info span{background:var(--sky)}
 </style>
 </head>
 <body>
@@ -1143,6 +1154,7 @@ const SOON = {};
 function go(t) {
   if (SOON[t]) { toast(SOON[t], 2600); return; }
   if (t === "more") { moreSheet(); return; }
+  if (t !== S.tab) S.prevTab = S.tab;
   S.tab = t; renderApp(); scrollTo(0, 0);
 }
 async function logout() { await api("logout", {}); S.me = null; S.chat = []; renderAuth("login"); }
@@ -1196,7 +1208,7 @@ function renderApp() {
   $("#tSearch").onclick = () => { S.vtab = "dict"; go("words"); };
   $(".lout").onclick = logout;
   bindTheme($(".navfoot"));
-  ({ home: desk() ? viewHome : viewHomeM, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: desk() ? viewMe : viewMeM, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite, badges: viewBadges, settings: viewSettings, notif: viewNotif, about: viewAbout })[S.tab]();
+  ({ home: desk() ? viewHome : viewHomeM, map: viewMap, practice: viewPractice, words: viewWords, ai: viewAI, rating: viewRating, stats: viewStats, me: desk() ? viewMe : viewMeM, oktagon: viewOktagon, gifts: viewGifts, invite: viewInvite, badges: viewBadges, settings: viewSettings, notif: viewNotif, about: viewAbout, levels: viewLevels })[S.tab]();
   renderSide();
 }
 addEventListener("scroll", () => { const t = document.querySelector(".top"); if (t) t.classList.toggle("scr", scrollY > 8); }, { passive: true });
@@ -1265,7 +1277,7 @@ function viewMap() {
         <div><small class="muted">${doneN} / ${all.length} dars · ${esc(m.tier.name)}</small><b>${next ? esc(next.title) : "Barcha darslar tugadi! 🎉"}</b><small class="muted">${next ? `${curIdx + 1}-dars · ${esc(next.unit.title)}` : "Takrorlash bilan mustahkamlang"}</small></div></div>
       ${next ? `<button class="btn" id="mmGo">▶ ${doneN ? "Davom etish" : "Boshlash"}</button>` : ""}
     </section>
-    <div class="mlv">${LV.map((lv, i) => { const st = i < m.tier.index ? "done" : i === m.tier.index ? "cur" : "lock"; return `<button class="mlvb ${st}" data-lv="${i}"><span>${st === "done" ? "✓" : st === "lock" ? "🔒" : i + 1}</span>${esc(lv.name)}</button>`; }).join("")}</div>`;
+    <div class="mlv"><button class="mlvb info" id="mlvInfo"><span>ℹ️</span>CEFR · IELTS</button>${LV.map((lv, i) => { const st = i < m.tier.index ? "done" : i === m.tier.index ? "cur" : "lock"; return `<button class="mlvb ${st}" data-lv="${i}"><span>${st === "done" ? "✓" : st === "lock" ? "🔒" : i + 1}</span>${esc(lv.name)}</button>`; }).join("")}</div>`;
   }
   S.course.units.forEach((u, ui) => {
     const ids = u.lessons.map((l) => l.id);
@@ -1276,7 +1288,7 @@ function viewMap() {
       const lvIds = S.course.units.filter((x) => LV[li0].units.includes(x.id)).flatMap((x) => x.lessons.map((l) => l.id));
       const lvDone = lvIds.filter((id) => m.done[id]).length;
       if (li0 > 0) html += `<div class="lvgate ${st}">${st === "lock" ? `🔒 ${esc(LV[li0 - 1].name)} darajasini tugating` : `🏆 ${esc(LV[li0 - 1].name)} tugatildi — ${esc(LV[li0].name)} ochildi`}</div>`;
-      html += `<div class="lvb ${st}" id="lv${li0}"><span class="lvn">${li0 + 1}</span><div style="flex:1"><small>${li0 + 1}-DARAJA</small><b>${esc(LV[li0].name)}</b></div>
+      html += `<div class="lvb ${st}" id="lv${li0}"><span class="lvn">${li0 + 1}</span><div style="flex:1"><small>${li0 + 1}-DARAJA · ${cefrOf(LV[li0].name).c}</small><b>${esc(LV[li0].name)}</b></div>
         <span class="lvs">${st === "done" ? "✓ Tugatildi" : st === "cur" ? `Hozirgi · ${lvDone}/${lvIds.length}` : "🔒 Ochilmagan"}</span></div>`;
     }
     html += `<div class="unit z${(ui % 6) + 1}"><div class="ub"><span class="ube">${UNIT_E[ui % UNIT_E.length]}</span><div class="ubt"><small>${ui + 1}-BO'LIM</small><b>${esc(u.title)}</b><span class="ubar"><i style="width:${(dn / ids.length) * 100}%"></i></span></div><span class="pr">${dn}/${ids.length}</span></div><div class="path">`;
@@ -1296,6 +1308,7 @@ function viewMap() {
   $("#main").innerHTML = html;
   decorateMap();
   const mg = $("#mmGo"); if (mg) mg.onclick = () => startLesson(all[curIdx]);
+  const mi = $("#mlvInfo"); if (mi) mi.onclick = () => go("levels");
   document.querySelectorAll(".mlvb").forEach((b) => (b.onclick = () => { const t = $("#lv" + b.dataset.lv); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }));
   document.querySelectorAll("#main .goRev").forEach((b) => (b.onclick = startReview));
   document.querySelectorAll(".node[data-l]").forEach((b) => (b.onclick = () => lessonSheet(b.dataset.l)));
@@ -2266,6 +2279,7 @@ function viewMe() {
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Ko'rinish</h3>
     <div id="pth">${themeHTML()}</div>
     <div class="grid2" style="margin-top:18px;grid-template-columns:1fr 1fr 1fr"><button class="btn ghost" id="dSet">⚙️ Sozlamalar</button><button class="btn ghost" id="dNot">🔔 Bildirishnomalar</button><button class="btn ghost" id="dAb">ℹ️ Ilova haqida</button></div>
+    <button class="btn ghost" id="dLv" style="margin-top:10px">🎓 Darajalar (CEFR · IELTS)</button>
     <button class="btn ghost" id="en" style="margin-top:10px">✏️ Profilni tahrirlash</button>
     <button class="btn ghost" id="lo" style="margin-top:10px;color:var(--red)">Chiqish</button>`;
   $("#lo").onclick = logout;
@@ -2278,7 +2292,7 @@ function viewMe() {
   }));
   $("#en").onclick = editProfile;
   $("#meInv").onclick = () => go("invite");
-  $("#dSet").onclick = () => go("settings"); $("#dNot").onclick = () => go("notif"); $("#dAb").onclick = () => go("about");
+  $("#dSet").onclick = () => go("settings"); $("#dNot").onclick = () => go("notif"); $("#dAb").onclick = () => go("about"); $("#dLv").onclick = () => go("levels");
   api("badges").then((r) => {
     if (!r.ok || S.tab !== "me" || !$("#bgs")) return;
     $("#bgc").textContent = `${r.done} / ${r.list.length}`;
@@ -2332,7 +2346,7 @@ function viewHomeM() {
   $("#main").innerHTML = `
     <p class="mgreet">Salom, <b>${esc(m.user.name)}</b></p>
     <section class="mc mjour">
-      <div class="mch"><b>Mening yo'lim</b><button class="mlink" data-go="map">Xarita ${MI.chev}</button></div>
+      <div class="mch"><b>Mening yo'lim</b><button class="mlink" data-go="levels">${cefrOf(m.tier.name).c} · Darajalar ${MI.chev}</button></div>
       <div class="mtrack">
         <span class="mtl">${esc(m.tiers[0].name)}</span>
         <div class="mline"><i style="width:${Math.max(3, pct)}%"></i><span class="mme" style="left:${Math.max(3, pct)}%">${userPic(m.user, 30)}</span><span class="mplane">🎓</span></div>
@@ -2374,9 +2388,9 @@ function viewMeM() {
         <div><b>${esc(m.user.name)}</b><small>${MI.phone}${esc(fmtPhone(m.user.phone))}</small></div></div>
       <div class="mcode"><span class="muted">Taklif kodi</span><b id="mCode">••••••</b><button class="mcb" id="mCopy" aria-label="Taklif havolasini nusxalash">${MI.copy}</button></div>
     </section>
-    <button class="mc mlvl" data-go="map">
+    <button class="mc mlvl" data-go="levels">
       <svg viewBox="0 0 60 60" class="mring" aria-hidden="true"><circle cx="30" cy="30" r="24" fill="none" style="stroke:var(--off)" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="#E8890C" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(lp / 100) * 151} 151" transform="rotate(-90 30 30)"/><text x="30" y="35" text-anchor="middle" font-size="13" font-weight="800" fill="#B86A00">${lp}%</text></svg>
-      <span class="mlt"><b>Daraja: ${esc(t.name)}</b><small>${t.next ? `${esc(t.next.name)} gacha ${t.left} dars qoldi` : t.left ? `Yakunigacha ${t.left} dars` : "Barcha darajalar tugatildi 🏆"}</small></span><span class="mrc">${MI.chev}</span></button>
+      <span class="mlt"><b>Daraja: ${esc(t.name)} · ${cefrOf(t.name).c}</b><small>${t.next ? `${esc(t.next.name)} gacha ${t.left} dars qoldi` : t.left ? `Yakunigacha ${t.left} dars` : "Barcha darajalar tugatildi 🏆"}</small></span><span class="mrc">${MI.chev}</span></button>
     <button class="mpc wide" data-go="gifts"><span class="mpi">${MI.crown}</span><span class="mwt"><b>Sovg'alar va bonuslar</b><small>${m.user.xp} coin · ${m.badges ? m.badges.length : 0} ta nishon</small></span><span class="mart c">${coin3d(56)}</span><span class="mpa">${MI.chev}</span></button>
     <section class="mc mlist"><h4>Hisob</h4>
       ${mRow("edit", MI.pen, "Profil ma'lumotlari")}
@@ -2640,6 +2654,34 @@ async function clientLookup(r) {
   if (!t) return { ok: false, error: "Tarjima topilmadi. Internetni tekshirib, qayta urinib ko'ring" };
   const uz = uniqL([t.text, ...(t.alts || [])]).slice(0, 4).join(", ");
   return api("dict/store", { en, uz, src: t.src, pos: e.pos || t.pos || "", phonetic: e.phonetic || "", audio: e.audio || "", def: e.def || "", example: e.example || "", syn: e.syn || "" });
+}
+
+/* ---------- Darajalar (CEFR · IELTS) ---------- */
+const CEFR = [
+  { c: "A1", n: "Beginner / Elementary", i: "2.0 – 3.0", d: "Kundalik oddiy iboralarni tushunadi, o'zini tanishtira oladi va sekin gapirilganda muloqot qiladi.", col: "#1FB45A" },
+  { c: "A2", n: "Pre-Intermediate", i: "3.5 – 4.0", d: "Oddiy mavzularda (oila, xarid, ish) gaplashadi va qisqa xabarlarni o'qib tushunadi.", col: "#2FA8C9" },
+  { c: "B1", n: "Intermediate", i: "4.5 – 5.0", d: "Sayohatda mustaqil harakatlanadi, tushunarli matnlar yozadi va o'z fikrini qisqacha asoslay oladi.", col: "#2F6BFF" },
+  { c: "B2", n: "Upper-Intermediate", i: "5.5 – 6.5", d: "Murakkab matnlar mazmunini tushunadi va til egalari bilan erkin, qiynalmasdan suhbatlasha oladi.", col: "#7C4DDB" },
+  { c: "C1", n: "Advanced", i: "7.0 – 8.0", d: "Keng ko'lamli murakkab matnlarni anglaydi, o'z fikrini ravon, aniq va uslubiy jihatdan to'g'ri ifodalaydi.", col: "#E8890C" },
+];
+function cefrOf(name) {
+  const n = String(name || "").toLowerCase();
+  if (n.includes("upper")) return CEFR[3];
+  if (n.includes("pre")) return CEFR[1];
+  if (n.includes("advanced")) return CEFR[4];
+  if (n.includes("intermediate")) return CEFR[2];
+  return CEFR[0];
+}
+function viewLevels() {
+  const cur = cefrOf(S.me.tier.name), ci = CEFR.indexOf(cur);
+  $("#main").innerHTML = subHead("Darajalar") + `
+    <section class="mc lvhero"><span class="lvbig" style="background:${cur.col}">${cur.c}</span>
+      <div><small class="muted">Sizning darajangiz</small><b>${esc(S.me.tier.name)} · ${cur.c}</b><small>IELTS taxminan <b>${cur.i}</b></small></div></section>
+    <p class="muted" style="font-size:13px;margin:4px 2px 12px">Darajalar xalqaro CEFR shkalasi bo'yicha. IELTS ballari taxminiy moslik.</p>
+    ${CEFR.map((x, i) => `<section class="mc lvc ${i === ci ? "cur" : i < ci ? "done" : ""}" style="--lc:${x.col}">
+      <div class="lvt"><span class="lvcode">${x.c}</span><div style="flex:1;min-width:0"><b>${x.n}</b><span class="lvi">IELTS ${x.i}</span></div>${i === ci ? `<em class="lvhere">📍 Siz shu yerdasiz</em>` : i < ci ? `<em class="lvok">✓</em>` : ""}</div>
+      <p>${x.d}</p></section>`).join("")}`;
+  $("#sBack").onclick = () => history.length && S.prevTab ? go(S.prevTab) : go("home");
 }
 
 boot();
