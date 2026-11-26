@@ -839,6 +839,42 @@ input,select,textarea{font-size:16px}
 .lvok{font-style:normal;width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
 .lvc.done{opacity:.8}
 .mlvb.info{color:var(--blue)}.mlvb.info span{background:var(--sky)}
+
+.fcard{position:relative;transition:transform .25s,opacity .25s}
+.fcard.fly-r{transform:translateX(30px) rotate(3deg);opacity:.4}.fcard.fly-l{transform:translateX(-30px) rotate(-3deg);opacity:.4}
+.fch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.fch b{font-size:17px}
+.fcprog{font-weight:800;font-size:14px;color:var(--blue);background:var(--sky);padding:5px 12px;border-radius:14px}
+.fcin{border:1.5px solid var(--line);border-radius:20px;padding:18px 14px;text-align:center}
+.fctag{font-size:12px;letter-spacing:.14em;color:var(--muted);font-weight:600}
+.fcw{font-size:36px;font-weight:800;margin:6px 0 2px;word-break:break-word}
+.fcph{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:15px}.fcph svg{width:18px;height:18px;color:var(--blue2)}
+.fcline{height:1px;background:var(--line);margin:14px 0}
+.fcback{min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:14px;cursor:pointer}
+.fcback span{font-weight:700;color:var(--blue);font-size:14px;background:var(--sky);padding:9px 16px;border-radius:14px}
+.fcback b{font-size:24px;color:var(--blue);font-weight:800}.fcback i{color:var(--muted);font-size:14px}
+.fcback.on{animation:fade .25s}
+.fcbtn{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.fcbtn button{padding:15px;border-radius:16px;font-weight:700;font-size:16px}
+.fcno{background:var(--red-bg);color:#C4262E}.fcyes{background:var(--green-bg);color:#147A3D}
+.fcend{text-align:center;padding:18px 6px}.fcend span{font-size:46px}.fcend b{display:block;font-size:18px;margin:6px 0 4px}.fcend p{font-size:14px}
+.fcstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:6px}
+.fs{border-radius:20px;padding:14px 12px}.fs b{display:block;font-size:26px;font-weight:800}.fs small{font-size:12.5px}
+.fs.g{background:var(--green-bg)}.fs.g b{color:#147A3D}.fs.y{background:var(--coin-bg)}.fs.y b{color:#8A5300}.fs.b{background:var(--sky)}.fs.b b{color:var(--blue)}
+[data-theme=dark] .fs.g b{color:#4FD17F}[data-theme=dark] .fs.y b{color:#F2B54B}[data-theme=dark] .fcno{color:#FF8A8F}[data-theme=dark] .fcyes{color:#4FD17F}
+.lgh{padding:16px}.lgt{display:flex;align-items:center;gap:12px}.lgt b{display:block;font-size:19px}.lgt small{font-size:12.5px}
+.lgd{font-size:13px;font-weight:700;color:var(--blue);background:var(--sky);padding:6px 11px;border-radius:14px;white-space:nowrap}
+.lgm{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;background:var(--bg);border-radius:14px;padding:10px 12px;margin-top:12px;font-size:13.5px}
+.lgpath{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 12px}
+.lgs{display:flex;flex-direction:column;align-items:center;gap:3px}.lgs small{font-size:12px;color:var(--muted);font-weight:600}.lgs.on small{color:var(--ink);font-weight:800}
+.lga{color:var(--blue2);font-size:20px;font-weight:700}
+.lgl{padding:8px}
+.lgr{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px}
+.lgr .lgp{width:24px;text-align:center;font-weight:800;color:var(--muted)}.lgr b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}.lgr .lgc{font-weight:800;font-size:14px}
+.lgr .av{width:34px;height:34px;border-radius:50%;overflow:hidden;display:flex;flex:none}
+.lgr.me{background:var(--blue);color:#fff}.lgr.me .lgp{color:#fff}
+.lgr.up:not(.me) .lgp{color:#147A3D}.lgr.down:not(.me) .lgp{color:#C4262E}
+.lgz{font-size:13px;font-weight:700;padding:8px 10px;margin:4px 0}.lgz.up{color:#147A3D;border-bottom:2px dashed #7FD39E}.lgz.down{color:#C4262E;border-top:2px dashed #F2A3A6}
+[data-theme=dark] .lgz.up{color:#4FD17F}[data-theme=dark] .lgz.down{color:#FF8A8F}
 </style>
 </head>
 <body>
@@ -1716,16 +1752,11 @@ function viewWords() {
 }
 async function viewMyVocab() {
   const m = S.me;
-  $("#vbody").innerHTML = `<div class="tiles3">
-      <div style="background:var(--green-bg)"><b style="color:#147A3D">${m.words.learned}</b><small>yodlandi</small></div>
-      <div style="background:var(--coin-bg)"><b style="color:#8A5300">${m.words.learning}</b><small>takrorlanmoqda</small></div>
-      <div style="background:var(--sky)"><b style="color:var(--blue)">${m.words.due}</b><small>bugun takrorlash</small></div>
-    </div>
-    <button class="btn" id="rv" ${m.words.due ? "" : "disabled"}>${m.words.due ? `🃏 Takrorlash · ${m.words.due} ta so'z` : "Bugun takrorlash yo'q ✓"}</button>
-    <p class="muted" style="font-size:13px;margin-top:8px;text-align:center">So'z 1 → 3 → 7 → 14 → 30 kundan keyin qayta chiqadi va yodlanadi</p>
+  $("#vbody").innerHTML = `<div class="fcwrap" id="fcw"><div class="mc" style="text-align:center"><div class="dots"><span></span><span></span><span></span></div></div></div>
+    <h3 class="okh" style="margin-top:18px">📚 Barcha so'zlarim</h3>
     <div class="vfil"><input class="search" id="q" placeholder="Lug'atimdan qidirish…"><select id="fl" class="search" style="width:auto"><option value="">Hammasi</option><option value="due">Takrorlash</option><option value="l">Yodlandi</option><option value="c">Saqlanganlar</option></select></div>
     <div class="wl" id="wl"><div class="dots" style="text-align:center;padding:20px"><span></span><span></span><span></span></div></div>`;
-  $("#rv").onclick = startReview;
+  loadCards();
   const r = await api("words");
   if (!r.ok) return;
   const list = r.words.sort((a, b) => a.en.localeCompare(b.en));
@@ -2007,13 +2038,18 @@ function startTalk(id) {
 /* ---------- Reyting ---------- */
 const AVC = ["#FFB020", "#7C9CFF", "#F08A8A", "#36C28A", "#B58CF2", "#4CC3E8", "#F2994A"];
 async function viewRating() {
-  $("#main").innerHTML = `<h2 class="t">Haftalik reyting</h2><div id="rt"><div class="dots" style="text-align:center;padding:30px"><span></span><span></span><span></span></div></div>`;
+  S.rtab = S.rtab || "league";
+  $("#main").innerHTML = `<h2 class="t">${S.rtab === "league" ? "Haftalik liga" : "Umumiy reyting"}</h2>
+    <div class="vseg"><button data-r="league" class="${S.rtab === "league" ? "on" : ""}">🏅 Liga</button><button data-r="all" class="${S.rtab === "all" ? "on" : ""}">🌍 Umumiy reyting</button></div><div id="rt"></div>`;
+  document.querySelectorAll(".vseg [data-r]").forEach((b) => (b.onclick = () => { S.rtab = b.dataset.r; viewRating(); }));
+  if (S.rtab === "league") return viewLeague($("#rt"));
+  $("#rt").innerHTML = `<div class="dots" style="text-align:center;padding:30px"><span></span><span></span><span></span></div>`;
   const r = await api("rating");
-  if (!r.ok) return;
+  if (!r.ok || S.rtab !== "all") return;
   const medal = ["🥇", "🥈", "🥉"];
   $("#rt").innerHTML = `<div class="rme"><div><div style="font-size:13px;opacity:.85">Sizning o'rningiz</div><b>${r.me.place}-o'rin</b></div>
       <div style="text-align:right"><div style="font-size:13px;opacity:.85">Bu hafta</div><b>${r.me.xp} coin</b></div></div>
-    <p class="muted" style="font-size:13px;margin-bottom:10px">⏳ Hafta tugashiga ${r.daysLeft} kun · coin dars, mashq, takrorlash va sandiqlar uchun beriladi</p>
+    <p class="muted" style="font-size:13px;margin-bottom:10px">⏳ Hafta tugashiga ${r.daysLeft} kun · barcha o'quvchilar orasida</p>
     <div class="rl">${r.list.length ? r.list.map((x, i) => `<div class="ri ${x.me ? "me" : ""}"><span class="p">${medal[i] || x.place}</span>
       <span class="av" style="background:${AVC[i % AVC.length]}">${userPic(x, 38)}</span>
       <span class="nm">${esc(x.name)}${x.me ? " (siz)" : ""}</span><span class="xp">${x.xp} coin</span></div>`).join("")
@@ -2270,10 +2306,7 @@ function viewMe() {
     <button class="card invside" id="meInv" style="margin-top:12px;width:100%"><span class="ise">🎁</span><span><b>Do'stingizni taklif qiling</b><small>Ikkalangizga +100 coin</small></span><span class="isa">›</span></button>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">🏅 Nishonlar <span class="muted" id="bgc" style="font-weight:600;font-size:14px"></span></h3>
     <div class="bgrid" id="bgs"><div class="dots" style="text-align:center;padding:20px;grid-column:1/-1"><span></span><span></span><span></span></div></div>
-    <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Tez orada</h3>
-    <div style="display:grid;gap:8px">
-      <div class="soon"><span class="e">🥈</span><div><b>Ligalar</b><span class="muted" style="font-size:13px">Bronza → Kumush → Oltin</span></div></div>
-    </div>
+
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 4px">Xaritadagi qahramonim</h3><p class="muted" style="font-size:13px;margin-bottom:10px">Xaritada siz bilan birga yuradigan qahramon</p>
     <div class="avpick big" id="avp">${["boy", "girl"].map((k) => `<button data-av="${k}" class="${AV() === k ? "on" : ""}">${faceIcon(k, 56)}<b>${k === "girl" ? "Qiz bola" : "O'g'il bola"}</b></button>`).join("")}</div>
     <h3 style="font-size:16px;font-weight:800;margin:18px 0 10px">Ko'rinish</h3>
@@ -2406,7 +2439,7 @@ function viewMeM() {
     </div>
     <section class="mc mlist">
       ${mRow("practice", IC.game, "Mashqlar")}
-      ${mRow("rating", IC.trophy, "Haftalik reyting")}
+      ${mRow("rating", IC.trophy, "Liga va reyting")}
       ${mRow("hero", MI.face, "Xaritadagi qahramon", `<em class="mpill">${AV() === "girl" ? "Qiz bola" : "O'g'il bola"}</em>`)}
       ${mRow("settings", MI.gear, "Sozlamalar")}
       ${mRow("about", MI.info, "Ilova haqida")}
@@ -2682,6 +2715,83 @@ function viewLevels() {
       <div class="lvt"><span class="lvcode">${x.c}</span><div style="flex:1;min-width:0"><b>${x.n}</b><span class="lvi">IELTS ${x.i}</span></div>${i === ci ? `<em class="lvhere">📍 Siz shu yerdasiz</em>` : i < ci ? `<em class="lvok">✓</em>` : ""}</div>
       <p>${x.d}</p></section>`).join("")}`;
   $("#sBack").onclick = () => history.length && S.prevTab ? go(S.prevTab) : go("home");
+}
+
+/* ---------- Bugungi so'zlar (kartochkalar) ---------- */
+async function loadCards() {
+  const r = await api("cards");
+  if (!r.ok || !$("#fcw")) return;
+  S.cards = r; S.ci = 0; drawCards();
+}
+function drawCards() {
+  const r = S.cards, box = $("#fcw"); if (!box || !r) return;
+  const st = r.stats;
+  const tiles = `<div class="fcstats"><div class="fs g"><b>${st.learned}</b><small>o'rganildi</small></div><div class="fs y"><b>${st.learning}</b><small>takrorlanmoqda</small></div><div class="fs b"><b>${st.fresh}</b><small>bugun yangi</small></div></div>`;
+  const c = r.cards[S.ci];
+  const prog = `<span class="fcprog">${Math.min(r.done, r.goal)} / ${r.goal}</span>`;
+  if (!c) {
+    box.innerHTML = `<div class="mc fcard done"><div class="fch"><b>Bugungi so'zlar</b>${prog}</div>
+      <div class="fcend"><span>${r.done >= r.goal ? "🎉" : "✅"}</span><b>${r.done >= r.goal ? "Bugungi 20 ta so'z tugadi!" : "Hozircha takrorlash yo'q"}</b><p class="muted">${r.done >= r.goal ? `Bugun ${r.good} ta so'zni bildingiz. Ertaga yangi so'zlar kutadi.` : "Dars o'ting yoki lug'atdan so'z qo'shing — ular shu yerda chiqadi."}</p></div></div>${tiles}`;
+    return;
+  }
+  const cefr = c.level ? cefrOf(c.level).c : "";
+  box.innerHTML = `<div class="mc fcard"><div class="fch"><b>Bugungi so'zlar</b>${prog}</div>
+    <div class="fcin" id="fcin">
+      <small class="fctag">INGLIZ${cefr ? " · " + cefr : ""}${c.isNew ? " · YANGI" : ""}</small>
+      <h2 class="fcw">${esc(c.en)}</h2>
+      <button class="fcph" id="fcsp">${c.phonetic ? esc(c.phonetic) + " " : ""}${IC.spk}</button>
+      <div class="fcline"></div>
+      <div class="fcback ${S.reveal ? "on" : ""}" id="fcbk">${S.reveal ? `<b>${esc(c.uz)}</b>${c.example ? `<i>${esc(c.example)}</i>` : ""}` : `<span>👆 Tarjimasini ko'rish</span>`}</div>
+    </div>
+    <div class="fcbtn"><button class="fcno" id="fcno">Bilmayman</button><button class="fcyes" id="fcyes">Bilaman</button></div></div>${tiles}`;
+  $("#fcsp").onclick = () => playWord(c.en, c.audio);
+  $("#fcbk").onclick = () => { S.reveal = true; drawCards(); say(c.en); };
+  $("#fcno").onclick = () => answerCard(false);
+  $("#fcyes").onclick = () => answerCard(true);
+  if (!c.phonetic && !c._tried) { c._tried = 1; cEnInfo(c.en).then((e) => { if (e.phonetic && S.cards && S.cards.cards[S.ci] === c) { c.phonetic = e.phonetic; c.audio = c.audio || e.audio; if (!c.example) c.example = e.example || ""; drawCards(); } }); }
+}
+async function answerCard(ok) {
+  const r = S.cards, c = r.cards[S.ci]; if (!c || S.cardBusy) return;
+  S.cardBusy = true; haptic(ok);
+  const card = document.querySelector(".fcard"); if (card) card.classList.add(ok ? "fly-r" : "fly-l");
+  if (!S.reveal && !ok) { S.reveal = true; drawCards(); await new Promise((x) => setTimeout(x, 1200)); }
+  const x = await api("cards/answer", { key: c.key, ok });
+  S.cardBusy = false;
+  if (!x.ok) { toast(x.error || "Xatolik"); return; }
+  r.done = x.done; if (ok) r.good++;
+  if (ok) { if (c.box + 1 >= 5) r.stats.learned++; } if (c.isNew) r.stats.fresh++, r.stats.learning++;
+  S.ci++; S.reveal = false;
+  if (S.ci >= r.cards.length) { await loadCards(); if (S.me) loadMe(); return; }
+  drawCards();
+}
+
+/* ---------- Haftalik liga ---------- */
+const SHIELD = (i, sz = 56, on = true) => { const c = [["#F5C6A0", "#B8682E"], ["#E3E8F2", "#7A869E"], ["#FFE08A", "#C98A00"]][i]; return `<svg viewBox="0 0 48 56" width="${sz}" height="${sz * 56 / 48}" aria-hidden="true" style="opacity:${on ? 1 : .45}"><path d="M24 2l20 6v18c0 14-9 23-20 28C13 49 4 40 4 26V8z" fill="${c[0]}" stroke="${c[1]}" stroke-width="3"/><path d="M24 17l3.4 7 7.6 1-5.5 5.3 1.3 7.6L24 34.3 17.2 38l1.3-7.6L13 25l7.6-1z" fill="${c[1]}"/></svg>`; };
+async function viewLeague(box) {
+  box.innerHTML = `<div class="dots" style="text-align:center;padding:30px"><span></span><span></span><span></span></div>`;
+  const r = await api("league");
+  if (!r.ok || S.tab !== "rating") return;
+  const L = r.leagues, T = L[r.tier];
+  const zone = (i) => i < r.up ? "up" : r.down && i >= r.list.length - r.down ? "down" : "";
+  let rows = "";
+  r.list.forEach((x, i) => {
+    rows += `<div class="lgr ${x.me ? "me" : ""} ${zone(i)}"><span class="lgp">${x.place}</span><span class="av" style="background:${AVC[i % AVC.length]}">${userPic(x, 34)}</span><b>${x.me ? "Siz" : esc(x.name)}</b><span class="lgc">${x.coins} coin</span></div>`;
+    if (r.up && i === r.up - 1 && r.list.length > r.up) rows += `<div class="lgz up">▲ Top ${r.up} — ${L[r.tier + 1].name} ligaga ko'tariladi</div>`;
+    if (r.down && i === r.list.length - r.down - 1) rows += `<div class="lgz down">▼ Oxirgi ${r.down} — ${L[r.tier - 1].name} ligaga tushadi</div>`;
+  });
+  box.innerHTML = `<section class="mc lgh">
+      <div class="lgt">${SHIELD(r.tier, 44)}<div style="flex:1"><b>${T.name} liga</b><small class="muted">Har hafta 30 kishilik guruh</small></div><span class="lgd">Tugashiga ${r.daysLeft} kun</span></div>
+      <div class="lgm"><span>Ligadagi o'rningiz: <b>${r.place} / ${r.size}</b></span><span>Umumiy: <b>${r.overall}-o'rin</b></span></div>
+    </section>
+    <div class="lgpath">${L.map((l, i) => `<div class="lgs ${i === r.tier ? "on" : ""}">${SHIELD(i, i === r.tier ? 46 : 36, i <= r.tier)}<small>${l.name}</small></div>${i < L.length - 1 ? `<span class="lga">→</span>` : ""}`).join("")}</div>
+    <section class="mc lgl">${rows || `<p class="muted" style="text-align:center;padding:14px">Hali guruhda hech kim yo'q</p>`}</section>
+    <p class="muted" style="font-size:12.5px;margin:6px 2px">O'rin haftalik coin bo'yicha: dars, so'z kartochkalari, mashq va Oktagon. Hafta dushanba kuni yangilanadi.</p>`;
+  if (r.result) {
+    const up = r.result.move === "up";
+    const d = document.createElement("div"); d.className = "dim";
+    d.innerHTML = `<div class="sheet" style="text-align:center"><div style="display:flex;justify-content:center">${SHIELD(r.tier, 90)}</div><h2 class="t" style="margin:12px 0 6px">${up ? `🎉 ${r.result.to} ligaga ko'tarildingiz!` : `${r.result.to} ligaga tushdingiz`}</h2><p class="muted">${up ? "O'tgan hafta top 5 ga kirdingiz. Barakalla!" : "Bu hafta ko'proq dars qilib, qayta ko'tariling 💪"}</p><button class="btn" id="lgok" style="margin-top:14px">Davom etish</button></div>`;
+    document.body.appendChild(d); $("#lgok", d).onclick = () => d.remove(); d.onclick = (e) => { if (e.target === d) d.remove(); };
+  }
 }
 
 boot();

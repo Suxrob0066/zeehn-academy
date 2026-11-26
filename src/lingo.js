@@ -211,6 +211,7 @@ async function award(env, user, xp, coins) {
     env.DB.prepare("UPDATE lingo_users SET xp=xp+?, coins=coins+?, streak=?, last_day=?, best_streak=MAX(best_streak,?) WHERE id=?").bind(xp, coins, streak, t, streak, user.id),
     env.DB.prepare("INSERT INTO lingo_xp (user_id,day,xp) VALUES (?,?,?) ON CONFLICT(user_id,day) DO UPDATE SET xp=xp+excluded.xp").bind(user.id, t, xp),
   ]);
+  try { await ensureLeague(env, user.id); } catch {}
   return streak;
 }
 
@@ -235,6 +236,52 @@ async function refCode(env, user) {
 }
 const REF_BONUS = 100;
 const FIN = "result IN ('win','lose','draw')";
+
+
+// ---------- Haftalik ligalar ----------
+const LEAGUES = [
+  { name: "Bronza", e: "🥉" },
+  { name: "Kumush", e: "🥈" },
+  { name: "Oltin", e: "🥇" },
+];
+const LG_SIZE = 30, LG_UP = 5, LG_DOWN = 5;
+async function ensureLeague(env, uid) {
+  const W = weekStart();
+  let L = await env.DB.prepare("SELECT * FROM lingo_league WHERE user_id=?").bind(uid).first();
+  if (L && L.week === W) return L;
+  if (!L) { await env.DB.prepare("INSERT OR IGNORE INTO lingo_league (user_id,tier) VALUES (?,0)").bind(uid).run(); L = { user_id: uid, tier: 0, week: null }; }
+  let tier = L.tier || 0, move = null;
+  const prevW = addDays(W, -7);
+  const last = await env.DB.prepare("SELECT week,tier,grp FROM lingo_lgm WHERE user_id=? AND week=?").bind(uid, prevW).first();
+  if (last) {
+    const mates = (await env.DB.prepare(
+      "SELECT m.user_id, COALESCE((SELECT SUM(x.xp) FROM lingo_xp x WHERE x.user_id=m.user_id AND x.day>=? AND x.day<?),0) s FROM lingo_lgm m WHERE m.week=? AND m.tier=? AND m.grp=? ORDER BY s DESC, m.user_id"
+    ).bind(prevW, W, prevW, last.tier, last.grp).all()).results || [];
+    const n = mates.length, idx = mates.findIndex((x) => x.user_id === uid), mine = mates[idx]?.s || 0;
+    tier = last.tier;
+    if (idx >= 0 && idx < LG_UP && n >= 2 && mine > 0 && tier < LEAGUES.length - 1) { tier++; move = "up"; }
+    else if (idx >= 0 && n >= 10 && idx >= n - LG_DOWN && tier > 0) { tier--; move = "down"; }
+    else move = "stay";
+  }
+  const g = await env.DB.prepare("SELECT grp, COUNT(*) c FROM lingo_lgm WHERE week=? AND tier=? GROUP BY grp HAVING c<? ORDER BY grp LIMIT 1").bind(W, tier, LG_SIZE).first();
+  const grp = g ? g.grp : ((await env.DB.prepare("SELECT COALESCE(MAX(grp),0)+1 n FROM lingo_lgm WHERE week=? AND tier=?").bind(W, tier).first())?.n || 1);
+  await env.DB.batch([
+    env.DB.prepare("INSERT OR REPLACE INTO lingo_lgm (week,tier,grp,user_id) VALUES (?,?,?,?)").bind(W, tier, grp, uid),
+    env.DB.prepare("UPDATE lingo_league SET tier=?, week=?, last_move=?, last_tier=?, seen=? WHERE user_id=?").bind(tier, W, move, last ? last.tier : null, move === "up" || move === "down" ? 0 : 1, uid),
+  ]);
+  return { user_id: uid, tier, week: W, last_move: move, last_tier: last ? last.tier : null, seen: move === "up" || move === "down" ? 0 : 1 };
+}
+
+// ---------- Bugungi so'z kartochkalari ----------
+const CARDS_DAY = 20, CARDS_NEW = 5;
+const COURSE_ORDER = Object.keys(WORDS);
+function exampleFor(key) {
+  const w = WORDS[key]; if (!w) return "";
+  const l = COURSE.units.flatMap((u) => u.lessons).find((x) => x.id === w.lesson);
+  const re = new RegExp("\\b" + w.en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i");
+  const sn = (l?.sentences || []).find(([en]) => re.test(en));
+  return sn ? sn[0] : "";
+}
 
 // ---------- Nishonlar ----------
 const BADGES = [
@@ -602,6 +649,75 @@ export async function handleLingo(req, env, url) {
     const xp = Math.min(good, 20);
     const streak = xp ? await award(env, user, xp, 0) : user.streak;
     return json({ ok: true, coins: xp, good, total: res.length, streak });
+  }
+
+
+  // ---------- Bugungi so'zlar (kartochkalar) ----------
+  if (path === "cards" && m === "GET") {
+    const t = today();
+    const [day, mine, st] = await Promise.all([
+      env.DB.prepare("SELECT n, ok FROM lingo_cards_day WHERE user_id=? AND day=?").bind(user.id, t).first(),
+      env.DB.prepare("SELECT word, box, due, added FROM lingo_words WHERE user_id=?").bind(user.id).all(),
+      env.DB.prepare("SELECT SUM(box>=?) learned, SUM(box<?) learning, SUM(added=?) fresh FROM lingo_words WHERE user_id=?").bind(LEARNED_BOX, LEARNED_BOX, t, user.id).first(),
+    ]);
+    const done = day?.n || 0, need = Math.max(0, CARDS_DAY - done);
+    const rows = mine.results || [];
+    const have = new Set(rows.map((r) => r.word));
+    const due = rows.filter((r) => r.box < LEARNED_BOX && r.due <= t).sort((a, b) => a.box - b.box || (a.due < b.due ? -1 : 1)).slice(0, need).map((r) => ({ key: r.word, box: r.box, isNew: false }));
+    const freshToday = st?.fresh || 0;
+    const room = Math.max(0, Math.min(need - due.length, CARDS_NEW - freshToday));
+    const fresh = COURSE_ORDER.filter((k) => !have.has(k)).slice(0, room).map((k) => ({ key: k, box: 0, isNew: true }));
+    const list = [...due, ...fresh];
+    const keys = list.map((c) => c.key);
+    const dict = keys.length ? ((await env.DB.prepare(`SELECT * FROM lingo_dict WHERE word IN (${keys.map(() => "?").join(",")})`).bind(...keys).all()).results || []) : [];
+    const dm = Object.fromEntries(dict.map((d) => [d.word, d]));
+    const cards = list.map((c) => {
+      const w = WORDS[c.key], d = dm[c.key] || {};
+      const lvl = w ? (COURSE.levels.find((lv) => lv.units.includes(COURSE.units.find((u) => u.lessons.some((l) => l.id === w.lesson))?.id))?.name || "") : "";
+      return { key: c.key, en: w ? w.en : c.key, uz: w ? w.uz : (d.uz || ""), phonetic: d.phonetic || "", audio: d.audio || "", example: d.example || exampleFor(c.key), level: lvl, box: c.box, isNew: c.isNew };
+    }).filter((c) => c.uz);
+    return json({ ok: true, cards, done, goal: CARDS_DAY, good: day?.ok || 0, stats: { learned: st?.learned || 0, learning: st?.learning || 0, fresh: freshToday } });
+  }
+
+  if (path === "cards/answer" && m === "POST") {
+    const b = await readBody(req);
+    const key = S(b.key, 40).toLowerCase(), ok = !!b.ok, t = today();
+    if (!key) return err("So'z yo'q");
+    const day = await env.DB.prepare("SELECT n FROM lingo_cards_day WHERE user_id=? AND day=?").bind(user.id, t).first();
+    if ((day?.n || 0) >= CARDS_DAY) return err("Bugungi 20 ta so'z tugadi. Ertaga davom etamiz!");
+    const row = await env.DB.prepare("SELECT box FROM lingo_words WHERE user_id=? AND word=?").bind(user.id, key).first();
+    const stmts = [];
+    if (!row) {
+      if (!WORDS[key]) { const d = await env.DB.prepare("SELECT 1 FROM lingo_dict WHERE word=?").bind(key).first(); if (!d) return err("So'z topilmadi", 404); }
+      const box = ok ? 2 : 1;
+      stmts.push(env.DB.prepare("INSERT INTO lingo_words (user_id,word,box,due,added) VALUES (?,?,?,?,?)").bind(user.id, key, box, addDays(t, BOX_DAYS[box]), t));
+    } else {
+      const box = ok ? Math.min(row.box + 1, LEARNED_BOX) : 1;
+      stmts.push(env.DB.prepare("UPDATE lingo_words SET box=?, due=? WHERE user_id=? AND word=?").bind(box, addDays(t, BOX_DAYS[box] || 1), user.id, key));
+    }
+    stmts.push(env.DB.prepare("INSERT INTO lingo_cards_day (user_id,day,n,ok) VALUES (?,?,1,?) ON CONFLICT(user_id,day) DO UPDATE SET n=n+1, ok=ok+excluded.ok").bind(user.id, t, ok ? 1 : 0));
+    await env.DB.batch(stmts);
+    if (ok) await award(env, user, 1, 0);
+    return json({ ok: true, done: (day?.n || 0) + 1, goal: CARDS_DAY, coins: ok ? 1 : 0 });
+  }
+
+  // ---------- Haftalik liga ----------
+  if (path === "league" && m === "GET") {
+    const L = await ensureLeague(env, user.id);
+    const W = weekStart();
+    const g = await env.DB.prepare("SELECT grp FROM lingo_lgm WHERE week=? AND user_id=?").bind(W, user.id).first();
+    const rows = (await env.DB.prepare(
+      "SELECT u.id,u.name,u.avatar,u.photo_v, COALESCE((SELECT SUM(x.xp) FROM lingo_xp x WHERE x.user_id=u.id AND x.day>=?),0) s FROM lingo_lgm m JOIN lingo_users u ON u.id=m.user_id WHERE m.week=? AND m.tier=? AND m.grp=? ORDER BY s DESC, u.id"
+    ).bind(W, W, L.tier, g?.grp || 1).all()).results || [];
+    const list = rows.map((x, i) => ({ place: i + 1, name: x.name, avatar: x.avatar, photo: photoUrl(x), coins: x.s, me: x.id === user.id }));
+    const me = list.find((x) => x.me) || { place: list.length + 1, coins: 0 };
+    const above = await env.DB.prepare("SELECT COUNT(*) n FROM (SELECT user_id,SUM(xp) s FROM lingo_xp WHERE day>=? GROUP BY user_id HAVING s>?)").bind(W, me.coins || 0).first();
+    const n = list.length;
+    const result = !L.seen && (L.last_move === "up" || L.last_move === "down") ? { move: L.last_move, from: LEAGUES[L.last_tier]?.name, to: LEAGUES[L.tier].name } : null;
+    if (result) await env.DB.prepare("UPDATE lingo_league SET seen=1 WHERE user_id=?").bind(user.id).run();
+    const daysLeft = 7 - ((nowTz().getUTCDay() + 6) % 7);
+    return json({ ok: true, tier: L.tier, leagues: LEAGUES, list, place: me.place, size: n, overall: (above?.n || 0) + 1, daysLeft,
+      up: L.tier < LEAGUES.length - 1 ? Math.min(LG_UP, n) : 0, down: L.tier > 0 && n >= 10 ? LG_DOWN : 0, result });
   }
 
   // Haftalik reyting
