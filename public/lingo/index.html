@@ -817,6 +817,17 @@ input,select,textarea{font-size:16px}
  [data-theme=dark] .unit{border:1px solid rgba(120,140,255,.10)}
 }
 .dalt{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}.dalt span{font-size:12px;color:var(--muted);font-weight:600}.dalt em{font-style:normal;font-size:13.5px;font-weight:600;background:var(--card);padding:4px 10px;border-radius:12px;color:var(--ink)}
+
+.vtut .vtt{display:block;font-size:16px;margin-bottom:10px}
+.vtg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vtc{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px 12px;border-radius:20px;background:var(--bg);border:2px solid transparent;text-align:center}
+.vtc.on{border-color:var(--blue2);background:var(--sky)}
+.vtc .tutor{border-radius:50%;box-shadow:0 8px 18px -10px rgba(11,27,77,.5)}
+.vtc b{font-size:16px;margin-top:4px}.vtc small{font-size:12px;color:var(--muted)}
+.vtp{margin-top:6px;font-size:12px;font-weight:700;color:var(--blue);background:var(--card);padding:5px 10px;border-radius:12px}
+.vavb .tutor{border-radius:50%}
+.vavb{background:rgba(255,255,255,.14)!important}
+.vname{text-align:center;font-weight:800;font-size:17px;margin:-2px 0 4px}
 </style>
 </head>
 <body>
@@ -895,6 +906,39 @@ function pickVoice() {
   voice = vs.find((v) => /en[-_]US/i.test(v.lang) && /Google|Samantha|Microsoft/i.test(v.name)) || vs.find((v) => /^en/i.test(v.lang)) || null;
 }
 if (canSpeak) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+const TUTORS = { girl: { name: "Aziza", g: "female", hint: "Ayol ovozi" }, boy: { name: "Sardor", g: "male", hint: "Erkak ovozi" } };
+const FEM = /female|samantha|zira|jenny|aria|karen|moira|tessa|victoria|susan|hazel|libby|sonia|natasha|catherine|serena|ava|allison|emma|michelle|joanna|salli|kendra|kimberly|ivy|nicky|fiona|veena|google us english$|google uk english female/i;
+const MAL = /male|daniel|alex\b|david|mark|guy|ryan|fred|tom\b|aaron|arthur|george|james|oliver|rishi|thomas|matthew|joey|justin|brian|eric|christopher|google uk english male/i;
+function tutorKind() { return LS.get("zl-tutor") === "boy" ? "boy" : "girl"; }
+function tutorVoice(kind) {
+  if (!canSpeak) return { voice: null, pitch: 1 };
+  const vs = speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
+  const want = TUTORS[kind].g;
+  const isF = (v) => FEM.test(v.name) && !/\bmale\b/i.test(v.name.replace(/female/i, ""));
+  const isM = (v) => MAL.test(v.name) && !/female/i.test(v.name);
+  const pool = vs.filter(want === "female" ? isF : isM);
+  const v = pool.find((x) => /en[-_]US/i.test(x.lang)) || pool[0] || null;
+  // Mos ovoz topilmasa — bitta ovozni balandlik bilan farqlaymiz
+  return { voice: v || voice, pitch: v ? 1 : want === "female" ? 1.25 : 0.78 };
+}
+function tutorSVG(kind, size = 64) {
+  const shirt = kind === "girl" ? "#E8458B" : "#0046E0", bg = kind === "girl" ? "#FFE1EE" : "#DDE8FF";
+  return `<svg viewBox="0 0 60 60" width="${size}" height="${size}" class="tutor" aria-label="${TUTORS[kind].name}"><defs><clipPath id="tc${kind}${size}"><circle cx="30" cy="30" r="30"/></clipPath></defs>
+    <g clip-path="url(#tc${kind}${size})"><circle cx="30" cy="30" r="30" fill="${bg}"/>
+    <path d="M8 62c1-12 10-18 22-18s21 6 22 18z" fill="${shirt}"/><path d="M24 44l6 7 6-7" fill="#fff"/>
+    <rect x="26" y="37" width="8" height="8" rx="3" fill="${SKIN_D}"/>
+    <g transform="translate(0,1)">${headSVG(kind)}</g>
+    <path d="M14 27a16 16 0 0 1 32 0" fill="none" stroke="#1B1B2F" stroke-width="2.4" stroke-linecap="round"/><rect x="11" y="25" width="6" height="10" rx="3" fill="#1B1B2F"/><rect x="43" y="25" width="6" height="10" rx="3" fill="#1B1B2F"/>
+    <path d="M14 34c0 6 4 9 10 9" fill="none" stroke="#1B1B2F" stroke-width="1.8"/><circle cx="25" cy="43" r="2" fill="#1B1B2F"/></g></svg>`;
+}
+function tutorSay(text, kind, onend) {
+  if (!canSpeak) { onend && onend(); return; }
+  speechSynthesis.cancel();
+  const tv = tutorVoice(kind), u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; if (tv.voice) u.voice = tv.voice; u.pitch = tv.pitch; u.rate = 0.9;
+  u.onend = u.onerror = () => onend && onend();
+  speechSynthesis.speak(u);
+}
 function say(text, slow) {
   if (!canSpeak) return;
   speechSynthesis.cancel();
@@ -1650,9 +1694,9 @@ function playWord(w, audio) {
   if (audio) { const a = new Audio(audio); a.play().catch(() => say(w)); } else say(w);
 }
 function viewWords() {
-  S.vtab = S.vtab || "my";
+  S.vtab = S.vtab || "dict";
   $("#main").innerHTML = `<h2 class="t">Lug'at</h2>
-    <div class="vseg"><button data-v="my" class="${S.vtab === "my" ? "on" : ""}">📚 My Vocabulary</button><button data-v="dict" class="${S.vtab === "dict" ? "on" : ""}">🔍 Dictionary</button></div>
+    <div class="vseg"><button data-v="dict" class="${S.vtab === "dict" ? "on" : ""}">🔍 Lug'at izlash</button><button data-v="my" class="${S.vtab === "my" ? "on" : ""}">📚 Mening lug'atim</button></div>
     <div id="vbody"></div>`;
   document.querySelectorAll(".vseg button").forEach((b) => (b.onclick = () => { S.vtab = b.dataset.v; viewWords(); }));
   S.vtab === "my" ? viewMyVocab() : viewDict();
@@ -1834,13 +1878,22 @@ function viewTextChat() {
 function viewVoiceHome() {
   $("#aibody").innerHTML = `
     ${SR && canSpeak ? "" : `<div class="card" style="background:var(--coin-bg);margin-bottom:12px">⚠️ Ovozli suhbat uchun brauzer mikrofon va ovozni qo'llab-quvvatlashi kerak. <b>Google Chrome</b>'da oching.</div>`}
-    <div class="card vhero"><div class="vav">🤖</div><div><b>Ovozli suhbat</b><p class="muted" style="font-size:14px">Mavzuni tanlang va AI bilan inglizcha gaplashing. Mikrofonni bosing — gapiring — AI ovozda javob beradi.</p></div></div>
+    <div class="card vtut"><b class="vtt">Kim bilan gaplashasiz?</b>
+      <div class="vtg">${["girl", "boy"].map((k) => `<button class="vtc ${tutorKind() === k ? "on" : ""}" data-tut="${k}">${tutorSVG(k, 72)}<b>${TUTORS[k].name}</b><small>${TUTORS[k].hint}</small><span class="vtp" data-hear="${k}" role="button" aria-label="Ovozini eshitish">🔊 Eshitish</span></button>`).join("")}</div>
+      <p class="muted" style="font-size:13px;margin-top:10px">Mavzuni tanlang, mikrofonni bosib inglizcha gapiring — ${TUTORS[tutorKind()].name} ovozda javob beradi.</p></div>
     <div class="vgrid">${TALKS.map((t) => `<button class="card vtopic" data-t="${t.id}"><span>${t.e}</span><b>${t.t}</b><small class="muted">${t.lines.length} ta savol-javob</small></button>`).join("")}
       <button class="card vtopic free" data-t="free"><span>🗣</span><b>Erkin suhbat</b><small class="muted">AI bilan istalgan mavzuda</small></button></div>
     <p class="muted" style="font-size:13px;margin-top:12px;text-align:center">🎙 Mikrofonga ruxsat so'raladi · gaplaringiz matn ko'rinishida ham chiqadi</p>`;
   document.querySelectorAll(".vtopic").forEach((b) => (b.onclick = () => startTalk(b.dataset.t)));
+  document.querySelectorAll(".vtc").forEach((b) => (b.onclick = (e) => {
+    const k = b.dataset.tut;
+    if (e.target.closest("[data-hear]")) { tutorSay(`Hi! I'm ${TUTORS[k].name}. Let's practice English together!`, k); return; }
+    LS.set("zl-tutor", k); viewVoiceHome();
+    tutorSay(`Hi! I'm ${TUTORS[k].name}.`, k);
+  }));
 }
 function startTalk(id) {
+  const TK = tutorKind();
   if (!SR) { toast("Brauzeringiz ovozni tanimaydi. Chrome'da oching", 3000); return; }
   const topic = TALKS.find((t) => t.id === id);
   const T = { topic, i: 0, ok: 0, tries: 0, log: [], free: !topic, msgs: [], start: Date.now(), busy: false };
@@ -1848,11 +1901,11 @@ function startTalk(id) {
   d.className = "full vfull";
   d.innerHTML = `<div class="in">
     <div class="lh" style="color:#fff"><button class="x" id="vx" style="color:#fff">${IC.x}</button><b style="flex:1">${topic ? topic.e + " " + topic.t : "🗣 Erkin suhbat"}</b><span class="vtime" id="vt">00:00</span></div>
-    <div class="vavb" id="vav"><span>🤖</span></div>
+    <div class="vavb" id="vav">${tutorSVG(TK, 110)}</div><div class="vname">${TUTORS[TK].name}</div>
     <div class="vlog" id="vlog"></div>
     <div class="vint" id="vint"></div>
     <div class="vbar"><button class="vbtn" id="vhint">💡</button><button class="vmic" id="vmic" aria-label="Gapirish">🎙</button><button class="vbtn" id="vskip">⏭</button></div>
-    <p class="vsub" id="vsub">AI gapirmoqda…</p></div>`;
+    <p class="vsub" id="vsub">${TUTORS[TK].name} gapirmoqda…</p></div>`;
   document.body.appendChild(d); document.body.style.overflow = "hidden";
   const timer = setInterval(() => { const s = Math.floor((Date.now() - T.start) / 1000); $("#vt").textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 1000);
   const close = () => { clearInterval(timer); if (canSpeak) speechSynthesis.cancel(); if (T.rec) try { T.rec.abort(); } catch {} closeFull(); };
@@ -1863,10 +1916,11 @@ function startTalk(id) {
     $("#vlog").scrollTop = 1e6;
   };
   const speak = (text, after) => {
-    $("#vav").classList.add("talk"); $("#vsub").textContent = "AI gapirmoqda…"; $("#vmic").disabled = true;
+    $("#vav").classList.add("talk"); $("#vsub").textContent = `${TUTORS[TK].name} gapirmoqda…`; $("#vmic").disabled = true;
     if (!canSpeak) { $("#vav").classList.remove("talk"); $("#vmic").disabled = false; after && after(); return; }
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; if (voice) u.voice = voice; u.rate = 0.88;
+    const tv = tutorVoice(TK);
+    const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; if (tv.voice) u.voice = tv.voice; u.pitch = tv.pitch; u.rate = 0.88;
     u.onend = u.onerror = () => { $("#vav").classList.remove("talk"); $("#vmic").disabled = false; $("#vsub").textContent = "Mikrofonni bosing va gapiring"; after && after(); };
     speechSynthesis.speak(u);
   };
@@ -1906,7 +1960,7 @@ function startTalk(id) {
     setTimeout(() => d.classList.remove("listening"), 9000);
   };
   async function freeReply(text) {
-    T.busy = true; $("#vsub").textContent = "AI o'ylayapti…"; $("#vav").classList.add("think");
+    T.busy = true; $("#vsub").textContent = `${TUTORS[TK].name} o'ylayapti…`; $("#vav").classList.add("think");
     T.msgs.push({ role: "user", content: text });
     const r = await api("ai", { messages: T.msgs, mode: "voice" });
     $("#vav").classList.remove("think"); T.busy = false;
@@ -1931,7 +1985,7 @@ function startTalk(id) {
     $("#vbk").onclick = () => { close(); refresh(); };
   }
   if (T.free) {
-    const hello = "Hi! I'm your English friend. What would you like to talk about today?";
+    const hello = `Hi! I'm ${TUTORS[TK].name}, your English friend. What would you like to talk about today?`;
     T.msgs.push({ role: "assistant", content: hello });
     log("ai", hello, `<span class="vuz">Salom! Bugun nima haqida gaplashamiz?</span>`); speak(hello);
   } else setTimeout(aiLine, 400);
