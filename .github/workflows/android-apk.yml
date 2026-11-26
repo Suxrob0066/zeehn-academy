@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths: ["app/**", ".github/workflows/android-apk.yml"]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,3 +46,13 @@ jobs:
           name: zeehn-lingo-apk
           path: app/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+      - name: APK nomini o'zgartirish
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk ZeehnLingo-1.0.${{ github.run_number }}.apk
+      - name: GitHub Release'ga yuklash
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lingo-v1.0.${{ github.run_number }}
+          name: Zeehn Lingo 1.0.${{ github.run_number }}
+          body: "Zeehn Lingo Android ilovasi (test versiya). APK faylni telefonga yuklab o'rnating."
+          files: app/ZeehnLingo-1.0.${{ github.run_number }}.apk
+          make_latest: true
